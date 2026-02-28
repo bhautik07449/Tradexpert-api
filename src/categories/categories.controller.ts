@@ -25,6 +25,16 @@ export class CategoriesController {
         return this.categoriesService.findAll();
     }
 
+    @Get('flat')
+    findFlat() {
+        return this.categoriesService.findFlat();
+    }
+
+    @Get('parents')
+    findParents() {
+        return this.categoriesService.findParents();
+    }
+
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number): Promise<Category> {
         return this.categoriesService.findOne(id);
