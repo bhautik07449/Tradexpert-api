@@ -14,6 +14,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
 import { BuyerInteractionsModule } from './buyer-interactions/buyer-interactions.module';
 import { MeasurementsModule } from './measurements/measurements.module';
+import { UploadController } from './upload.controller';
 
 @Module({
   imports: [
@@ -49,10 +50,10 @@ import { MeasurementsModule } from './measurements/measurements.module';
     SuppliersModule,
     ProductsModule,
     CategoriesModule,
-    BrandsModule, 
+    BrandsModule,
     BuyerInteractionsModule, MeasurementsModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, UploadController],
   providers: [
     AppService,
     ConsoleLogger
