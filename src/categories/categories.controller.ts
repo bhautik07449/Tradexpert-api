@@ -4,9 +4,9 @@ import {
     Post,
     Body,
     Param,
-    Put,
     Delete,
     ParseIntPipe,
+    Patch,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { Category } from './entities/category.entity';
@@ -40,7 +40,7 @@ export class CategoriesController {
         return this.categoriesService.findOne(id);
     }
 
-    @Put(':id')
+    @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<Category>,

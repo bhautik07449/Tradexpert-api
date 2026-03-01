@@ -6,8 +6,8 @@ import {
     Param,
     Delete,
     ParseIntPipe,
-    Put,
     UseGuards,
+    Patch,
 } from '@nestjs/common';
 import { SuppliersService } from './suppliers.service';
 import { Supplier } from './entities/supplier.entity';
@@ -33,7 +33,7 @@ export class SuppliersController {
         return this.suppliersService.findOne(id);
     }
 
-    @Put(':id')
+    @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<Supplier>,
