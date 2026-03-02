@@ -15,6 +15,7 @@ import { BrandsModule } from './brands/brands.module';
 import { BuyerInteractionsModule } from './buyer-interactions/buyer-interactions.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { UploadController } from './upload.controller';
+import { CurrencyModule } from './currency/currency.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { UploadController } from './upload.controller';
     ProductsModule,
     CategoriesModule,
     BrandsModule,
-    BuyerInteractionsModule, MeasurementsModule
+    BuyerInteractionsModule, MeasurementsModule,
+    CurrencyModule
   ],
   controllers: [AppController, UploadController],
   providers: [
