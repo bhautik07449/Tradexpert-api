@@ -16,6 +16,7 @@ import { BuyerInteractionsModule } from './buyer-interactions/buyer-interactions
 import { MeasurementsModule } from './measurements/measurements.module';
 import { UploadController } from './upload.controller';
 import { CurrencyModule } from './currency/currency.module';
+import { PagesModule } from './pages/pages.module';
 
 @Module({
   imports: [
@@ -53,7 +54,7 @@ import { CurrencyModule } from './currency/currency.module';
     CategoriesModule,
     BrandsModule,
     BuyerInteractionsModule, MeasurementsModule,
-    CurrencyModule
+    CurrencyModule, PagesModule
   ],
   controllers: [AppController, UploadController],
   providers: [
