@@ -20,6 +20,7 @@ import { PagesModule } from './pages/pages.module';
 import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
 import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
 import { BlogCategoryModule } from './blogCategory/blogcategorymodule';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -58,7 +59,8 @@ import { BlogCategoryModule } from './blogCategory/blogcategorymodule';
     BrandsModule,
     BuyerInteractionsModule, MeasurementsModule,
     CurrencyModule, PagesModule, QualityPolicyModule,
-    EmailtemplateModule, BlogCategoryModule
+    EmailtemplateModule, BlogCategoryModule,
+    BlogModule
   ],
   controllers: [AppController, UploadController],
   providers: [
