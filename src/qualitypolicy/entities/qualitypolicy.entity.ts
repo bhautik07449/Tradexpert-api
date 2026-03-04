@@ -9,6 +9,11 @@ import {
     JoinColumn,
 } from 'typeorm';
 
+export enum QualityPoliciesStatus {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
+
 @Entity('Qualitypolicy')
 export class Qualitypolicy {
     @PrimaryGeneratedColumn()
@@ -26,6 +31,13 @@ export class Qualitypolicy {
 
     @Column({ name: 'description', type: 'text' })
     description: string;
+
+    @Column({
+        type: 'enum',
+        enum: QualityPoliciesStatus,
+        default: QualityPoliciesStatus.ACTIVE,
+    })
+    status: QualityPoliciesStatus;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

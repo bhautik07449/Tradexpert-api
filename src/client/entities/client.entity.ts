@@ -1,5 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+export enum status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
+
 @Entity({ name: 'client' })
 export class Client {
     @PrimaryGeneratedColumn()
@@ -19,6 +24,13 @@ export class Client {
 
     @Column({ name: 'image' })
     image: string;
+
+    @Column({
+        type: 'enum',
+        enum: status,
+        default: status.ACTIVE,
+    })
+    status: status;
 
     @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
     lastUpdatedAt: Date;

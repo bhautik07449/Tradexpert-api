@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { Product } from '../../products/entities/product.entity';
-import { Category } from '../../categories/entities/category.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+export enum status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
 @Entity({ name: 'team' })
 export class Team {
     @PrimaryGeneratedColumn()
@@ -30,6 +32,13 @@ export class Team {
 
     @Column({ name: 'youtube' })
     youtube: string;
+
+    @Column({
+        type: 'enum',
+        enum: status,
+        default: status.ACTIVE,
+    })
+    status: status;
 
     @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
     lastUpdatedAt: Date;

@@ -31,7 +31,7 @@ export class PagesService {
 
     async findAll() {
         const pages = await this.pageRepo.find({
-            where: { status: Not(PageStatus.INACTIVE) },
+            // where: { status: Not(PageStatus.INACTIVE) },
             order: { createdAt: 'DESC' },
         });
 
