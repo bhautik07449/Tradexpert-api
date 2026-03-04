@@ -18,6 +18,7 @@ import { UploadController } from './upload.controller';
 import { CurrencyModule } from './currency/currency.module';
 import { PagesModule } from './pages/pages.module';
 import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
+import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
     CategoriesModule,
     BrandsModule,
     BuyerInteractionsModule, MeasurementsModule,
-    CurrencyModule, PagesModule,QualityPolicyModule
+    CurrencyModule, PagesModule,QualityPolicyModule,
+    EmailtemplateModule
   ],
   controllers: [AppController, UploadController],
   providers: [

@@ -20,7 +20,7 @@ export class EmailTemplateService {
 
             return {
                 success: true,
-                message: 'Currency created successfully',
+                message: 'Email Template created successfully',
                 data: saved,
             };
         } catch (error) {
