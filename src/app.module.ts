@@ -19,11 +19,12 @@ import { CurrencyModule } from './currency/currency.module';
 import { PagesModule } from './pages/pages.module';
 import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
 import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
-import { BlogCategoryModule } from './blogCategory/blogcategorymodule';
+import { BlogCategoryModule } from './blogCategory/blogcategory.module';
 import { BlogModule } from './blog/blog.module';
 import { TeamModule } from './team/team.module';
 import { ClientModule } from './client/client.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
+import { TradetypeModule } from './tradetype/tradetype.module';
 
 @Module({
   imports: [
@@ -63,7 +64,8 @@ import { TestimonialModule } from './testimonial/testimonial.module';
     BuyerInteractionsModule, MeasurementsModule,
     CurrencyModule, PagesModule, QualityPolicyModule,
     EmailtemplateModule, BlogCategoryModule,
-    BlogModule, TeamModule, ClientModule, TestimonialModule
+    BlogModule, TeamModule, ClientModule, TestimonialModule,
+    TradetypeModule
   ],
   controllers: [AppController, UploadController],
   providers: [
