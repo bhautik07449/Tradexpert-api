@@ -25,6 +25,7 @@ import { TeamModule } from './team/team.module';
 import { ClientModule } from './client/client.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { TradetypeModule } from './tradetype/tradetype.module';
+import { TradeofferModule } from './tradeoffer/tradeoffer.module';
 
 @Module({
   imports: [
@@ -65,7 +66,7 @@ import { TradetypeModule } from './tradetype/tradetype.module';
     CurrencyModule, PagesModule, QualityPolicyModule,
     EmailtemplateModule, BlogCategoryModule,
     BlogModule, TeamModule, ClientModule, TestimonialModule,
-    TradetypeModule
+    TradetypeModule, TradeofferModule
   ],
   controllers: [AppController, UploadController],
   providers: [
