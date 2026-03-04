@@ -17,6 +17,7 @@ import { MeasurementsModule } from './measurements/measurements.module';
 import { UploadController } from './upload.controller';
 import { CurrencyModule } from './currency/currency.module';
 import { PagesModule } from './pages/pages.module';
+import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
 
 @Module({
   imports: [
@@ -54,7 +55,7 @@ import { PagesModule } from './pages/pages.module';
     CategoriesModule,
     BrandsModule,
     BuyerInteractionsModule, MeasurementsModule,
-    CurrencyModule, PagesModule
+    CurrencyModule, PagesModule,QualityPolicyModule
   ],
   controllers: [AppController, UploadController],
   providers: [
