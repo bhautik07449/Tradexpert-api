@@ -22,6 +22,7 @@ import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
 import { BlogCategoryModule } from './blogCategory/blogcategorymodule';
 import { BlogModule } from './blog/blog.module';
 import { TeamModule } from './team/team.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -61,7 +62,7 @@ import { TeamModule } from './team/team.module';
     BuyerInteractionsModule, MeasurementsModule,
     CurrencyModule, PagesModule, QualityPolicyModule,
     EmailtemplateModule, BlogCategoryModule,
-    BlogModule, TeamModule
+    BlogModule, TeamModule, ClientModule
   ],
   controllers: [AppController, UploadController],
   providers: [
