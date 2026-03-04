@@ -19,6 +19,7 @@ import { CurrencyModule } from './currency/currency.module';
 import { PagesModule } from './pages/pages.module';
 import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
 import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
+import { BlogCategoryModule } from './blogCategory/blogcategorymodule';
 
 @Module({
   imports: [
@@ -56,8 +57,8 @@ import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
     CategoriesModule,
     BrandsModule,
     BuyerInteractionsModule, MeasurementsModule,
-    CurrencyModule, PagesModule,QualityPolicyModule,
-    EmailtemplateModule
+    CurrencyModule, PagesModule, QualityPolicyModule,
+    EmailtemplateModule, BlogCategoryModule
   ],
   controllers: [AppController, UploadController],
   providers: [
