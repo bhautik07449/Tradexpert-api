@@ -17,8 +17,8 @@ export class Gallery {
     @Column({ name: 'description', type: 'text' })
     description: string;
 
-    @Column('simple-array', { name: 'image' })
-    image: string[];
+    @Column({ name: 'image' })
+    image: string;
 
     @Column({ unique: true })
     sr_no: number;
