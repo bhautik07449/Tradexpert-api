@@ -30,6 +30,9 @@ import { OfferRequestModule } from './offerRequest/offerrequest.module';
 import { HomebannerModule } from './homebanner/homebanner.module';
 import { CertificationsliderModule } from './certificationslider/certificationslider.module';
 import { GalleryModule } from './gallery/gallery.module';
+import { FaqModule } from './faq/faq.module';
+import { GeneralSettingsModule } from './generalsetting/generalsetting.module';
+import { SocialSettingsModule } from './socialsetting/socialsetting.module';
 
 @Module({
   imports: [
@@ -71,7 +74,9 @@ import { GalleryModule } from './gallery/gallery.module';
     EmailtemplateModule, BlogCategoryModule,
     BlogModule, TeamModule, ClientModule, TestimonialModule,
     TradetypeModule, TradeofferModule, OfferRequestModule,
-    HomebannerModule, CertificationsliderModule, GalleryModule
+    HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
+    GeneralSettingsModule, SocialSettingsModule
+
   ],
   controllers: [AppController, UploadController],
   providers: [

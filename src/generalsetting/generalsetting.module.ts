@@ -9,4 +9,4 @@ import { GeneralSettingsController } from './generalsetting.controller';
   controllers: [GeneralSettingsController],
   providers: [GeneralSettingsService],
 })
-export class SiteSettingsModule {}
+export class GeneralSettingsModule {}
