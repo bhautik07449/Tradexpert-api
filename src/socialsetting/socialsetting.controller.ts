@@ -15,6 +15,7 @@ export class SocialSettingsController {
     }
 
     @Patch()
+    @UseGuards(AdminAuthGuard)
     updateSettings(@Body() body: Partial<SocialSettings>) {
         return this.service.updateSettings(body);
     }

@@ -15,6 +15,7 @@ export class GeneralSettingsController {
     }
 
     @Patch()
+    @UseGuards(AdminAuthGuard)
     updateSettings(@Body() body: Partial<GeneralSettings>) {
         return this.service.updateSettings(body);
     }
