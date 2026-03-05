@@ -20,8 +20,8 @@ export class Gallery {
     @Column('simple-array', { name: 'image' })
     image: string[];
 
-    @Column()
-    sr_no: string;
+    @Column({ unique: true })
+    sr_no: number;
 
     @Column({
         type: 'enum',

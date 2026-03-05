@@ -12,9 +12,19 @@ export class GalleryService {
 
     async create(data: Partial<Gallery>) {
         try {
-            if (!data) {
-                throw new BadRequestException('Request body is required');
+
+            if (!data.sr_no) {
+                throw new BadRequestException('sr_no is required');
             }
+
+            const existing = await this.galleryRepository.findOne({
+                where: { sr_no: data.sr_no }
+            });
+
+            if (existing) {
+                throw new BadRequestException(`Position ${data.sr_no} already exists`);
+            }
+
             const gallery = this.galleryRepository.create(data);
             const saved = await this.galleryRepository.save(gallery);
 
@@ -23,15 +33,16 @@ export class GalleryService {
                 message: 'gallery created successfully',
                 data: saved,
             };
+
         } catch (error) {
-            throw new InternalServerErrorException('Failed to create gallery');
+            throw error;
         }
     }
 
     async findAll() {
         try {
             const data = await this.galleryRepository.find({
-                order: { createdAt: 'DESC' },
+                order: { sr_no: 'ASC' },
             });
 
             return {
@@ -65,27 +76,34 @@ export class GalleryService {
     }
 
     async update(id: number, data: Partial<Gallery>) {
-        try {
-            const gallery = await this.galleryRepository.findOne({
-                where: { id },
+
+        const gallery = await this.galleryRepository.findOne({
+            where: { id },
+        });
+
+        if (!gallery) {
+            throw new NotFoundException('gallery not found');
+        }
+
+        if (data.sr_no) {
+            const existing = await this.galleryRepository.findOne({
+                where: { sr_no: data.sr_no }
             });
 
-            if (!gallery) {
-                throw new NotFoundException('gallery not found');
+            if (existing && existing.id !== id) {
+                throw new BadRequestException(`Position ${data.sr_no} already exists`);
             }
-
-            Object.assign(gallery, data);
-
-            const updated = await this.galleryRepository.save(gallery);
-
-            return {
-                success: true,
-                message: 'gallery updated successfully',
-                data: updated,
-            };
-        } catch (error) {
-            throw error;
         }
+
+        Object.assign(gallery, data);
+
+        const updated = await this.galleryRepository.save(gallery);
+
+        return {
+            success: true,
+            message: 'gallery updated successfully',
+            data: updated,
+        };
     }
 
     async remove(id: number) {
