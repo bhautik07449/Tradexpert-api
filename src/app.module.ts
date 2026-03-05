@@ -27,6 +27,7 @@ import { TestimonialModule } from './testimonial/testimonial.module';
 import { TradetypeModule } from './tradetype/tradetype.module';
 import { TradeofferModule } from './tradeoffer/tradeoffer.module';
 import { OfferRequestModule } from './offerRequest/offerrequest.module';
+import { HomebannerModule } from './homebanner/homebanner.module';
 
 @Module({
   imports: [
@@ -67,7 +68,8 @@ import { OfferRequestModule } from './offerRequest/offerrequest.module';
     CurrencyModule, PagesModule, QualityPolicyModule,
     EmailtemplateModule, BlogCategoryModule,
     BlogModule, TeamModule, ClientModule, TestimonialModule,
-    TradetypeModule, TradeofferModule, OfferRequestModule
+    TradetypeModule, TradeofferModule, OfferRequestModule,
+    HomebannerModule
   ],
   controllers: [AppController, UploadController],
   providers: [
