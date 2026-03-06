@@ -4,8 +4,7 @@ import { BlogCategory } from 'src/blogCategory/entities/blogcategory.entity';
 
 export enum BlogStatus {
   ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  DELETED = 'deleted',
+  INACTIVE = 'inactive'
 }
 
 @Entity({ name: 'blogs' })
@@ -13,7 +12,7 @@ export class Blog {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'post_date', type: 'timestamptz' })
+  @Column({ name: 'post_date', type: 'date' })
   postDate: Date;
 
   @ManyToOne(() => BlogCategory)
@@ -29,13 +28,13 @@ export class Blog {
   @Column({ name: 'blog_detail', type: 'text' })
   blogDetail: string;
 
-  @Column('simple-array', { name: 'slider' })
-  slider: string[];
+  @Column({ name: 'slider', nullable:true })
+  slider: string;
 
   @Column({
     type: 'enum',
     enum: BlogStatus,
-    default: BlogStatus.ACTIVE
+    default: BlogStatus.INACTIVE
   })
   status: BlogStatus;
 

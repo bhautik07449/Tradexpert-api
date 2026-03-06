@@ -19,6 +19,10 @@ export class BlogService {
     ) { }
 
     async create(data: Partial<Blog>) {
+        if (!data.postDate) {
+            throw new BadRequestException('Post date is required');
+        }
+
         if (data.blog_category?.id) {
             const category = await this.blogCategoryRepository.findOne({
                 where: { id: data.blog_category.id },
@@ -27,6 +31,15 @@ export class BlogService {
             if (!category) throw new NotFoundException('Blog category not found');
 
             data.blog_category = category;
+        }
+
+        const today = new Date();
+        const postDate = new Date(data.postDate);
+
+        if (postDate <= today) {
+            data.status = 'active' as any;
+        } else {
+            data.status = 'inactive' as any;
         }
 
         const blog = this.blogRepository.create(data);
@@ -81,6 +94,13 @@ export class BlogService {
             if (!category) throw new NotFoundException('Blog category not found');
 
             blog.blog_category = category;
+        }
+
+        if (data.postDate) {
+            const today = new Date();
+            const postDate = new Date(data.postDate);
+
+            blog.status = postDate <= today ? 'active' as any : 'inactive' as any;
         }
 
         Object.assign(blog, data);
