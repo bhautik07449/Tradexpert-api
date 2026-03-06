@@ -12,7 +12,6 @@ import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
-import { BuyerInteractionsModule } from './buyer-interactions/buyer-interactions.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { UploadController } from './upload.controller';
 import { CurrencyModule } from './currency/currency.module';
@@ -69,7 +68,7 @@ import { SocialSettingsModule } from './socialsetting/socialsetting.module';
     ProductsModule,
     CategoriesModule,
     BrandsModule,
-    BuyerInteractionsModule, MeasurementsModule,
+    MeasurementsModule,
     CurrencyModule, PagesModule, QualityPolicyModule,
     EmailtemplateModule, BlogCategoryModule,
     BlogModule, TeamModule, ClientModule, TestimonialModule,
