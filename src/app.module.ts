@@ -34,6 +34,7 @@ import { GeneralSettingsModule } from './generalsetting/generalsetting.module';
 import { SocialSettingsModule } from './socialsetting/socialsetting.module';
 import { QuotationModule } from './quotation/quotation.module';
 import { RequestsamplesModule } from './requestsamples/requestsamples.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -77,7 +78,7 @@ import { RequestsamplesModule } from './requestsamples/requestsamples.module';
     TradetypeModule, TradeofferModule, OfferRequestModule,
     HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
     GeneralSettingsModule, SocialSettingsModule,
-    QuotationModule, RequestsamplesModule
+    QuotationModule, RequestsamplesModule, ContactModule
 
   ],
   controllers: [AppController, UploadController],
