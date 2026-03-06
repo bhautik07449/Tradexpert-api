@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Brand } from '../../brands/entities/brand.entity';
 import { ProductImage } from './product-image.entity';
-import { Inquiry } from '../../buyer-interactions/entities/inquiry.entity';
-import { RequestSample } from '../../buyer-interactions/entities/request-sample.entity';
 import { ProductApplication } from './product-application.entity';
 import { ProductCommercialAspect } from './product-commercial-aspect.entity';
 import { ProductCertification } from './product-certification.entity';
 import { ProductShipment } from './product-shipment.entity';
 import { ProductSpecification } from './product-specification.entity';
 import { Category } from 'src/categories/entities/category.entity';
+import { Inquiry } from 'src/inquiry/entities/inquiry.entity';
+import { Requestsamples } from 'src/requestsamples/entities/requestsamples.entity';
 
 export enum ProductStatus {
   ACTIVE = 'active',
@@ -124,8 +124,8 @@ export class Product {
   @OneToMany(() => Inquiry, inquiry => inquiry.product)
   inquiries: Inquiry[];
 
-  @OneToMany(() => RequestSample, requestSample => requestSample.product)
-  requestSamples: RequestSample[];
+  @OneToMany(() => Requestsamples, requestSample => requestSample.product)
+  requestSamples: Requestsamples[];
 
   @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
   lastUpdatedAt: Date;

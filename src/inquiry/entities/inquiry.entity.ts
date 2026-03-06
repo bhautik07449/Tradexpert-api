@@ -1,3 +1,4 @@
+import { Buyer } from 'src/buyers/entities/buyer.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
@@ -6,10 +7,14 @@ export enum status {
     INACTIVE = 'inactive',
 }
 
-@Entity({ name: 'inquiry ' })
+@Entity({ name: 'inquiry' })
 export class Inquiry {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @ManyToOne(() => Buyer, (buyer) => buyer.inquiries)
+    @JoinColumn({ name: 'buyer_id' })
+    buyer: Buyer;
 
     @Column({ name: 'email' })
     email: string;

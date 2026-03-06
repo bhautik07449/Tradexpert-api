@@ -1,3 +1,4 @@
+import { Buyer } from 'src/buyers/entities/buyer.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
@@ -10,6 +11,10 @@ export enum status {
 export class Requestsamples {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @ManyToOne(() => Buyer, (buyer) => buyer.requestSamples)
+    @JoinColumn({ name: 'buyer_id' })
+    buyer: Buyer;
 
     @Column({ name: 'email' })
     email: string;

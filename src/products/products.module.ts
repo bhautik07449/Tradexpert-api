@@ -1,6 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BuyerInteractionsModule } from 'src/buyer-interactions/buyer-interactions.module';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';

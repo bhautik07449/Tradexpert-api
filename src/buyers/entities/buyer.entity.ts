@@ -1,6 +1,6 @@
+import { Inquiry } from 'src/inquiry/entities/inquiry.entity';
+import { Requestsamples } from 'src/requestsamples/entities/requestsamples.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { Inquiry } from '../../buyer-interactions/entities/inquiry.entity';
-import { RequestSample } from '../../buyer-interactions/entities/request-sample.entity';
 
 export enum BuyerGender {
   MR = 'Mr',
@@ -92,7 +92,7 @@ export class Buyer {
   @OneToMany(() => Inquiry, (inquiry) => inquiry.buyer)
   inquiries: Inquiry[];
 
-  @OneToMany(() => RequestSample, (requestSample) => requestSample.buyer)
-  requestSamples: RequestSample[];
+  @OneToMany(() => Requestsamples, (requestSample) => requestSample.buyer)
+  requestSamples: Requestsamples[];
 }
 
