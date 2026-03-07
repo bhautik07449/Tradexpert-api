@@ -36,6 +36,7 @@ import { RequestsamplesModule } from './requestsamples/requestsamples.module';
 import { ContactModule } from './contact/contact.module';
 import { InquiryModule } from './inquiry/inquiry.module';
 import { ProductModule } from './product/product.module';
+import { DRMModule } from './drm/dmr.module';
 
 @Module({
   imports: [
@@ -79,8 +80,8 @@ import { ProductModule } from './product/product.module';
     TradetypeModule, TradeofferModule, OfferRequestModule,
     HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
     GeneralSettingsModule, SocialSettingsModule,
-    QuotationModule, RequestsamplesModule, ContactModule, InquiryModule
-
+    QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
+    DRMModule
   ],
   controllers: [AppController, UploadController],
   providers: [
