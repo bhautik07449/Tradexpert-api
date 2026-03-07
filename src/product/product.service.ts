@@ -26,7 +26,7 @@ export class ProductService {
         if (!category) throw new NotFoundException('Category not found');
 
         const subcategory = await this.categoryRepo.findOne({
-            where: { id: body.subcategory },
+            where: { id: body.subCategory },
         });
 
         if (!subcategory) throw new NotFoundException('Subcategory not found');
@@ -101,9 +101,9 @@ export class ProductService {
             product.category = category;
         }
 
-        if (body.subcategory) {
+        if (body.subCategory) {
             const subcategory = await this.categoryRepo.findOne({
-                where: { id: body.subcategory },
+                where: { id: body.subCategory },
             });
 
             if (!subcategory) throw new NotFoundException('Subcategory not found');

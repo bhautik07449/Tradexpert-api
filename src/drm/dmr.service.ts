@@ -22,63 +22,63 @@ export class DRMService {
         if (!category) throw new NotFoundException('Category not found');
 
         const subcategory = await this.categoryRepo.findOne({
-            where: { id: body.subcategory },
+            where: { id: body.subCategory },
         });
 
         if (!subcategory) throw new NotFoundException('Subcategory not found');
 
-        const product = this.dmrRepo.create({
+        const dmr = this.dmrRepo.create({
             ...body,
             category,
             subcategory
         });
 
-        const savedProduct = await this.dmrRepo.save(product);
+        const savedDMR = await this.dmrRepo.save(dmr);
 
         return {
             success: true,
             message: 'DMR created successfully',
-            data: savedProduct,
+            data: savedDMR,
         };
     }
 
     async findAll() {
-        const products = await this.dmrRepo.find({
-            relations: ['category', 'subcategory'],
+        const dmr = await this.dmrRepo.find({
+            relations: ['category', 'subcategory', 'market'],
             order: { id: 'DESC' },
         });
 
         return {
             success: true,
             message: 'DMR list fetched successfully',
-            data: products,
+            data: dmr,
         };
     }
 
     async findOne(id: number) {
-        const product = await this.dmrRepo.findOne({
+        const dmr = await this.dmrRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'market'],
         });
 
-        if (!product) {
+        if (!dmr) {
             throw new NotFoundException('DMR not found');
         }
 
         return {
             success: true,
             message: 'DMR fetched successfully',
-            data: product,
+            data: dmr,
         };
     }
 
     async update(id: number, body: any) {
-        const product = await this.dmrRepo.findOne({
+        const dmr = await this.dmrRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'market'],
         });
 
-        if (!product) throw new NotFoundException('DMR not found');
+        if (!dmr) throw new NotFoundException('DMR not found');
 
         if (body.category) {
             const category = await this.categoryRepo.findOne({
@@ -87,38 +87,38 @@ export class DRMService {
 
             if (!category) throw new NotFoundException('Category not found');
 
-            product.category = category;
+            dmr.category = category;
         }
 
-        if (body.subcategory) {
+        if (body.subCategory) {
             const subcategory = await this.categoryRepo.findOne({
-                where: { id: body.subcategory },
+                where: { id: body.subCategory },
             });
 
             if (!subcategory) throw new NotFoundException('Subcategory not found');
 
-            product.subcategory = subcategory;
+            dmr.subcategory = subcategory;
         }
 
-        Object.assign(product, body);
+        Object.assign(dmr, body);
 
-        const updatedProduct = await this.dmrRepo.save(product);
+        const updatedDMR = await this.dmrRepo.save(dmr);
 
         return {
             success: true,
             message: 'DMR updated successfully',
-            data: updatedProduct,
+            data: updatedDMR,
         };
     }
 
     async delete(id: number) {
-        const product = await this.dmrRepo.findOne({
+        const dmr = await this.dmrRepo.findOne({
             where: { id },
         });
 
-        if (!product) throw new NotFoundException('DMR not found');
+        if (!dmr) throw new NotFoundException('DMR not found');
 
-        await this.dmrRepo.remove(product);
+        await this.dmrRepo.remove(dmr);
 
         return {
             success: true,
