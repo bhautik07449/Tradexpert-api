@@ -7,7 +7,6 @@ import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { BuyersModule } from './buyers/buyers.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
-import { ProductsModule } from './products/products.module';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { CategoriesModule } from './categories/categories.module';
@@ -36,6 +35,7 @@ import { QuotationModule } from './quotation/quotation.module';
 import { RequestsamplesModule } from './requestsamples/requestsamples.module';
 import { ContactModule } from './contact/contact.module';
 import { InquiryModule } from './inquiry/inquiry.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -69,7 +69,7 @@ import { InquiryModule } from './inquiry/inquiry.module';
     AdminModule,
     BuyersModule,
     SuppliersModule,
-    ProductsModule,
+    ProductModule,
     CategoriesModule,
     BrandsModule,
     MeasurementsModule,

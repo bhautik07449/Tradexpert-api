@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Requestsamples } from "./entities/requestsamples.entity";
-import { Product } from "src/products/entities/product.entity";
+import { Product } from "src/product/entities/product.entity";
 
 @Injectable()
 export class RequestsamplesService {

@@ -88,11 +88,11 @@ export class BrandsService {
             throw new NotFoundException('Brand not found');
         }
 
-        if (brand.products.length > 0) {
-            throw new BadRequestException(
-                'Cannot delete brand with associated products',
-            );
-        }
+        // if (brand.products.length > 0) {
+        //     throw new BadRequestException(
+        //         'Cannot delete brand with associated products',
+        //     );
+        // }
 
         await this.brandRepository.remove(brand);
 

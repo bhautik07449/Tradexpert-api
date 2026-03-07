@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Product } from "src/products/entities/product.entity";
 import { Inquiry } from "./entities/inquiry.entity";
+import { Product } from "src/product/entities/product.entity";
 
 @Injectable()
 export class InquiryService {

@@ -1,4 +1,3 @@
-import { Product } from 'src/products/entities/product.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 export enum status {

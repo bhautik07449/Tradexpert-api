@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { Product } from '../../products/entities/product.entity';
+// import { Product } from '../../products/entities/product.entity';
 import { Category } from '../../categories/entities/category.entity';
 
 export enum BrandStatus {
@@ -32,8 +32,8 @@ export class Brand {
   })
   status: BrandStatus;
 
-  @OneToMany(() => Product, product => product.brand)
-  products: Product[];
+  // @OneToMany(() => Product, product => product.brand)
+  // products: Product[];
 
   @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
   lastUpdatedAt: Date;

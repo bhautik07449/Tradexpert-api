@@ -1,6 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { Product } from '../../products/entities/product.entity';
-import { Category } from '../../categories/entities/category.entity';
 import { Client } from 'src/client/entities/client.entity';
 
 export enum TestimonialStatus {
