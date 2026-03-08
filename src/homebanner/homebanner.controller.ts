@@ -14,7 +14,7 @@ export class HomebannerController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.homebannerService.findAll();
     }

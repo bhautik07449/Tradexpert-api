@@ -14,7 +14,7 @@ export class TestimonialController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.testimonialService.findAll();
     }
