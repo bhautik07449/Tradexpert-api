@@ -8,7 +8,7 @@ export class ContactController {
     constructor(private readonly contactService: ContactService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Contact>) {
         return this.contactService.create(body);
     }

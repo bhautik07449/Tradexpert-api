@@ -10,14 +10,20 @@ export class Contact {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'name' })
-    name: string;
+    @Column({ name: 'first_name' })
+    first_name: string;
+
+    @Column({ name: 'last_name' })
+    last_name: string;
 
     @Column({ name: 'email' })
     email: string;
 
-    @Column({ name: 'phone' })
+    @Column({ name: 'phone', type: 'varchar', length: 15 })
     phone: number;
+
+    @Column({ name: 'message' })
+    message: string;
 
     @Column({
         type: 'enum',
