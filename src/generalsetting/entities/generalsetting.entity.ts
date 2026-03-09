@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 
 @Entity('general_settings')
 export class GeneralSettings {
@@ -59,4 +59,10 @@ export class GeneralSettings {
 
     @Column({ nullable: true })
     homePageVideo: string;
+
+    @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
+    lastUpdatedAt: Date;
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }

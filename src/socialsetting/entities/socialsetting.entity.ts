@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('social_settings')
 export class SocialSettings {
@@ -26,4 +26,10 @@ export class SocialSettings {
 
     @Column({ nullable: true })
     youtube: string;
+
+    @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
+    lastUpdatedAt: Date;
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 }
