@@ -3,8 +3,9 @@ import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 
 export enum status {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
+    INDENTING = 'Indenting',
+    ONBEHALF = 'On-behalf',
+    MARKETDEVELOPMENT = 'Market-Development',
 }
 
 @Entity()
@@ -65,6 +66,9 @@ export class Product {
     metaDescription: string;
 
     @Column({ type: 'json', nullable: true })
+    shipmentmanual: { key: string; value: string }[];
+
+    @Column({ type: 'json', nullable: true })
     technicalSpecification: { key: string; value: string }[];
 
     @Column({ type: 'json', nullable: true })
@@ -73,10 +77,13 @@ export class Product {
     @Column({ type: 'json', nullable: true })
     images: string[];
 
+    @Column({ nullable: true })
+    application: string;
+
     @Column({
         type: 'enum',
         enum: status,
-        default: status.ACTIVE,
+        default: status.INDENTING,
     })
     status: status;
 
