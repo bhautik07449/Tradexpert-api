@@ -30,7 +30,7 @@ export class UploadController {
         }),
     )
     uploadImage(@UploadedFile() file: Express.Multer.File) {
-        const imageUrl = `http://192.168.1.6:3030/uploads/${file.filename}`;
+        const imageUrl = `http://192.168.1.14:3030/uploads/${file.filename}`;
 
         return {
             message: 'Image uploaded successfully',

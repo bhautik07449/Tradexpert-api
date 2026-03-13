@@ -8,7 +8,7 @@ export enum status {
     MARKETDEVELOPMENT = 'Market-Development',
 }
 
-@Entity()
+@Entity('product')
 export class Product {
 
     @PrimaryGeneratedColumn()
@@ -76,6 +76,9 @@ export class Product {
 
     @Column({ type: 'json', nullable: true })
     images: string[];
+
+    @Column({ nullable: true })
+    certification: string
 
     @Column({ nullable: true })
     application: string;
