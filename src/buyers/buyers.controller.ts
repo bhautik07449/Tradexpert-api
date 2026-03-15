@@ -64,7 +64,7 @@ export class BuyersController {
   }
 
   @Get('admin/:buyerId')
-  @UseGuards(AdminAuthGuard)
+  // @UseGuards(AdminAuthGuard)
   @Transactional()
   async getBuyerById(@Param('buyerId') buyerId: string): Promise<BuyerDto> {
     const id = Number(buyerId);

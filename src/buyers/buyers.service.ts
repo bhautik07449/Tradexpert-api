@@ -85,7 +85,7 @@ export class BuyersService {
     return this.buyerRepository.findOne({ where: { email } });
   }
 
-  async login(loginBuyerDto: LoginBuyerDto): Promise<LoginBuyerResultDto> {
+  async login(loginBuyerDto: LoginBuyerDto): Promise<any> {
     const buyer = await this.getBuyerByEmailOrNull(loginBuyerDto.email);
     if (!buyer) {
       throw new BusinessException(ErrorCodes.ERR_AC_001, 'Invalid credentials', 'Buyers', BuyersService.name, 'login');
@@ -109,7 +109,11 @@ export class BuyersService {
       excludeExtraneousValues: true,
     });
     result.access_token = accessToken;
-    return result;
+    return {
+      success: true,
+      message: "Buyer login successfully",
+      data: result,
+    };
   }
 
   async getBuyerIdByEmail(email: string): Promise<number | null> {
