@@ -59,8 +59,8 @@ export class Buyer {
   @Column({ name: 'activation_date' })
   activationDate: Date;
 
-  @Column({ nullable: true })
-  photo: string;
+  // @Column({ nullable: true })
+  // photo: string;
 
   @Column()
   phone: string;

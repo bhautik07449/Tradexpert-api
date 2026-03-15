@@ -24,7 +24,7 @@ export class BrandsController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll(): Promise<Brand[]> {
         return this.brandsService.findAll();
     }

@@ -30,18 +30,9 @@ export class BuyersController {
   constructor(private readonly buyersService: BuyersService) { }
 
   @Post('signup')
-  @UseInterceptors(FileInterceptor('photo', {
-    storage: diskStorage({
-      destination: './uploads',
-      filename: (req, file, cb) => {
-        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-        return cb(null, `${randomName}${extname(file.originalname)}`);
-      },
-    }),
-  }))
   @Transactional()
-  async signup(@UploadedFile() file: Express.Multer.File, @Body() registerBuyerDto: RegisterBuyerDto) {
-    return await this.buyersService.createBuyer(registerBuyerDto, file ? file.path : '');
+  async signup(@Body() registerBuyerDto: RegisterBuyerDto) {
+    return await this.buyersService.createBuyer(registerBuyerDto);
   }
 
   @Post('login')
