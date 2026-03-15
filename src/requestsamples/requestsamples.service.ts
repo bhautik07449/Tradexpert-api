@@ -8,6 +8,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Requestsamples } from "./entities/requestsamples.entity";
 import { Product } from "src/product/entities/product.entity";
+import { Buyer } from "src/buyers/entities/buyer.entity";
 
 @Injectable()
 export class RequestsamplesService {
@@ -16,7 +17,10 @@ export class RequestsamplesService {
         private readonly requestSampleRepository: Repository<Requestsamples>,
 
         @InjectRepository(Product)
-        private readonly productRepository: Repository<Product>
+        private readonly productRepository: Repository<Product>,
+
+        @InjectRepository(Buyer)
+        private readonly buyerRepository: Repository<Buyer>
     ) { }
 
     async create(data: any) {
@@ -25,21 +29,32 @@ export class RequestsamplesService {
                 throw new BadRequestException("Request body is required");
             }
 
-            const product = await this.productRepository.findOne({
-                where: { id: data.product },
-            });
+            if (data.product) {
+                const product = await this.productRepository.findOne({
+                    where: { id: data.product },
+                });
 
-            if (!product) {
-                throw new NotFoundException("Product not found");
+                if (!product) {
+                    throw new NotFoundException("Product not found");
+                }
+
+                data.product = product
             }
 
-            const requestSample = this.requestSampleRepository.create({
-                email: data.email,
-                quantity: data.quantity,
-                product: product,
-            });
+            if (data.buyer) {
+                const buyer = await this.buyerRepository.findOne({
+                    where: { id: data.buyer },
+                });
 
-            const saved = await this.requestSampleRepository.save(requestSample);
+
+                if (!buyer) {
+                    throw new NotFoundException("Buyer not found");
+                }
+
+                data.buyer = buyer
+            }
+
+            const saved = await this.requestSampleRepository.save(data);
 
             return {
                 success: true,
@@ -112,7 +127,20 @@ export class RequestsamplesService {
                     throw new NotFoundException("Product not found");
                 }
 
-                requestSample.product = product;
+                data.product = product
+            }
+
+            if (data.buyer) {
+                const buyer = await this.buyerRepository.findOne({
+                    where: { id: data.buyer },
+                });
+
+
+                if (!buyer) {
+                    throw new NotFoundException("Buyer not found");
+                }
+
+                data.buyer = buyer
             }
 
             Object.assign(requestSample, data);

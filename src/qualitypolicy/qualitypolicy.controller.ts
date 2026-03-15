@@ -24,7 +24,7 @@ export class QualityPolicyController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.qualitypolicyService.findAll();
     }
