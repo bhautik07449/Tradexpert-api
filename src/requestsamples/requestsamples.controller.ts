@@ -8,7 +8,7 @@ export class RequestsamplesController {
     constructor(private readonly requestsamplesService: RequestsamplesService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Requestsamples>) {
         return this.requestsamplesService.create(body);
     }
