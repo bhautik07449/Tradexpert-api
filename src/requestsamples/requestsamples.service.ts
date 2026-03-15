@@ -135,7 +135,6 @@ export class RequestsamplesService {
                     where: { id: data.buyer },
                 });
 
-
                 if (!buyer) {
                     throw new NotFoundException("Buyer not found");
                 }
