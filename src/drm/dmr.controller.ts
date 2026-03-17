@@ -7,14 +7,17 @@ import {
     Put,
     Delete,
     Patch,
+    UseGuards,
 } from '@nestjs/common';
 import { DRMService } from './dmr.service';
+import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 
 @Controller('dmr')
 export class DMRController {
     constructor(private readonly dmrService: DRMService) { }
 
     @Post()
+    @UseGuards(AdminAuthGuard)
     create(@Body() body: any) {
         return this.dmrService.create(body);
     }
@@ -30,11 +33,13 @@ export class DMRController {
     }
 
     @Patch(':id')
+    @UseGuards(AdminAuthGuard)
     update(@Param('id') id: number, @Body() body: any) {
         return this.dmrService.update(id, body);
     }
 
     @Delete(':id')
+    @UseGuards(AdminAuthGuard)
     delete(@Param('id') id: number) {
         return this.dmrService.delete(id);
     }
