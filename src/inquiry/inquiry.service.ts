@@ -8,6 +8,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Inquiry } from "./entities/inquiry.entity";
 import { Product } from "src/product/entities/product.entity";
+import { Buyer } from "src/buyers/entities/buyer.entity";
 
 @Injectable()
 export class InquiryService {
@@ -16,7 +17,10 @@ export class InquiryService {
         private readonly inquiryRepository: Repository<Inquiry>,
 
         @InjectRepository(Product)
-        private readonly productRepository: Repository<Product>
+        private readonly productRepository: Repository<Product>,
+
+        @InjectRepository(Buyer)
+        private readonly buyerRepository: Repository<Buyer>
     ) { }
 
     async create(data: any) {
@@ -25,21 +29,41 @@ export class InquiryService {
                 throw new BadRequestException("Request body is required");
             }
 
-            const product = await this.productRepository.findOne({
-                where: { id: data.product },
-            });
+            let product = null;
+            if (data.product) {
+                product = await this.productRepository.findOne({
+                    where: { id: data.product },
+                });
 
-            if (!product) {
-                throw new NotFoundException("Product not found");
+                if (!product) {
+                    throw new NotFoundException("Product not found");
+                }
             }
 
-            const requestSample = this.inquiryRepository.create({
-                email: data.email,
-                quantity: data.quantity,
+            let buyer = null;
+            if (data.buyer) {
+                buyer = await this.buyerRepository.findOne({
+                    where: { id: data.buyer },
+                });
+
+                if (!buyer) {
+                    throw new NotFoundException("Buyer not found");
+                }
+            }
+
+            const inquiry = this.inquiryRepository.create({
+                subject: data.subject,
+                message: data.message,
+
+                quantity: data.expectedQty,
+                frequency: data.requirementFrequency,
+                price: data.getLatestPrice ? null : data.preferredPrice,
+
                 product: product,
+                buyer: buyer,
             });
 
-            const saved = await this.inquiryRepository.save(requestSample);
+            const saved = await this.inquiryRepository.save(inquiry);
 
             return {
                 success: true,
@@ -47,8 +71,9 @@ export class InquiryService {
                 data: saved,
             };
         } catch (error) {
+            console.error("ERROR:", error);
             throw new InternalServerErrorException(
-                "Failed to create Inquiry"
+                error.message || "Failed to create Inquiry"
             );
         }
     }

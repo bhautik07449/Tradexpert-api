@@ -70,6 +70,16 @@ export class BuyersService {
     if (!buyer) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Buyer with id ${id} not found`, 'Buyers', BuyersService.name, 'getBuyerById');
     }
+
+    if (buyer.status === 'deleted') {
+      throw new BusinessException(
+        ErrorCodes.ERR_RC_002,
+        `Buyer with id ${id} is deleted`,
+        'Buyers',
+        BuyersService.name,
+        'getBuyerById'
+      );
+    }
     return plainToInstance(BuyerDto, buyer, { excludeExtraneousValues: true });
   }
 

@@ -8,7 +8,7 @@ export class InquiryController {
     constructor(private readonly inquiryService: InquiryService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Inquiry>) {
         return this.inquiryService.create(body);
     }

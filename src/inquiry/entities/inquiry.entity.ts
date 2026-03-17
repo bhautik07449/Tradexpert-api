@@ -16,20 +16,23 @@ export class Inquiry {
     @JoinColumn({ name: 'buyer_id' })
     buyer: Buyer;
 
-    @Column({ name: 'email' })
-    email: string;
-
     @ManyToOne(() => Product)
     @JoinColumn({ name: 'product' })
     product: Product;
 
-    @Column({ name: 'frequency' })
+    @Column({ name: 'subject' })
+    subject: string;
+
+    @Column({ name: 'message' })
+    message: string;
+
+    @Column({ name: 'frequency', nullable: true })
     frequency: string;
 
-    @Column({ name: 'quantity' })
+    @Column({ name: 'quantity', nullable: true })
     quantity: number;
 
-    @Column({ name: 'price' })
+    @Column({ name: 'price', nullable: true })
     price: number;
 
     @Column({
