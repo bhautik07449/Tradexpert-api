@@ -24,7 +24,7 @@ export class PagesController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.pagesService.findAll();
     }

@@ -24,7 +24,7 @@ export class MeasurementController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.measurementService.findAll();
     }
