@@ -29,6 +29,12 @@ export class PagesController {
         return this.pagesService.findAll();
     }
 
+    @Get('slug/:page_url')
+    findurl(@Param('page_url') page_url: string) {
+        return this.pagesService.findSlug(page_url);
+    }
+
+
     @Get(':id')
     @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {

@@ -58,6 +58,22 @@ export class PagesService {
         };
     }
 
+    async findSlug(page_url: string) {
+        const page = await this.pageRepo.findOne({
+            where: { page_url },
+        });
+
+        if (!page) {
+            throw new NotFoundException('Page not found');
+        }
+
+        return {
+            success: true,
+            message: 'Page fetched successfully',
+            data: page,
+        };
+    }
+
     async update(id: number, data: Partial<Page>) {
         const page = await this.pageRepo.findOne({ where: { id } });
 
