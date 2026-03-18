@@ -22,14 +22,14 @@ export class SocialSettingsService {
   }
 
   async updateSettings(data: Partial<SocialSettings>) {
-    const settings = await this.repo.findOne({ where: { id: 1 } });
+    // const settings = await this.repo.findOne({ where: { id: 1 } });
 
-    if (!settings) {
-      throw new NotFoundException('Settings not found');
-    }
+    // if (!settings) {
+    //   throw new NotFoundException('Settings not found');
+    // }
 
-    Object.assign(settings, data);
+    // Object.assign(settings, data);
 
-    return this.repo.save(settings);
+    return this.repo.save(data);
   }
 }
