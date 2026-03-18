@@ -8,7 +8,7 @@ export class EmailTemplateController {
     constructor(private readonly emailtemplateService: EmailTemplateService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<EmailTemplate>) {
         return this.emailtemplateService.create(body);
     }

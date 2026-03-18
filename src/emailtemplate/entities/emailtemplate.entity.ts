@@ -10,11 +10,11 @@ export class EmailTemplate {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'name' })
-    name: string;
+    @Column({ name: 'email' })
+    email: string;
 
-    @Column({ name: 'subject', type: 'text' })
-    subject: string;
+    // @Column({ name: 'subject', type: 'text' })
+    // subject: string;
 
     @Column({
         type: 'enum',
