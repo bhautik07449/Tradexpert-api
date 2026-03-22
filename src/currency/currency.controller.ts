@@ -24,7 +24,7 @@ export class CurrencyController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.currencyService.findAll();
     }
