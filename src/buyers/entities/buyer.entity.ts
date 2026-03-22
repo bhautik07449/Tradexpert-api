@@ -79,7 +79,7 @@ export class Buyer {
   @Column({
     type: 'enum',
     enum: BuyerStatus,
-    default: BuyerStatus.BLOCK,
+    default: BuyerStatus.ACTIVE,
   })
   status: BuyerStatus;
 

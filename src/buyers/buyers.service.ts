@@ -39,7 +39,7 @@ export class BuyersService {
     const buyer = this.buyerRepository.create({
       ...dto,
       password: hashedPassword,
-      status: BuyerStatus.PENDING,
+      status: BuyerStatus.ACTIVE,
       activationCode,
       activationDate,
     });
