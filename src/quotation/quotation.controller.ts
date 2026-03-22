@@ -8,7 +8,7 @@ export class QuotationController {
     constructor(private readonly quotationService: QuotationService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Quotation>) {
         return this.quotationService.create(body);
     }

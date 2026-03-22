@@ -2,20 +2,81 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Quotation } from "./entities/quotation.entity";
+import { Category } from "src/categories/entities/category.entity";
+import { Measurement } from "src/measurements/entities/measurement.entity";
+import { Currency } from "src/currency/entities/currency.entity";
 
 @Injectable()
 export class QuotationService {
     constructor(
         @InjectRepository(Quotation)
-        private readonly quotationRepository: Repository<Quotation>
+        private readonly quotationRepository: Repository<Quotation>,
+
+        @InjectRepository(Category)
+        private readonly categoryRepo: Repository<Category>,
+
+        @InjectRepository(Measurement)
+        private readonly measureRepo: Repository<Measurement>,
+
+        @InjectRepository(Currency)
+        private readonly currencyRepo: Repository<Currency>
     ) { }
 
-    async create(data: Partial<Quotation>) {
+    async create(data: any) {
         try {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
-            const quotation = this.quotationRepository.create(data);
+
+            const category = data.category
+                ? await this.categoryRepo.findOne({ where: { id: data.category } })
+                : null;
+
+            if (data.category && !category) {
+                throw new NotFoundException('Category not found');
+            }
+
+            const subCategory = data.subCategory
+                ? await this.categoryRepo.findOne({ where: { id: data.subCategory } })
+                : null;
+
+            if (data.subCategory && !subCategory) {
+                throw new NotFoundException('SubCategory not found');
+            }
+
+            const childCategory = data.childCategory
+                ? await this.categoryRepo.findOne({ where: { id: data.childCategory } })
+                : null;
+
+            if (data.childCategory && !childCategory) {
+                throw new NotFoundException('ChildCategory not found');
+            }
+
+            const unit = data.unit
+                ? await this.measureRepo.findOne({ where: { id: data.unit } })
+                : null;
+
+            if (data.unit && !unit) {
+                throw new NotFoundException('Measurement not found');
+            }
+
+            const currency = data.currency
+                ? await this.currencyRepo.findOne({ where: { id: data.currency } })
+                : null;
+
+            if (data.currency && !currency) {
+                throw new NotFoundException('Currency not found');
+            }
+
+            const quotation = this.quotationRepository.create({
+                ...data,
+                category,
+                subCategory,
+                childCategory,
+                unit,
+                currency
+            });
+
             const saved = await this.quotationRepository.save(quotation);
 
             return {
@@ -31,6 +92,13 @@ export class QuotationService {
     async findAll() {
         try {
             const data = await this.quotationRepository.find({
+                relations: [
+                    "category",
+                    "subCategory",
+                    "childCategory",
+                    "unit",
+                    "currency"
+                ],
                 order: { createdAt: 'DESC' },
             });
 
