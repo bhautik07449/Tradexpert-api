@@ -37,6 +37,7 @@ import { ContactModule } from './contact/contact.module';
 import { InquiryModule } from './inquiry/inquiry.module';
 import { ProductModule } from './product/product.module';
 import { DRMModule } from './drm/dmr.module';
+import { DashboardModule } from './dashboard/entity/dashboard.entity';
 
 @Module({
   imports: [
@@ -81,7 +82,7 @@ import { DRMModule } from './drm/dmr.module';
     HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
-    DRMModule
+    DRMModule, DashboardModule
   ],
   controllers: [AppController, UploadController],
   providers: [
