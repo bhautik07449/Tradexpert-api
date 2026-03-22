@@ -100,6 +100,9 @@ export class BuyersService {
     if (!buyer) {
       throw new BusinessException(ErrorCodes.ERR_AC_001, 'Invalid credentials', 'Buyers', BuyersService.name, 'login');
     }
+    if (buyer.status === BuyerStatus.DELETED) {
+      throw new BusinessException(ErrorCodes.ERR_AC_003, 'Your account has been deleted. Please register again.', 'Buyers', BuyersService.name, 'login');
+    }
     if (buyer.status === BuyerStatus.BLOCK) {
       throw new BusinessException(ErrorCodes.ERR_AC_002, 'Your account has been blocked.', 'Buyers', BuyersService.name, 'login');
     }
