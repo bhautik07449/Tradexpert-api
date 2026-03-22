@@ -33,19 +33,21 @@ export class DashboardService {
 
         const monthlyRaw = await this.productRepo
             .createQueryBuilder('product')
-            .select('MONTH(product.createdAt)', 'month')
+            .select('EXTRACT(MONTH FROM product.createdAt)', 'month')
             .addSelect('COUNT(*)', 'count')
             .groupBy('month')
+            .orderBy('month', 'ASC')
             .getRawMany();
 
         const monthlyProducts = Array(12).fill(0);
+        
         monthlyRaw.forEach(item => {
             monthlyProducts[item.month - 1] = parseInt(item.count);
         });
 
         const growthRaw = await this.sampleRepo
             .createQueryBuilder('sample')
-            .select('MONTH(sample.createdAt)', 'month')
+            .select('EXTRACT(MONTH FROM sample.created_at)', 'month')
             .addSelect('COUNT(*)', 'count')
             .groupBy('month')
             .orderBy('month', 'ASC')
