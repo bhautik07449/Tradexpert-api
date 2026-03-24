@@ -17,4 +17,15 @@ export class DashboardController {
             data,
         };
     }
+
+    @Get('/front')
+    async dashboardFront() {
+        const data = await this.dashboardService.getDashboardData();
+
+        return {
+            success: true,
+            message: "Dashboard data fetched successfully",
+            data,
+        };
+    }
 }
