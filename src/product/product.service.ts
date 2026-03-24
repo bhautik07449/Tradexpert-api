@@ -84,18 +84,23 @@ export class ProductService {
     }
 
     async findBycat(slug: string) {
-        const product = await this.categoryRepo.findOne({
-            where: { slug },
+        const products = await this.productRepo.find({
+            where: {
+                category: {
+                    slug: slug,
+                },
+            },
+            relations: ['category', 'subcategory', 'measure'],
         });
 
-        if (!product) {
-            throw new NotFoundException('Product not found');
+        if (!products.length) {
+            throw new NotFoundException('No products found for this category');
         }
 
         return {
             success: true,
-            message: 'Product fetched successfully',
-            data: product,
+            message: 'Products fetched successfully',
+            data: products,
         };
     }
 
