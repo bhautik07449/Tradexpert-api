@@ -38,6 +38,7 @@ import { InquiryModule } from './inquiry/inquiry.module';
 import { ProductModule } from './product/product.module';
 import { DRMModule } from './drm/dmr.module';
 import { DashboardModule } from './dashboard/entity/dashboard.entity';
+import { CreditAccountModule } from './creditaccount/creditaccount.module';
 
 @Module({
   imports: [
@@ -82,7 +83,7 @@ import { DashboardModule } from './dashboard/entity/dashboard.entity';
     HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
-    DRMModule, DashboardModule
+    DRMModule, DashboardModule, CreditAccountModule
   ],
   controllers: [AppController, UploadController],
   providers: [
