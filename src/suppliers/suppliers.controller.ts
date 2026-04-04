@@ -18,7 +18,7 @@ export class SuppliersController {
     constructor(private readonly suppliersService: SuppliersService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Supplier>) {
         return this.suppliersService.create(body);
     }

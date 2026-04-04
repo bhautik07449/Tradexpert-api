@@ -14,7 +14,7 @@ export class CertificationsliderController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.certificationsliderService.findAll();
     }
