@@ -37,8 +37,9 @@ import { ContactModule } from './contact/contact.module';
 import { InquiryModule } from './inquiry/inquiry.module';
 import { ProductModule } from './product/product.module';
 import { DRMModule } from './drm/dmr.module';
-import { DashboardModule } from './dashboard/entity/dashboard.entity';
 import { CreditAccountModule } from './creditaccount/creditaccount.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 
 @Module({
   imports: [
@@ -83,7 +84,7 @@ import { CreditAccountModule } from './creditaccount/creditaccount.module';
     HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
-    DRMModule, DashboardModule, CreditAccountModule
+    DRMModule, DashboardModule, CreditAccountModule, NewsletterModule
   ],
   controllers: [AppController, UploadController],
   providers: [
