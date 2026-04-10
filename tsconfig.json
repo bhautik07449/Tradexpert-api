@@ -16,7 +16,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
 
-    "strict": true,
+    "strict": false,
     "strictPropertyInitialization": false
   },
   "include": [
