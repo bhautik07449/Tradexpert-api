@@ -10,11 +10,14 @@ export class EmailTemplate {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'email' })
-    email: string;
+    @Column({ name: 'template_name', nullable: true })
+    template_name: string;
 
-    // @Column({ name: 'subject', type: 'text' })
-    // subject: string;
+    @Column({ name: 'email_subject', type: 'text', nullable: true })
+    email_subject: string;
+
+    @Column({ name: 'email_body', type: 'text', nullable: true })
+    email_body: string;
 
     @Column({
         type: 'enum',

@@ -8,7 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import { BuyersModule } from './buyers/buyers.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
+import { addTransactionalDataSource, getDataSourceByName } from 'typeorm-transactional';
 import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
 import { MeasurementsModule } from './measurements/measurements.module';
@@ -63,9 +63,22 @@ import { NewsletterModule } from './newsletter/newsletter.module';
       }),
       async dataSourceFactory(options) {
         if (!options) {
-          throw new Error('Invalid options passed. ORM config loading failed for transactional support in api module.');
+          throw new Error(
+            'Invalid options passed. ORM config loading failed for transactional support in api module.',
+          );
         }
-        return addTransactionalDataSource(new DataSource(options));
+
+        const existing = getDataSourceByName('default');
+        if (existing) {
+          return existing;
+        }
+
+        const dataSource = new DataSource(options);
+        await dataSource.initialize();
+
+        addTransactionalDataSource(dataSource);
+
+        return dataSource;
       },
       inject: [ConfigService],
     }),

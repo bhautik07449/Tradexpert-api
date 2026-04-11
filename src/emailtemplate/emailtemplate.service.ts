@@ -15,8 +15,8 @@ export class EmailTemplateService {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
-            const currency = this.emailtemplateRepository.create(data);
-            const saved = await this.emailtemplateRepository.save(currency);
+            const emailtemplate = this.emailtemplateRepository.create(data);
+            const saved = await this.emailtemplateRepository.save(emailtemplate);
 
             return {
                 success: true,
@@ -24,7 +24,7 @@ export class EmailTemplateService {
                 data: saved,
             };
         } catch (error) {
-            throw new InternalServerErrorException('Failed to create currency');
+            throw new InternalServerErrorException('Failed to create email template');
         }
     }
 
@@ -51,7 +51,7 @@ export class EmailTemplateService {
             });
 
             if (!emailtemplate) {
-                throw new NotFoundException('Currency not found');
+                throw new NotFoundException('Email Template not found');
             }
 
             return {
@@ -71,7 +71,7 @@ export class EmailTemplateService {
             });
 
             if (!emailtemplate) {
-                throw new NotFoundException('Currency not found');
+                throw new NotFoundException('Email Template not found');
             }
 
             Object.assign(emailtemplate, data);
