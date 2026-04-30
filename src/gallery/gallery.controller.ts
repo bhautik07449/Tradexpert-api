@@ -14,7 +14,7 @@ export class GalleryController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.galleryService.findAll();
     }

@@ -14,7 +14,7 @@ export class FaqController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.faqService.findAll();
     }
