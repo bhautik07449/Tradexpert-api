@@ -8,6 +8,7 @@ import {
     Delete,
     Patch,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 
 import { ProductService } from './product.service';
@@ -24,8 +25,8 @@ export class ProductController {
     }
 
     @Get()
-    findAll() {
-        return this.productService.findAll();
+    findAll(@Query('season') season?: string) {
+        return this.productService.findAll(season);
     }
 
     @Get(':id')

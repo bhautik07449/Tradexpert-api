@@ -90,6 +90,9 @@ export class Product {
     })
     status: status;
 
+    @Column({ nullable: true })
+    season: string;
+
     @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
     lastUpdatedAt: Date;
 

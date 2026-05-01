@@ -53,11 +53,21 @@ export class ProductService {
         };
     }
 
-    async findAll() {
+    async findAll(season?: string) {
+        const whereClause: any = {};
+        if (season) {
+            whereClause.season = season;
+        }
+
         const products = await this.productRepo.find({
+            where: whereClause,
             relations: ['category', 'subcategory', 'measure'],
             order: { id: 'DESC' },
         });
+
+        if (!products.length) {
+            throw new NotFoundException('No data found');
+        }
 
         return {
             success: true,
