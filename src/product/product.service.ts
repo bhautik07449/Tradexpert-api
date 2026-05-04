@@ -94,7 +94,7 @@ export class ProductService {
     }
 
     async findBycat(slug: string) {
-        const products = await this.productRepo.find({
+        let products = await this.productRepo.find({
             where: {
                 category: {
                     slug: slug,
@@ -104,7 +104,18 @@ export class ProductService {
         });
 
         if (!products.length) {
-            throw new NotFoundException('No products found for this category');
+            products = await this.productRepo.find({
+                where: {
+                    subcategory: {
+                        slug: slug,
+                    },
+                },
+                relations: ['category', 'subcategory', 'measure'],
+            });
+        }
+
+        if (!products.length) {
+            throw new NotFoundException('No products found for this category or subcategory');
         }
 
         return {
