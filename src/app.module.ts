@@ -40,6 +40,8 @@ import { DRMModule } from './drm/dmr.module';
 import { CreditAccountModule } from './creditaccount/creditaccount.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+
 
 @Module({
   imports: [
@@ -97,7 +99,9 @@ import { NewsletterModule } from './newsletter/newsletter.module';
     HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
-    DRMModule, DashboardModule, CreditAccountModule, NewsletterModule
+    DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
+    CloudinaryModule
+
   ],
   controllers: [AppController, UploadController],
   providers: [
