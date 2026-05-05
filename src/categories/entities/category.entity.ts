@@ -1,4 +1,5 @@
 import { Product } from 'src/product/entities/product.entity';
+import { Abc } from 'src/abc/entities/abc.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 
 export enum CategoryStatus {
@@ -42,6 +43,12 @@ export class Category {
 
   @OneToMany(() => Product, product => product.category)
   products: Product[];
+
+  @OneToMany(() => Abc, abc => abc.category)
+  abcs: Abc[];
+
+  @OneToMany(() => Abc, abc => abc.subcategory)
+  abcSubcategories: Abc[];
 
   @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
   lastUpdatedAt: Date;

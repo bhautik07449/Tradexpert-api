@@ -41,6 +41,7 @@ import { CreditAccountModule } from './creditaccount/creditaccount.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { AbcModule } from './abc/abc.module';
 
 
 @Module({
@@ -100,7 +101,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
-    CloudinaryModule
+    CloudinaryModule, AbcModule
 
   ],
   controllers: [AppController, UploadController],
