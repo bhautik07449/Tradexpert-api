@@ -3,9 +3,11 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Tradeoffer } from './entities/tradeoffer.entity';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
+import { Category } from 'src/categories/entities/category.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class TradeofferService {
@@ -15,6 +17,12 @@ export class TradeofferService {
 
         @InjectRepository(Tradetype)
         private readonly tradetypeRepo: Repository<Tradetype>,
+
+        @InjectRepository(Category)
+        private readonly categoryRepo: Repository<Category>,
+
+        @InjectRepository(Product)
+        private readonly productRepo: Repository<Product>,
     ) { }
 
     async create(data: Partial<Tradeoffer>) {
@@ -28,6 +36,8 @@ export class TradeofferService {
             data.trade_type = tradeType;
         }
 
+        await this.validateRelations(data);
+
         const tradeoffer = this.tradeofferRepo.create(data);
         const saved = await this.tradeofferRepo.save(tradeoffer);
 
@@ -40,7 +50,7 @@ export class TradeofferService {
 
     async findAll() {
         const data = await this.tradeofferRepo.find({
-            relations: ['trade_type'],
+            relations: ['trade_type', 'category', 'subCategory', 'product'],
             order: { createdAt: 'DESC' },
         });
 
@@ -54,7 +64,7 @@ export class TradeofferService {
     async findOne(id: number) {
         const data = await this.tradeofferRepo.findOne({
             where: { id },
-            relations: ['trade_type'],
+            relations: ['trade_type', 'category', 'subCategory', 'product'],
         });
 
         if (!data) throw new NotFoundException('Trade offer not found');
@@ -85,6 +95,8 @@ export class TradeofferService {
             tradeoffer.trade_type = tradeType;
         }
 
+        await this.validateRelations(body);
+
         Object.assign(tradeoffer, body);
 
         const updated = await this.tradeofferRepo.save(tradeoffer);
@@ -110,5 +122,27 @@ export class TradeofferService {
             success: true,
             message: 'Trade offer deleted successfully',
         };
+    }
+
+    private async validateRelations(data: any) {
+        const processIds = async (repo: Repository<any>, values: any) => {
+            if (!values) return [];
+            const valArray = Array.isArray(values) ? values : [values];
+            if (valArray.length === 0) return [];
+
+            const ids = valArray.map((v) => (typeof v === 'object' ? v.id : v)).filter((id) => !!id);
+            if (ids.length === 0) return [];
+
+            const uniqueIds = [...new Set(ids)];
+            const found = await repo.find({ where: { id: In(uniqueIds) } });
+            if (found.length !== uniqueIds.length) {
+                throw new NotFoundException(`Some IDs not found in ${repo.metadata.target instanceof Function ? repo.metadata.target.name : repo.metadata.tableName}`);
+            }
+            return found;
+        };
+
+        if (data.category !== undefined) data.category = await processIds(this.categoryRepo, data.category);
+        if (data.subCategory !== undefined) data.subCategory = await processIds(this.categoryRepo, data.subCategory);
+        if (data.product !== undefined) data.product = await processIds(this.productRepo, data.product);
     }
 }

@@ -23,13 +23,13 @@ export class TradeofferController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.service.findAll();
     }
 
     @Get(':id')
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.service.findOne(id);
     }

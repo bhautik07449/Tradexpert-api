@@ -4,9 +4,11 @@ import { Tradeoffer } from './entities/tradeoffer.entity';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
 import { TradeofferService } from './tradeoffer.service';
 import { TradeofferController } from './tradeoffer.controller';
+import { Category } from 'src/categories/entities/category.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Tradeoffer, Tradetype])],
+    imports: [TypeOrmModule.forFeature([Tradeoffer, Tradetype, Category, Product])],
     controllers: [TradeofferController],
     providers: [TradeofferService],
 })

@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
+import { Category } from 'src/categories/entities/category.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 export enum TradeofferStatus {
     ACTIVE = 'active',
@@ -21,6 +23,18 @@ export class Tradeoffer {
 
     @Column({ name: 'description', type: 'text' })
     description: string;
+
+    @ManyToMany(() => Category)
+    @JoinTable({ name: 'tradeoffer_categories' })
+    category: Category[];
+
+    @ManyToMany(() => Category)
+    @JoinTable({ name: 'tradeoffer_subcategories' })
+    subCategory: Category[];
+
+    @ManyToMany(() => Product)
+    @JoinTable({ name: 'tradeoffer_products' })
+    product: Product[];
 
     @Column({
         type: 'enum',
