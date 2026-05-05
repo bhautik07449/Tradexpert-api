@@ -31,7 +31,7 @@ export class EmailTemplateService {
     async findAll() {
         try {
             const data = await this.emailtemplateRepository.find({
-                order: { createdAt: 'DESC' },
+                order: { createdAt: 'ASC' },
             });
 
             return {
