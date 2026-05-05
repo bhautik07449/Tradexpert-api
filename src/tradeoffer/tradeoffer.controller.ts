@@ -28,8 +28,13 @@ export class TradeofferController {
         return this.service.findAll();
     }
 
+    @Get('grouped/:id')
+    getGroupedProductsByTradeoffer(@Param('id', ParseIntPipe) id: number) {
+        return this.service.getGroupedProductsByTradeoffer(id);
+    }
+
     @Get(':id')
-    // @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.service.findOne(id);
     }
