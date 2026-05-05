@@ -16,7 +16,14 @@ export class AbcService {
     async create(data: any) {
         if (data.categoryId) data.category = { id: data.categoryId };
         if (data.subCategoryId) data.subcategory = { id: data.subCategoryId };
-        if (data.productId) data.product = { id: data.productId };
+        
+        if (data.product) {
+            data.products = [{ id: data.product }];
+        } else if (data.productId) {
+            data.products = [{ id: data.productId }];
+        } else if (data.products && Array.isArray(data.products)) {
+            data.products = data.products.map(id => typeof id === 'object' ? id : { id });
+        }
 
         const abc = this.abcRepo.create(data);
         const saved: any = await this.abcRepo.save(abc);
@@ -24,7 +31,7 @@ export class AbcService {
 
         const fullData = await this.abcRepo.findOne({
             where: { id: savedId },
-            relations: ['category', 'subcategory', 'product', 'product.category', 'product.subcategory'],
+            relations: ['category', 'subcategory', 'products'],
         });
 
         return {
@@ -36,7 +43,7 @@ export class AbcService {
 
     async findAll() {
         const data = await this.abcRepo.find({
-            relations: ['category', 'subcategory', 'product'],
+            relations: ['category', 'subcategory', 'products'],
             order: { createdAt: 'DESC' },
         });
 
@@ -50,37 +57,21 @@ export class AbcService {
 
     async groupedData() {
         const data = await this.abcRepo.find({
-            relations: ['category', 'subcategory', 'product'],
+            relations: ['category', 'subcategory', 'products'],
             order: { createdAt: 'DESC' },
-        });
-
-        const groupedMap = new Map<string, any>();
-
-        data.forEach(item => {
-            const key = `${item.category?.id || 'no-cat'}-${item.subcategory?.id || 'no-sub'}`;
-            if (!groupedMap.has(key)) {
-                groupedMap.set(key, {
-                    category: item.category,
-                    subcategory: item.subcategory,
-                    items: []
-                });
-            }
-            if (item.product) {
-                groupedMap.get(key).items.push(item.product);
-            }
         });
 
         return {
             success: true,
             message: 'ABC entries fetched successfully',
-            data: Array.from(groupedMap.values()),
+            data,
         };
     }
 
     async findOne(id: number) {
         const data = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'product', 'product.category', 'product.subcategory'],
+            relations: ['category', 'subcategory', 'products'],
         });
 
         if (!data) throw new NotFoundException('ABC entry not found');
@@ -102,14 +93,21 @@ export class AbcService {
 
         if (body.categoryId) body.category = { id: body.categoryId };
         if (body.subCategoryId) body.subcategory = { id: body.subCategoryId };
-        if (body.productId) body.product = { id: body.productId };
+        
+        if (body.product) {
+            body.products = [{ id: body.product }];
+        } else if (body.productId) {
+            body.products = [{ id: body.productId }];
+        } else if (body.products && Array.isArray(body.products)) {
+            body.products = body.products.map(id => typeof id === 'object' ? id : { id });
+        }
 
         Object.assign(abc, body);
         await this.abcRepo.save(abc);
 
         const updated = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'product', 'product.category', 'product.subcategory'],
+            relations: ['category', 'subcategory', 'products'],
         });
 
         return {

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
 
@@ -21,9 +21,9 @@ export class Abc {
     @JoinColumn({ name: 'subcategory_id' })
     subcategory: Category;
 
-    @ManyToOne(() => Product, product => product.abcs)
-    @JoinColumn({ name: 'product_id' })
-    product: Product;
+    @ManyToMany(() => Product, product => product.abcs)
+    @JoinTable({ name: 'abc_products' })
+    products: Product[];
 
     @Column({
         type: 'enum',
