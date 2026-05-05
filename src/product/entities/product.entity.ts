@@ -1,7 +1,8 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Abc } from 'src/abc/entities/abc.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany } from 'typeorm';
+import { DMR } from 'src/drm/entities/dmr.entity';
 
 export enum status {
     INDENTING = 'Indenting',
@@ -93,6 +94,9 @@ export class Product {
 
     @ManyToMany(() => Abc, abc => abc.products)
     abcs: Abc[];
+
+    @OneToMany(() => DMR, (dmr) => dmr.product)
+    dmrs: DMR[];
 
     @Column({ nullable: true })
     season: string;

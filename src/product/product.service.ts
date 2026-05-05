@@ -79,7 +79,7 @@ export class ProductService {
     async findOne(id: number) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure'],
+            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market'],
         });
 
         if (!product) {
