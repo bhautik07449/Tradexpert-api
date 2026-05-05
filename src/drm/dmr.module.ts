@@ -5,9 +5,10 @@ import { MarketDetails } from './entities/dmr-market.entity';
 import { DMRController } from './dmr.controller';
 import { DRMService } from './dmr.service';
 import { Category } from 'src/categories/entities/category.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([DMR, MarketDetails, Category])],
+    imports: [TypeOrmModule.forFeature([DMR, MarketDetails, Category, Product])],
     controllers: [DMRController],
     providers: [DRMService],
 })

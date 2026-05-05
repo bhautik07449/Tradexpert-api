@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 import { DMR } from './entities/dmr.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class DRMService {
@@ -12,6 +13,9 @@ export class DRMService {
 
         @InjectRepository(DMR)
         private readonly dmrRepo: Repository<DMR>,
+
+        @InjectRepository(Product)
+        private readonly productRepo: Repository<Product>,
     ) { }
 
     async create(body: any) {
@@ -27,10 +31,17 @@ export class DRMService {
 
         if (!subcategory) throw new NotFoundException('Subcategory not found');
 
+        const product = await this.productRepo.findOne({
+            where: { id: body.product },
+        });
+
+        if (!product) throw new NotFoundException('Product not found');
+
         const dmr = this.dmrRepo.create({
             ...body,
             category,
-            subcategory
+            subcategory,
+            product
         });
 
         const savedDMR = await this.dmrRepo.save(dmr);
@@ -44,7 +55,7 @@ export class DRMService {
 
     async findAll() {
         const dmr = await this.dmrRepo.find({
-            relations: ['category', 'subcategory', 'market'],
+            relations: ['category', 'subcategory', 'market', 'product'],
             order: { id: 'DESC' },
         });
 
@@ -58,7 +69,7 @@ export class DRMService {
     async findOne(id: number) {
         const dmr = await this.dmrRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'market'],
+            relations: ['category', 'subcategory', 'market', 'product'],
         });
 
         if (!dmr) {
@@ -75,7 +86,7 @@ export class DRMService {
     async update(id: number, body: any) {
         const dmr = await this.dmrRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'market'],
+            relations: ['category', 'subcategory', 'market', 'product'],
         });
 
         if (!dmr) throw new NotFoundException('DMR not found');
@@ -98,6 +109,16 @@ export class DRMService {
             if (!subcategory) throw new NotFoundException('Subcategory not found');
 
             dmr.subcategory = subcategory;
+        }
+
+        if (body.product) {
+            const product = await this.productRepo.findOne({
+                where: { id: body.product },
+            });
+
+            if (!product) throw new NotFoundException('Product not found');
+
+            dmr.product = product;
         }
 
         Object.assign(dmr, body);

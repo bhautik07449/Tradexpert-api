@@ -1,6 +1,7 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 import { MarketDetails } from './dmr-market.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 export enum status {
     ACTIVE = 'active',
@@ -22,6 +23,10 @@ export class DMR {
     @ManyToOne(() => Category)
     @JoinColumn({ name: 'subcategory' })
     subcategory: Category;
+
+    @ManyToOne(() => Product)
+    @JoinColumn({ name: 'product' })
+    product: Product;
 
     @OneToMany(() => MarketDetails, (market) => market.dmr, {
         cascade: true,
