@@ -61,6 +61,9 @@ import { AbcModule } from './abc/abc.module';
         database: configService.get('DB_DATABASE'),
         synchronize: configService.get('DB_SYNC_REQUIRED') === 'true',
         ssl: configService.get('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
+        extra: {
+          family: 4
+        },
         autoLoadEntities: true,
         logging: ["error"],
         migrationsRun: false
