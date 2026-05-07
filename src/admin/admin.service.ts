@@ -80,14 +80,20 @@ export class AdminService {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`);
     }
 
-    Object.assign(admin, dto);
+    const { password, ...updateData } = dto;
+    Object.assign(admin, updateData);
+
+    if (password && password.trim() !== '') {
+      admin.password = await bcrypt.hash(password, 10);
+    }
 
     return this.adminRepository.save(admin);
   }
 
+
   async updateAdminProfile(
     id: number,
-    dto: { firstName?: string; lastName?: string; photo?: string }
+    dto: { firstName?: string; lastName?: string; photo?: string; password?: string }
   ): Promise<Admin> {
 
     const admin = await this.adminRepository.findOne({ where: { id } });
@@ -99,6 +105,10 @@ export class AdminService {
     if (dto.firstName !== undefined) admin.firstName = dto.firstName;
     if (dto.lastName !== undefined) admin.lastName = dto.lastName;
     if (dto.photo !== undefined) admin.photo = dto.photo;
+
+    if (dto.password && dto.password.trim() !== '') {
+      admin.password = await bcrypt.hash(dto.password, 10);
+    }
 
     return this.adminRepository.save(admin);
   }

@@ -20,5 +20,9 @@ export class UpdateAdminDto {
   @IsEnum(['active', 'block', 'deleted'])
   @IsOptional()
   status?: string;
+
+  @IsString()
+  @IsOptional()
+  password?: string;
 }
 
