@@ -27,6 +27,11 @@ export class DMRController {
         return this.dmrService.findAll();
     }
 
+    @Get('market-data')
+    getAllMarketData() {
+        return this.dmrService.getAllMarketData();
+    }
+
     @Get(':id')
     findOne(@Param('id') id: number) {
         return this.dmrService.findOne(id);

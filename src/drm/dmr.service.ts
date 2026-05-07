@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 import { DMR } from './entities/dmr.entity';
 import { Product } from 'src/product/entities/product.entity';
+import { MarketDetails } from './entities/dmr-market.entity';
 
 @Injectable()
 export class DRMService {
@@ -16,6 +17,9 @@ export class DRMService {
 
         @InjectRepository(Product)
         private readonly productRepo: Repository<Product>,
+
+        @InjectRepository(MarketDetails)
+        private readonly marketRepo: Repository<MarketDetails>,
     ) { }
 
     async create(body: any) {
@@ -63,6 +67,24 @@ export class DRMService {
             success: true,
             message: 'DMR list fetched successfully',
             data: dmr,
+        };
+    }
+
+    async getAllMarketData() {
+        const markets = await this.marketRepo.find({
+            relations: ['dmr'],
+            order: { id: 'DESC' },
+        });
+
+        const data = markets.map(market => ({
+            ...market,
+            dmrName: market.dmr?.name,
+        }));
+
+        return {
+            success: true,
+            message: 'All DMR market data fetched successfully',
+            data: data,
         };
     }
 
