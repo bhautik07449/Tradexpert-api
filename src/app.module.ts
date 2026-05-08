@@ -15,7 +15,6 @@ import { MeasurementsModule } from './measurements/measurements.module';
 import { UploadController } from './upload.controller';
 import { CurrencyModule } from './currency/currency.module';
 import { PagesModule } from './pages/pages.module';
-import { QualityPolicyModule } from './qualitypolicy/qualitypolicy,module';
 import { EmailtemplateModule } from './emailtemplate/emailtemplate.module';
 import { BlogCategoryModule } from './blogCategory/blogcategory.module';
 import { BlogModule } from './blog/blog.module';
@@ -42,6 +41,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AbcModule } from './abc/abc.module';
+import { AbctypeModule } from './abcType/abctype.module';
+import { QualityPolicyModule } from './qualitypolicy/qualitypolicy.module';
 
 
 @Module({
@@ -105,7 +106,7 @@ import { AbcModule } from './abc/abc.module';
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
-    CloudinaryModule, AbcModule
+    CloudinaryModule, AbcModule, AbctypeModule
 
   ],
   controllers: [AppController, UploadController],

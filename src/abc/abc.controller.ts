@@ -28,6 +28,12 @@ export class AbcController {
         return this.service.findAll();
     }
 
+    @Get('/grouped')
+    // @UseGuards(AdminAuthGuard)
+    groupedData() {
+        return this.service.groupedData();
+    }
+
     @Get(':id')
     @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {

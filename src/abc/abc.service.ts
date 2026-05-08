@@ -16,7 +16,8 @@ export class AbcService {
     async create(data: any) {
         if (data.categoryId) data.category = { id: data.categoryId };
         if (data.subCategoryId) data.subcategory = { id: data.subCategoryId };
-        
+        if (data.abcTypeId) data.abc_type = { id: data.abcTypeId };
+
         if (data.product) {
             data.products = [{ id: data.product }];
         } else if (data.productId) {
@@ -31,7 +32,7 @@ export class AbcService {
 
         const fullData = await this.abcRepo.findOne({
             where: { id: savedId },
-            relations: ['category', 'subcategory', 'products'],
+            relations: ['category', 'subcategory', 'products', 'abc_type'],
         });
 
         return {
@@ -43,10 +44,9 @@ export class AbcService {
 
     async findAll() {
         const data = await this.abcRepo.find({
-            relations: ['category', 'subcategory', 'products'],
+            relations: ['category', 'subcategory', 'products', 'abc_type'],
             order: { createdAt: 'DESC' },
         });
-
         return {
             success: true,
             message: 'ABC entries fetched successfully',
@@ -57,21 +57,60 @@ export class AbcService {
 
     async groupedData() {
         const data = await this.abcRepo.find({
-            relations: ['category', 'subcategory', 'products'],
+            relations: ['category', 'subcategory', 'products', 'abc_type'],
             order: { createdAt: 'DESC' },
         });
+
+        const grouped = data.reduce((acc, curr) => {
+            const typeId = curr.abc_type?.id || 'other';
+
+            if (!acc[typeId]) {
+                acc[typeId] = {
+                    abc_type: curr.abc_type || { id: null, name: 'Other' },
+                    itemsMap: {}
+                };
+            }
+
+            const catId = curr.category?.id || 'none';
+            const subCatId = curr.subcategory?.id || 'none';
+            const itemKey = `${catId}-${subCatId}`;
+
+            if (!acc[typeId].itemsMap[itemKey]) {
+                acc[typeId].itemsMap[itemKey] = {
+                    category: curr.category,
+                    sub_category: curr.subcategory,
+                    product_data: []
+                };
+            }
+
+            if (curr.products && Array.isArray(curr.products)) {
+                curr.products.forEach(newProd => {
+                    const alreadyAdded = acc[typeId].itemsMap[itemKey].product_data.some(p => p.id === newProd.id);
+                    if (!alreadyAdded) {
+                        acc[typeId].itemsMap[itemKey].product_data.push(newProd);
+                    }
+                });
+            }
+
+            return acc;
+        }, {});
+
+        const result = Object.values(grouped).map((group: any) => ({
+            abc_type: group.abc_type,
+            item: Object.values(group.itemsMap)
+        }));
 
         return {
             success: true,
             message: 'ABC entries fetched successfully',
-            data,
+            data: result,
         };
     }
 
     async findOne(id: number) {
         const data = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products'],
+            relations: ['category', 'subcategory', 'products', 'abc_type'],
         });
 
         if (!data) throw new NotFoundException('ABC entry not found');
@@ -93,7 +132,8 @@ export class AbcService {
 
         if (body.categoryId) body.category = { id: body.categoryId };
         if (body.subCategoryId) body.subcategory = { id: body.subCategoryId };
-        
+        if (body.abcTypeId) body.abc_type = { id: body.abcTypeId };
+
         if (body.product) {
             body.products = [{ id: body.product }];
         } else if (body.productId) {
@@ -107,7 +147,7 @@ export class AbcService {
 
         const updated = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products'],
+            relations: ['category', 'subcategory', 'products', 'abc_type'],
         });
 
         return {
