@@ -1,13 +1,17 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { IsNull, Repository } from "typeorm";
 import { Homebanner } from "./entities/homebanner.entity";
+import { Category } from "src/categories/entities/category.entity";
 
 @Injectable()
 export class HomebannerService {
     constructor(
         @InjectRepository(Homebanner)
-        private readonly homebannerRepository: Repository<Homebanner>
+        private readonly homebannerRepository: Repository<Homebanner>,
+
+        @InjectRepository(Category)
+        private readonly categoryRepository: Repository<Category>
     ) { }
 
     async create(data: Partial<Homebanner>) {
@@ -15,6 +19,17 @@ export class HomebannerService {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
+
+            if (data.category?.id) {
+                const category = await this.categoryRepository.findOne({
+                    where: { id: data.category.id },
+                });
+
+                if (!category) throw new NotFoundException('Blog category not found');
+
+                data.category = category;
+            }
+
             const homebanner = this.homebannerRepository.create(data);
             const saved = await this.homebannerRepository.save(homebanner);
 
@@ -32,6 +47,7 @@ export class HomebannerService {
         try {
             const data = await this.homebannerRepository.find({
                 order: { createdAt: 'DESC' },
+                relations: ['category'],
             });
 
             return {
@@ -44,10 +60,62 @@ export class HomebannerService {
         }
     }
 
+    async findByCountry(country?: string) {
+        try {
+            const whereCondition = country ? { country } : { country: IsNull() };
+            const data = await this.homebannerRepository.find({
+                where: whereCondition,
+                order: { createdAt: 'DESC' },
+            });
+
+
+            if (!data || data.length === 0) {
+                throw new NotFoundException('Data not found');
+            }
+
+            return {
+                success: true,
+                message: 'Data fetched successfully',
+                data: data,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async findByCategory(category: number) {
+        console.log("categoryId", category);
+        
+        try {
+            const data = await this.homebannerRepository.find({
+                where: {
+                    category: {
+                        id: Number(category),
+                    },
+                },
+                relations: ['category'],
+                order: { createdAt: 'DESC' },
+            });
+
+            if (!data || data.length === 0) {
+                throw new NotFoundException('Data not found');
+            }
+
+            return {
+                success: true,
+                message: 'Data fetched successfully',
+                data,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async findOne(id: number) {
         try {
             const homebanner = await this.homebannerRepository.findOne({
                 where: { id },
+                relations: ['category'],
             });
 
             if (!homebanner) {
@@ -72,6 +140,16 @@ export class HomebannerService {
 
             if (!homebanner) {
                 throw new NotFoundException('Home Banner not found');
+            }
+
+            if (data.category?.id) {
+                const category = await this.categoryRepository.findOne({
+                    where: { id: data.category.id },
+                });
+
+                if (!category) throw new NotFoundException('Blog category not found');
+
+                data.category = category;
             }
 
             Object.assign(homebanner, data);

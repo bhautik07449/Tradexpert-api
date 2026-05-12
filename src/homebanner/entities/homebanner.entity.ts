@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Category } from 'src/categories/entities/category.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 export enum status {
     ACTIVE = 'active',
@@ -12,6 +13,13 @@ export class Homebanner {
 
     @Column({ name: 'image' })
     image: string;
+
+    @Column({ nullable: true })
+    country: string | null;
+
+    @ManyToOne(() => Category)
+    @JoinColumn({ name: 'category' })
+    category: Category;
 
     @Column({
         type: 'enum',

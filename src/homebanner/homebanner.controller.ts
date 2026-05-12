@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { HomebannerService } from "./homebanner.service";
 import { Homebanner } from "./entities/homebanner.entity";
@@ -17,6 +17,18 @@ export class HomebannerController {
     // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.homebannerService.findAll();
+    }
+
+    @Get('/country')
+    // @UseGuards(AdminAuthGuard)
+    findByCountryQuery(@Query('country') country?: string) {
+        return this.homebannerService.findByCountry(country);
+    }
+
+    @Get('/category')
+    // @UseGuards(AdminAuthGuard)
+    findByCategoryQuery(@Query('category') category?: number) {
+        return this.homebannerService.findByCategory(category);
     }
 
     @Get(':id')
