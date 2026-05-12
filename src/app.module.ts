@@ -43,6 +43,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AbcModule } from './abc/abc.module';
 import { AbctypeModule } from './abcType/abctype.module';
 import { QualityPolicyModule } from './qualitypolicy/qualitypolicy.module';
+import { EventsModule } from './events/events.module';
 
 
 @Module({
@@ -106,7 +107,7 @@ import { QualityPolicyModule } from './qualitypolicy/qualitypolicy.module';
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
-    CloudinaryModule, AbcModule, AbctypeModule
+    CloudinaryModule, AbcModule, AbctypeModule, EventsModule
 
   ],
   controllers: [AppController, UploadController],
