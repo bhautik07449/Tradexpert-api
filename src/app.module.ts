@@ -44,6 +44,7 @@ import { AbcModule } from './abc/abc.module';
 import { AbctypeModule } from './abcType/abctype.module';
 import { QualityPolicyModule } from './qualitypolicy/qualitypolicy.module';
 import { EventsModule } from './events/events.module';
+import { PresencesModule } from './presences/presences.module';
 
 
 @Module({
@@ -107,7 +108,7 @@ import { EventsModule } from './events/events.module';
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
-    CloudinaryModule, AbcModule, AbctypeModule, EventsModule
+    CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule
 
   ],
   controllers: [AppController, UploadController],
