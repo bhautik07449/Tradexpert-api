@@ -46,6 +46,7 @@ import { QualityPolicyModule } from './qualitypolicy/qualitypolicy.module';
 import { EventsModule } from './events/events.module';
 import { PresencesModule } from './presences/presences.module';
 import { AnalyticalModule } from './analytical/analytical.module';
+import { TradeHistoryModule } from './tradeHistory/tradeHistory.module';
 
 
 @Module({
@@ -109,7 +110,8 @@ import { AnalyticalModule } from './analytical/analytical.module';
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
-    CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule
+    CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
+    TradeHistoryModule
 
   ],
   controllers: [AppController, UploadController],
