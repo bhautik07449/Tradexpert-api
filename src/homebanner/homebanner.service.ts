@@ -84,8 +84,6 @@ export class HomebannerService {
     }
 
     async findByCategory(category: number) {
-        console.log("categoryId", category);
-        
         try {
             const data = await this.homebannerRepository.find({
                 where: {
