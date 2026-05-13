@@ -88,6 +88,31 @@ export class DRMService {
         };
     }
 
+    async getAllMarketDataByCategory(category: number) {
+        const markets = await this.marketRepo.find({
+            where: {
+                dmr: {
+                    category: {
+                        id: category,
+                    },
+                },
+            },
+            relations: ['dmr', 'dmr.category'],
+            order: { id: 'DESC' },
+        });
+
+        const data = markets.map(market => ({
+            ...market,
+            dmrName: market.dmr?.name,
+        }));
+
+        return {
+            success: true,
+            message: 'DMR market data fetched successfully by category',
+            data,
+        };
+    }
+
     async findOne(id: number) {
         const dmr = await this.dmrRepo.findOne({
             where: { id },

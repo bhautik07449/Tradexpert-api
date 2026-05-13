@@ -8,6 +8,7 @@ import {
     Delete,
     Patch,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { DRMService } from './dmr.service';
 import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
@@ -30,6 +31,11 @@ export class DMRController {
     @Get('market-data')
     getAllMarketData() {
         return this.dmrService.getAllMarketData();
+    }
+
+    @Get('market-data/category')
+    getAllMarketDataByCategory(@Query('category') category: string) {
+        return this.dmrService.getAllMarketDataByCategory(+category);
     }
 
     @Get(':id')
