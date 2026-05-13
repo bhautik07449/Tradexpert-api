@@ -29,6 +29,18 @@ export class ProductController {
         return this.productService.findAll(season);
     }
 
+    @Get('/country')
+    // @UseGuards(AdminAuthGuard)
+    findByCountryQuery(@Query('country') country?: string) {
+        return this.productService.findByCountry(country);
+    }
+
+    @Get('/category')
+    // @UseGuards(AdminAuthGuard)
+    findByCategoryQuery(@Query('category') category?: number) {
+        return this.productService.findByCategory(category);
+    }
+
     @Get(':id')
     findOne(@Param('id') id: number) {
         return this.productService.findOne(id);

@@ -101,6 +101,9 @@ export class Product {
     @Column({ nullable: true })
     season: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
     lastUpdatedAt: Date;
 

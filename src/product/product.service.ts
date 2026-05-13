@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
@@ -123,6 +123,56 @@ export class ProductService {
             message: 'Products fetched successfully',
             data: products,
         };
+    }
+
+    async findByCountry(country?: string) {
+        try {
+            const whereCondition = country ? { country } : { country: IsNull() };
+            const data = await this.productRepo.find({
+                where: whereCondition,
+                relations: ['category', 'subcategory', 'measure'],
+                order: { createdAt: 'DESC' },
+            });
+
+
+            if (!data || data.length === 0) {
+                throw new NotFoundException('Product not found for this country');
+            }
+
+            return {
+                success: true,
+                message: 'Product list fetched successfully',
+                data: data,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async findByCategory(category: number) {
+        try {
+            const data = await this.productRepo.find({
+                where: {
+                    category: {
+                        id: Number(category),
+                    },
+                },
+                relations: ['category', 'subcategory', 'measure'],
+                order: { createdAt: 'DESC' },
+            });
+
+            if (!data || data.length === 0) {
+                throw new NotFoundException('Product not found for this category');
+            }
+
+            return {
+                success: true,
+                message: 'Product list fetched successfully',
+                data,
+            };
+        } catch (error) {
+            throw error;
+        }
     }
 
     async update(id: number, body: any) {
