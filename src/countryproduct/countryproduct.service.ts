@@ -56,10 +56,11 @@ export class CountryproductService {
     }
 
 
-    async groupedData() {
+    async groupedData(country: any) {
         const data = await this.countryproductRepo.find({
             relations: ['category', 'subcategory', 'products', 'productname'],
             order: { createdAt: 'DESC' },
+            where: { country },
         });
 
         const grouped = data.reduce((acc, curr) => {
