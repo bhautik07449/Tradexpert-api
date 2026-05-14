@@ -47,6 +47,8 @@ import { EventsModule } from './events/events.module';
 import { PresencesModule } from './presences/presences.module';
 import { AnalyticalModule } from './analytical/analytical.module';
 import { TradeHistoryModule } from './tradeHistory/tradeHistory.module';
+import { CountryproductnameModule } from './countryproductname/countryproductname.module';
+import { CountryproductModule } from './countryproduct/countryproduct.module';
 
 
 @Module({
@@ -111,8 +113,7 @@ import { TradeHistoryModule } from './tradeHistory/tradeHistory.module';
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
-    TradeHistoryModule
-
+    TradeHistoryModule, CountryproductnameModule, CountryproductModule
   ],
   controllers: [AppController, UploadController],
   providers: [

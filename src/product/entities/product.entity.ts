@@ -3,6 +3,7 @@ import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Abc } from 'src/abc/entities/abc.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany } from 'typeorm';
 import { DMR } from 'src/drm/entities/dmr.entity';
+import { Countryproduct } from 'src/countryproduct/entities/countryproduct.entity';
 
 export enum status {
     INDENTING = 'Indenting',
@@ -95,14 +96,14 @@ export class Product {
     @ManyToMany(() => Abc, abc => abc.products)
     abcs: Abc[];
 
+    @ManyToMany(() => Countryproduct, countryproduct => countryproduct.products)
+    countryproducts: Countryproduct[];
+
     @OneToMany(() => DMR, (dmr) => dmr.product)
     dmrs: DMR[];
 
     @Column({ nullable: true })
     season: string;
-
-    @Column({ nullable: true })
-    country: string | null;
 
     @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
     lastUpdatedAt: Date;
