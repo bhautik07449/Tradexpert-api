@@ -49,6 +49,7 @@ import { AnalyticalModule } from './analytical/analytical.module';
 import { TradeHistoryModule } from './tradeHistory/tradeHistory.module';
 import { CountryproductnameModule } from './countryproductname/countryproductname.module';
 import { CountryproductModule } from './countryproduct/countryproduct.module';
+import { ContentOverviewModule } from './contentoverview/contentoverview.module';
 
 
 @Module({
@@ -113,7 +114,7 @@ import { CountryproductModule } from './countryproduct/countryproduct.module';
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
-    TradeHistoryModule, CountryproductnameModule, CountryproductModule
+    TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule
   ],
   controllers: [AppController, UploadController],
   providers: [
