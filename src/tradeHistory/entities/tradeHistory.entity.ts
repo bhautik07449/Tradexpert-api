@@ -16,6 +16,12 @@ export class TradeHistory {
     @Column({ name: 'content' })
     content: string;
 
+    @Column({ name: 'year', nullable: true })
+    year: string;
+
+    @Column({ name: 'label', nullable: true })
+    label: string;
+
     @Column({ nullable: true })
     country: string | null;
 

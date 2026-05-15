@@ -57,6 +57,9 @@ export class Category {
   @OneToMany(() => Countryproduct, countryproduct => countryproduct.subcategory)
   countryproductSubcategory: Countryproduct[];
 
+  @Column({ nullable: true })
+  country: string | null;
+
   @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
   lastUpdatedAt: Date;
 

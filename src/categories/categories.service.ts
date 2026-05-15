@@ -39,6 +39,15 @@ export class CategoriesService {
         return this.buildTree(categories);
     }
 
+    async findAllByCountry(country: string): Promise<Category[]> {
+        const categories = await this.categoryRepository.find({
+            relations: ['parent'],
+            where: { country },
+        });
+
+        return this.buildTree(categories);
+    }
+
     async findFlat(): Promise<Category[]> {
         return this.categoryRepository.find({
             relations: ['parent'],
@@ -52,6 +61,7 @@ export class CategoriesService {
             order: { id: 'ASC' },
         });
     }
+
     private buildTree(categories: Category[]): Category[] {
         const map = new Map<number, Category>();
         const roots: Category[] = [];

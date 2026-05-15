@@ -7,15 +7,19 @@ import {
     Delete,
     ParseIntPipe,
     Patch,
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { Category } from './entities/category.entity';
+import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 
 @Controller('categories')
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) { }
 
     @Post()
+    @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Category>): Promise<Category> {
         return this.categoriesService.create(body);
     }
@@ -23,6 +27,11 @@ export class CategoriesController {
     @Get()
     findAll(): Promise<Category[]> {
         return this.categoriesService.findAll();
+    }
+
+    @Get('country')
+    findAllByCountry(@Query('country') country: string): Promise<Category[]> {
+        return this.categoriesService.findAllByCountry(country);
     }
 
     @Get('flat')
@@ -41,6 +50,7 @@ export class CategoriesController {
     }
 
     @Patch(':id')
+    @UseGuards(AdminAuthGuard)
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<Category>,
@@ -49,6 +59,7 @@ export class CategoriesController {
     }
 
     @Delete(':id')
+    @UseGuards(AdminAuthGuard)
     remove(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<{ message: string }> {
