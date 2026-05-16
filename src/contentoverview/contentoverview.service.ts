@@ -21,12 +21,15 @@ export class ContentOverviewService {
 
         if (!category) throw new NotFoundException('Category not found');
 
-        const existingPresence = await this.contentoverviewRepo.findOne({
-            where: { country: body.country },
+        const existingRecord = await this.contentoverviewRepo.findOne({
+            where: {
+                country: body.country,
+                category: { id: body.category },
+            },
         });
 
-        if (existingPresence) {
-            throw new BadRequestException(`Content overview for country '${body.country}' already exists`);
+        if (existingRecord) {
+            throw new BadRequestException(`Content overview for this category and country combination already exists`);
         }
 
         const contentoverview = this.contentoverviewRepo.create({
@@ -97,6 +100,20 @@ export class ContentOverviewService {
         });
 
         if (!contentoverview) throw new NotFoundException('Content Overview not found');
+
+        const countryToCheck = body.country !== undefined ? body.country : contentoverview.country;
+        const categoryIdToCheck = body.category !== undefined ? body.category : (contentoverview.category ? contentoverview.category.id : undefined);
+
+        const existingRecord = await this.contentoverviewRepo.findOne({
+            where: {
+                country: countryToCheck,
+                category: { id: categoryIdToCheck },
+            },
+        });
+
+        if (existingRecord && existingRecord.id !== id) {
+            throw new BadRequestException(`Content overview for this category and country combination already exists`);
+        }
 
         if (body.category) {
             const category = await this.categoryRepo.findOne({
