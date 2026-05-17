@@ -67,6 +67,20 @@ export class TradeofferService {
         };
     }
 
+    async findAllByCountry(country: string) {
+        const data = await this.tradeofferRepo.find({
+            where: { country },
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
+            order: { createdAt: 'DESC' },
+        });
+
+        return {
+            success: true,
+            message: 'Trade offers fetched successfully',
+            data,
+        };
+    }
+
     async findOne(id: number) {
         const data = await this.tradeofferRepo.findOne({
             where: { id },
@@ -110,6 +124,7 @@ export class TradeofferService {
 
         if (body.name) tradeoffer.name = body.name;
         if (body.description) tradeoffer.description = body.description;
+        if (body.country) tradeoffer.country = body.country;
         if (body.status) tradeoffer.status = body.status;
 
         const updated = await this.tradeofferRepo.save(tradeoffer);

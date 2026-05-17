@@ -23,6 +23,9 @@ export class Tradeoffer {
     @Column({ name: 'description', type: 'text' })
     description: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @OneToMany(() => TradeofferItem, (item) => item.tradeoffer, { cascade: true })
     items: TradeofferItem[];
 

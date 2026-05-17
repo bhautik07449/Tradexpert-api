@@ -8,6 +8,7 @@ import {
     Param,
     ParseIntPipe,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { TradeofferService } from './tradeoffer.service';
 import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
@@ -26,6 +27,11 @@ export class TradeofferController {
     // @UseGuards(AdminAuthGuard)
     findAll() {
         return this.service.findAll();
+    }
+
+    @Get('country')
+    findAllByCountry(@Query('country') country: string) {
+        return this.service.findAllByCountry(country);
     }
 
     @Get('grouped/:id')
