@@ -8,6 +8,7 @@ import {
     Param,
     ParseIntPipe,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 import { AbcService } from './abc.service';
@@ -30,8 +31,8 @@ export class AbcController {
 
     @Get('/grouped')
     // @UseGuards(AdminAuthGuard)
-    groupedData() {
-        return this.service.groupedData();
+    groupedData(@Query('country') country?: string) {
+        return this.service.groupedData(country);
     }
 
     @Get(':id')

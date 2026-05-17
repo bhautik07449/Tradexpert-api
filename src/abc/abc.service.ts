@@ -55,8 +55,9 @@ export class AbcService {
     }
 
 
-    async groupedData() {
+    async groupedData(country?: string) {
         const data = await this.abcRepo.find({
+            where: { country },
             relations: ['category', 'subcategory', 'products', 'abc_type'],
             order: { createdAt: 'DESC' },
         });

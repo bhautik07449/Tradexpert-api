@@ -30,6 +30,9 @@ export class Abc {
     @JoinColumn({ name: 'abctype_id' })
     abc_type: Abctype;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @Column({
         type: 'enum',
         enum: AbcStatus,
