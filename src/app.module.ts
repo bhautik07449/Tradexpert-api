@@ -50,6 +50,7 @@ import { TradeHistoryModule } from './tradeHistory/tradeHistory.module';
 import { CountryproductnameModule } from './countryproductname/countryproductname.module';
 import { CountryproductModule } from './countryproduct/countryproduct.module';
 import { ContentOverviewModule } from './contentoverview/contentoverview.module';
+import { CareerModule } from './career/career.module';
 
 
 @Module({
@@ -114,7 +115,7 @@ import { ContentOverviewModule } from './contentoverview/contentoverview.module'
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
-    TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule
+    TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule
   ],
   controllers: [AppController, UploadController],
   providers: [
