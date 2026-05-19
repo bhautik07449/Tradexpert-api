@@ -34,6 +34,11 @@ export class CategoriesController {
         return this.categoriesService.findAllByCountry(country);
     }
 
+    @Get('hierarchy')
+    getHierarchy(@Query('country') country?: string): Promise<any[]> {
+        return this.categoriesService.getHierarchy(country);
+    }
+
     @Get('flat')
     findFlat() {
         return this.categoriesService.findFlat();

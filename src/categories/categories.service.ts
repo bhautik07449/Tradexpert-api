@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -144,5 +145,113 @@ export class CategoriesService {
         await this.categoryRepository.remove(category);
 
         return { message: 'Category deleted successfully' };
+    }
+
+    async getHierarchy(country?: string): Promise<any[]> {
+        // 1. Fetch categories
+        const categories = await this.categoryRepository.find({
+            relations: ['parent'],
+            order: { id: 'ASC' },
+        });
+
+        // 2. Fetch products
+        const products = await this.categoryRepository.manager.getRepository(Product).find({
+            relations: ['category', 'subcategory'],
+            order: { id: 'ASC' },
+        });
+
+        // 3. Create a map of categories for quick access
+        const categoryMap = new Map<number, any>();
+        const parentCategories: any[] = [];
+        const subCategories: any[] = [];
+
+        categories.forEach(cat => {
+            const node = {
+                id: cat.id,
+                name: cat.name,
+                slug: cat.slug,
+                pageTitle: cat.pageTitle,
+                metaKeyword: cat.metaKeyword,
+                metaDescription: cat.metaDescription,
+                status: cat.status,
+                country: cat.country,
+                createdAt: cat.createdAt,
+                lastUpdatedAt: cat.lastUpdatedAt,
+                subcategories: [], // Level 3 subcategories go here if node is parent
+                products: [],      // Level 4 products go here if node is subcategory
+            };
+            categoryMap.set(cat.id, node);
+
+            if (!cat.parent) {
+                parentCategories.push(node);
+            } else {
+                subCategories.push({ cat, node });
+            }
+        });
+
+        // 4. Link subcategories to parent categories
+        subCategories.forEach(({ cat, node }) => {
+            const parentNode = categoryMap.get(cat.parent.id);
+            if (parentNode) {
+                parentNode.subcategories.push(node);
+            }
+        });
+
+        // 5. Link products to subcategories
+        products.forEach(prod => {
+            const prodData = {
+                id: prod.id,
+                name: prod.name,
+                price: prod.price,
+                slug: prod.slug,
+                description: prod.description,
+                images: prod.images,
+                status: prod.status,
+                featured: prod.featured,
+                trending: prod.trending,
+                newArrival: prod.newArrival,
+                createdAt: prod.createdAt,
+            };
+
+            if (prod.subcategory?.id) {
+                const subNode = categoryMap.get(prod.subcategory.id);
+                if (subNode) {
+                    subNode.products.push(prodData);
+                }
+            } else if (prod.category?.id) {
+                const catNode = categoryMap.get(prod.category.id);
+                if (catNode) {
+                    if (!catNode.products) catNode.products = [];
+                    catNode.products.push(prodData);
+                }
+            }
+        });
+
+        // 6. Group parent categories by Country
+        const countryGroupsMap = new Map<string, any[]>();
+
+        parentCategories.forEach(parentCat => {
+            const catCountry = parentCat.country || 'Global';
+            if (!countryGroupsMap.has(catCountry)) {
+                countryGroupsMap.set(catCountry, []);
+            }
+            countryGroupsMap.get(catCountry).push(parentCat);
+        });
+
+        // 7. Format the final output
+        const hierarchy: any[] = [];
+        countryGroupsMap.forEach((cats, countryName) => {
+            hierarchy.push({
+                country: countryName,
+                categories: cats,
+            });
+        });
+
+        // 8. If a specific country is requested, filter the result
+        if (country) {
+            return hierarchy.filter(h => h.country.toLowerCase() === country.toLowerCase());
+        }
+
+        return hierarchy;
     }
 }
