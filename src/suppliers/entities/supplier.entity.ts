@@ -63,6 +63,9 @@ export class Supplier {
   @Column({ nullable: true })
   state: string;
 
+  @Column({ nullable: true })
+  country: string;
+
   @Column({
     type: 'enum',
     enum: SupplierStatus,
