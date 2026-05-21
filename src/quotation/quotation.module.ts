@@ -6,9 +6,10 @@ import { QuotationController } from './quotation.controller';
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Currency } from 'src/currency/entities/currency.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Quotation, Category, Measurement, Currency])],
+    imports: [TypeOrmModule.forFeature([Quotation, Category, Measurement, Currency, Product])],
     providers: [QuotationService],
     controllers: [QuotationController],
 })

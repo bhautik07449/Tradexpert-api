@@ -1,6 +1,7 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { Currency } from 'src/currency/entities/currency.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
+import { Product } from 'src/product/entities/product.entity';
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -42,9 +43,9 @@ export class Quotation {
     @JoinColumn({ name: 'sub_category_id' })
     subCategory: Category;
 
-    @ManyToOne(() => Category, { nullable: true })
-    @JoinColumn({ name: 'child_category_id' })
-    childCategory: Category;
+    @ManyToOne(() => Product, { nullable: true })
+    @JoinColumn({ name: 'product_id' })
+    product: Product;
 
     @Column({ nullable: true })
     quantity: string;
@@ -83,6 +84,9 @@ export class Quotation {
 
     @Column({ nullable: true })
     productImage: string;
+
+    @Column({ nullable: true })
+    country: string;
 
     @Column({
         type: 'enum',

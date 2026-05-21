@@ -5,6 +5,7 @@ import { Quotation } from "./entities/quotation.entity";
 import { Category } from "src/categories/entities/category.entity";
 import { Measurement } from "src/measurements/entities/measurement.entity";
 import { Currency } from "src/currency/entities/currency.entity";
+import { Product } from "src/product/entities/product.entity";
 
 @Injectable()
 export class QuotationService {
@@ -19,7 +20,10 @@ export class QuotationService {
         private readonly measureRepo: Repository<Measurement>,
 
         @InjectRepository(Currency)
-        private readonly currencyRepo: Repository<Currency>
+        private readonly currencyRepo: Repository<Currency>,
+
+        @InjectRepository(Product)
+        private readonly productRepo: Repository<Product>
     ) { }
 
     async create(data: any) {
@@ -44,12 +48,12 @@ export class QuotationService {
                 throw new NotFoundException('SubCategory not found');
             }
 
-            const childCategory = data.childCategory
-                ? await this.categoryRepo.findOne({ where: { id: data.childCategory } })
+            const product = data.product
+                ? await this.productRepo.findOne({ where: { id: data.product } })
                 : null;
 
-            if (data.childCategory && !childCategory) {
-                throw new NotFoundException('ChildCategory not found');
+            if (data.product && !product) {
+                throw new NotFoundException('Product not found');
             }
 
             const unit = data.unit
@@ -72,7 +76,7 @@ export class QuotationService {
                 ...data,
                 category,
                 subCategory,
-                childCategory,
+                product,
                 unit,
                 currency
             });
@@ -95,7 +99,7 @@ export class QuotationService {
                 relations: [
                     "category",
                     "subCategory",
-                    "childCategory",
+                    "product",
                     "unit",
                     "currency"
                 ],
@@ -116,6 +120,13 @@ export class QuotationService {
         try {
             const quotation = await this.quotationRepository.findOne({
                 where: { id },
+                relations: [
+                    "category",
+                    "subCategory",
+                    "product",
+                    "unit",
+                    "currency"
+                ],
             });
 
             if (!quotation) {
