@@ -14,9 +14,13 @@ export class AdminController {
 
     @Post()
     // @UseGuards(AdminAuthGuard)
-    async registerAdmin(@Body() createAdminDto: RegisterAdminDto): Promise<AdminDto> {
-        const admin = await this.adminService.createAdmin(createAdminDto);
-        return plainToInstance(AdminDto, admin, { excludeExtraneousValues: true });
+    async registerAdmin(@Body() createAdminDto: RegisterAdminDto): Promise<{ success: boolean; message: string; data: AdminDto }> {
+        const result = await this.adminService.createAdmin(createAdminDto);
+        return {
+            success: result.success,
+            message: result.message,
+            data: plainToInstance(AdminDto, result.data, { excludeExtraneousValues: true }),
+        };
     }
 
     @Get()

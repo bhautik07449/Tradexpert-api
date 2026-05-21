@@ -53,7 +53,11 @@ export class DashboardService {
             .orderBy('month', 'ASC')
             .getRawMany();
 
-        const sampleRequestGrowth = growthRaw.map(item => Number(item.count));
+        const sampleRequestGrowth = Array(12).fill(0);
+        
+        growthRaw.forEach(item => {
+            sampleRequestGrowth[item.month - 1] = parseInt(item.count);
+        });
 
         return {
             totalCategory,

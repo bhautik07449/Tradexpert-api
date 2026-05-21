@@ -19,7 +19,7 @@ export class AdminService {
     private readonly emailService: EmailService,
   ) { }
 
-  async createAdmin(dto: RegisterAdminDto): Promise<Admin> {
+  async createAdmin(dto: RegisterAdminDto): Promise<{ success: boolean; message: string; data: Admin }> {
 
     const existingAdminByEmail = await this.adminRepository.findOne({
       where: { email: dto.email },
@@ -45,7 +45,13 @@ export class AdminService {
       status: AdminStatus.ACTIVE,
     });
 
-    return await this.adminRepository.save(admin);
+    const savedAdmin = await this.adminRepository.save(admin);
+    
+    return {
+      success: true,
+      message: 'Admin created successfully',
+      data: savedAdmin,
+    };
   }
 
   async getAdminById(id: number): Promise<AdminDto> {
@@ -80,6 +86,24 @@ export class AdminService {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`);
     }
 
+    if (dto.email && dto.email !== admin.email) {
+      const existingAdminByEmail = await this.adminRepository.findOne({
+        where: { email: dto.email },
+      });
+      if (existingAdminByEmail) {
+        throw new BusinessException(ErrorCodes.ERR_RC_002, `User with email id ${dto.email} already exists.`);
+      }
+    }
+
+    if (dto.phone && dto.phone !== admin.phone) {
+      const existingAdminByPhone = await this.adminRepository.findOne({
+        where: { phone: dto.phone },
+      });
+      if (existingAdminByPhone) {
+        throw new BusinessException(ErrorCodes.ERR_RC_002, `User with phone number ${dto.phone} already exists.`);
+      }
+    }
+
     const { password, ...updateData } = dto;
     Object.assign(admin, updateData);
 
@@ -93,7 +117,7 @@ export class AdminService {
 
   async updateAdminProfile(
     id: number,
-    dto: { firstName?: string; lastName?: string; photo?: string; password?: string }
+    dto: { firstName?: string; lastName?: string; photo?: string; password?: string; email?: string; phone?: string }
   ): Promise<Admin> {
 
     const admin = await this.adminRepository.findOne({ where: { id } });
@@ -102,9 +126,29 @@ export class AdminService {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`);
     }
 
+    if (dto.email && dto.email !== admin.email) {
+      const existingAdminByEmail = await this.adminRepository.findOne({
+        where: { email: dto.email },
+      });
+      if (existingAdminByEmail) {
+        throw new BusinessException(ErrorCodes.ERR_RC_002, `User with email id ${dto.email} already exists.`);
+      }
+    }
+
+    if (dto.phone && dto.phone !== admin.phone) {
+      const existingAdminByPhone = await this.adminRepository.findOne({
+        where: { phone: dto.phone },
+      });
+      if (existingAdminByPhone) {
+        throw new BusinessException(ErrorCodes.ERR_RC_002, `User with phone number ${dto.phone} already exists.`);
+      }
+    }
+
     if (dto.firstName !== undefined) admin.firstName = dto.firstName;
     if (dto.lastName !== undefined) admin.lastName = dto.lastName;
     if (dto.photo !== undefined) admin.photo = dto.photo;
+    if (dto.email !== undefined) admin.email = dto.email;
+    if (dto.phone !== undefined) admin.phone = dto.phone;
 
     if (dto.password && dto.password.trim() !== '') {
       admin.password = await bcrypt.hash(dto.password, 10);
