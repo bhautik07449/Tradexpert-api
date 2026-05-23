@@ -52,6 +52,7 @@ import { CountryproductModule } from './countryproduct/countryproduct.module';
 import { ContentOverviewModule } from './contentoverview/contentoverview.module';
 import { CareerModule } from './career/career.module';
 import { MarketDevelopmentModule } from './markerDevelopment/marketDevelopment.module';
+import { MarketDataModule } from './marketData/marketData.module';
 
 
 @Module({
@@ -116,7 +117,8 @@ import { MarketDevelopmentModule } from './markerDevelopment/marketDevelopment.m
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
-    TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule
+    TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
+    MarketDataModule
   ],
   controllers: [AppController, UploadController],
   providers: [
