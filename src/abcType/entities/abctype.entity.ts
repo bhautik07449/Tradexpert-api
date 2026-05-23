@@ -13,6 +13,9 @@ export class Abctype {
     @Column({ name: 'name' })
     name: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: AbctypeStatus,
