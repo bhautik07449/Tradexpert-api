@@ -28,9 +28,12 @@ export class TradeHistoryService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereCondition = country ? { country } : {};
+            
             const data = await this.tradeHistoryRepository.find({
+                where: whereCondition,
                 order: { createdAt: 'DESC' },
             });
 

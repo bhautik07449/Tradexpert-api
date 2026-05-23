@@ -15,8 +15,8 @@ export class AnalyticalController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.analyticalService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.analyticalService.findAll(country);
     }
 
     @Get('/country')

@@ -43,8 +43,11 @@ export class CountryproductService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereCondition = country ? { country } : {};
+
         const data = await this.countryproductRepo.find({
+            where: whereCondition,
             relations: ['category', 'subcategory', 'products', 'productname'],
             order: { createdAt: 'DESC' },
         });

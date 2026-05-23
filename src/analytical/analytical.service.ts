@@ -28,9 +28,12 @@ export class AnalyticalService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereCondition = country ? { country } : {};
+
             const data = await this.analyticalRepository.find({
+                where: whereCondition,
                 order: { createdAt: 'DESC' },
             });
 
@@ -52,7 +55,7 @@ export class AnalyticalService {
 
             if (!data) {
                 throw new NotFoundException('Data not found');
-            }   
+            }
 
             return {
                 success: true,
@@ -74,7 +77,7 @@ export class AnalyticalService {
 
             if (!data || data.length === 0) {
                 throw new NotFoundException('Data not found');
-            }   
+            }
 
             return {
                 success: true,

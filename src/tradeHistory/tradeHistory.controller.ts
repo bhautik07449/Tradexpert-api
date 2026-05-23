@@ -15,8 +15,8 @@ export class TradeHistoryController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.tradeHistoryService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.tradeHistoryService.findAll(country);
     }
 
     @Get('/country')

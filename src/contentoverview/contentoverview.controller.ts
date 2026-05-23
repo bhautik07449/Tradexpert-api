@@ -24,8 +24,8 @@ export class ContentOverviewController {
     }
 
     @Get()
-    findAll() {
-        return this.contentoverviewService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.contentoverviewService.findAll(country);
     }
 
     @Get('category')

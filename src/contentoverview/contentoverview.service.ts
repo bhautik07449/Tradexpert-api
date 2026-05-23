@@ -46,8 +46,11 @@ export class ContentOverviewService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereCondition = country ? { country } : {};
+        
         const contentoverview = await this.contentoverviewRepo.find({
+            where: whereCondition,
             relations: ['category', 'global_impotance'],
             order: { id: 'DESC' },
         });

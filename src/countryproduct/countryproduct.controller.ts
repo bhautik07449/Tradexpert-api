@@ -25,8 +25,8 @@ export class CountryproductController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.service.findAll();
+    findAll(@Query('country') country: string) {
+        return this.service.findAll(country);
     }
 
     @Get('/grouped')
