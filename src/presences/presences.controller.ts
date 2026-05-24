@@ -19,6 +19,11 @@ export class PresencesController {
         return this.presencesService.findAll();
     }
 
+    @Get('countries')
+    findAllCountry() {
+        return this.presencesService.findAllCountry();
+    }
+
     @Get(':id')
     @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {

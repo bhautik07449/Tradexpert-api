@@ -1,13 +1,16 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, In } from "typeorm";
 import { Presences } from "./entities/presences.entity";
+import { Category } from "../categories/entities/category.entity";
 
 @Injectable()
 export class PresencesService {
     constructor(
         @InjectRepository(Presences)
-        private readonly presencesRepository: Repository<Presences>
+        private readonly presencesRepository: Repository<Presences>,
+        @InjectRepository(Category)
+        private readonly categoryRepository: Repository<Category>,
     ) { }
 
     async create(data: Partial<Presences>) {
@@ -54,9 +57,28 @@ export class PresencesService {
         }
     }
 
+    async findAllCountry() {
+        try {
+            const countryResult = await this.categoryRepository
+                .createQueryBuilder('category')
+                .select('DISTINCT category.country', 'country')
+                .where('category.country IS NOT NULL')
+                .getRawMany();
+            const countries: string[] = countryResult.map((row: any) => row.country);
+
+            return {
+                success: true,
+                message: 'Presences fetched successfully',
+                countries,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to fetch presences');
+        }
+    }
+
     async findOne(id: number) {
         try {
-            const presence   = await this.presencesRepository.findOne({
+            const presence = await this.presencesRepository.findOne({
                 where: { id },
             });
 
