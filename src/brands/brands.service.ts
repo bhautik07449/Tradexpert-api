@@ -48,10 +48,14 @@ export class BrandsService {
         });
     }
 
-    async groupByCategoryAndCountry() {
+    async groupByCategoryAndCountry(country?: string) {
+        const whereCondition = country ? { country } : {};
+
         const list = await this.brandRepository.find({
+            where: whereCondition,
             relations: ['category'],
             order: {
+                country: 'ASC',
                 category: {
                     id: 'ASC',
                 },
@@ -59,32 +63,49 @@ export class BrandsService {
         });
 
         const groupedData = list.reduce((acc, item) => {
-            const categoryId = item.category?.id || 'no-category';
             const countryName = item.country || 'no-country';
+            const categoryId = item.category?.id || 'no-category';
 
-            const key = `${categoryId}-${countryName}`;
+            if (!acc[countryName]) {
+                acc[countryName] = {
+                    country: countryName,
+                    category: {},
+                };
+            }
 
-            if (!acc[key]) {
-                acc[key] = {
+            if (!acc[countryName].category[categoryId]) {
+                acc[countryName].category[categoryId] = {
                     category: item.category,
-                    country: item.country,
                     data: [],
                 };
             }
 
-            acc[key].data.push(item);
+            acc[countryName].category[categoryId].data.push(item);
 
             return acc;
-        }, {} as Record<string, {
-            category: Category | null;
-            country: string;
-            data: Brand[];
-        }>);
+        }, {} as Record<
+            string,
+            {
+                country: string;
+                category: Record<
+                    string,
+                    {
+                        category: Category | null;
+                        data: Brand[];
+                    }
+                >;
+            }
+        >);
+
+        const data = Object.values(groupedData).map((countryGroup) => ({
+            country: countryGroup.country,
+            category: Object.values(countryGroup.category),
+        }));
 
         return {
             success: true,
-            message: 'Quality Policy list fetched successfully',
-            data: Object.values(groupedData),
+            message: 'Brand list fetched successfully',
+            data,
         };
     }
 
