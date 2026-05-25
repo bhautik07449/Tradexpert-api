@@ -30,6 +30,11 @@ export class QualityPolicyController {
         return this.qualitypolicyService.findAll(country);
     }
 
+    @Get('grouped')
+    groupByCategoryAndCountry() {
+        return this.qualitypolicyService.groupByCategoryAndCountry();
+    }
+
     @Get(':id')
     @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {

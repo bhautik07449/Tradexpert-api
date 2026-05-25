@@ -60,6 +60,46 @@ export class QualitypolicyService {
         };
     }
 
+    async groupByCategoryAndCountry() {
+        const list = await this.qualityRepository.find({
+            relations: ['category'],
+            order: {
+                category: {
+                    id: 'ASC',
+                },
+            },
+        });
+
+        const groupedData = list.reduce((acc, item) => {
+            const categoryId = item.category?.id || 'no-category';
+            const countryName = item.country || 'no-country';
+
+            const key = `${categoryId}-${countryName}`;
+
+            if (!acc[key]) {
+                acc[key] = {
+                    category: item.category,
+                    country: item.country,
+                    data: [],
+                };
+            }
+
+            acc[key].data.push(item);
+
+            return acc;
+        }, {} as Record<string, {
+            category: Category | null;
+            country: string;
+            data: Qualitypolicy[];
+        }>);
+
+        return {
+            success: true,
+            message: 'Quality Policy list fetched successfully',
+            data: Object.values(groupedData),
+        };
+    }
+
     async findOne(id: number) {
         const quality = await this.qualityRepository.findOne({
             where: { id },

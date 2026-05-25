@@ -30,6 +30,11 @@ export class BrandsController {
         return this.brandsService.findAll(country);
     }
 
+    @Get('grouped')
+    groupByCategoryAndCountry() {
+        return this.brandsService.groupByCategoryAndCountry();
+    }
+
     @Get(':id')
     @UseGuards(AdminAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number): Promise<Brand> {
