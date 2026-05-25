@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     UseGuards,
     Patch,
+    Query,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { Brand } from './entities/brand.entity';
@@ -25,8 +26,8 @@ export class BrandsController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll(): Promise<Brand[]> {
-        return this.brandsService.findAll();
+    findAll(@Query('country') country: string): Promise<Brand[]> {
+        return this.brandsService.findAll(country);
     }
 
     @Get(':id')

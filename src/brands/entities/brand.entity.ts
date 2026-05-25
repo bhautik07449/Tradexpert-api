@@ -25,6 +25,9 @@ export class Brand {
   @Column({ name: 'logo' })
   logo: string;
 
+  @Column({ name: 'country', nullable: true })
+  country: string;
+
   @Column({
     type: 'enum',
     enum: BrandStatus,

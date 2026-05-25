@@ -32,6 +32,9 @@ export class Qualitypolicy {
     @Column({ name: 'description', type: 'text' })
     description: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: QualityPoliciesStatus,

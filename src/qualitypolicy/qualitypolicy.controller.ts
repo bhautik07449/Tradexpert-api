@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     UseGuards,
     Patch,
+    Query,
 } from '@nestjs/common';
 import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 import { QualitypolicyService } from './qualitypolicy.service';
@@ -25,8 +26,8 @@ export class QualityPolicyController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.qualitypolicyService.findAll();
+    findAll(@Query('country') country: string) {
+        return this.qualitypolicyService.findAll(country);
     }
 
     @Get(':id')

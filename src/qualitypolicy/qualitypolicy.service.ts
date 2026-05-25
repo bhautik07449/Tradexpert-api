@@ -45,9 +45,12 @@ export class QualitypolicyService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereCondition = country ? { country } : {};
+
         const list = await this.qualityRepository.find({
             relations: ['category'],
+            where: whereCondition,
         });
 
         return {

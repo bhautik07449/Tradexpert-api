@@ -39,8 +39,11 @@ export class BrandsService {
         return this.brandRepository.save(brand);
     }
 
-    async findAll(): Promise<Brand[]> {
+    async findAll(country?: string): Promise<Brand[]> {
+        const whereCondition = country ? { country } : {};
+
         return this.brandRepository.find({
+            where: whereCondition,
             relations: ['category'],
         });
     }
