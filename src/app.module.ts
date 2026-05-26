@@ -53,6 +53,7 @@ import { ContentOverviewModule } from './contentoverview/contentoverview.module'
 import { CareerModule } from './career/career.module';
 import { MarketDevelopmentModule } from './markerDevelopment/marketDevelopment.module';
 import { MarketDataModule } from './marketData/marketData.module';
+import { DeliveryReachModule } from './deliveryreach/deliveryreach.module';
 
 
 @Module({
@@ -118,7 +119,7 @@ import { MarketDataModule } from './marketData/marketData.module';
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
-    MarketDataModule
+    MarketDataModule, DeliveryReachModule
   ],
   controllers: [AppController, UploadController],
   providers: [

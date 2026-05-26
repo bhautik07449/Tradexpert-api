@@ -25,6 +25,9 @@ export class Contact {
     @Column({ name: 'message' })
     message: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: status,
