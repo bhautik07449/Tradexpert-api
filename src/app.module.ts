@@ -1,6 +1,10 @@
 import { ConsoleLogger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule } from '@songkeys/nestjs-redis';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheInterceptor } from './common/cache.interceptor';
+import { EncryptionInterceptor } from './common/encryption.interceptor';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -66,7 +70,24 @@ import { MembershipModule } from './resources/membership.module';
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.env'],
-      isGlobal: true
+      isGlobal: true,
+    }),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        readyLog: false,
+        errorLog: false,
+        config: {
+          host: configService.get('REDIS_HOST') || 'localhost',
+          port: Number(configService.get('REDIS_PORT')) || 6379,
+          enableOfflineQueue: false,
+          retryStrategy: (times) => {
+            // Reconnect once every 30 seconds to be extremely quiet if Redis is not running
+            return 30000;
+          },
+        },
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -80,11 +101,11 @@ import { MembershipModule } from './resources/membership.module';
         synchronize: configService.get('DB_SYNC_REQUIRED') === 'true',
         ssl: configService.get('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
         extra: {
-          family: 4
+          family: 4,
         },
         autoLoadEntities: true,
         logging: ["error"],
-        migrationsRun: false
+        migrationsRun: false,
       }),
       async dataSourceFactory(options) {
         if (!options) {
@@ -131,7 +152,15 @@ import { MembershipModule } from './resources/membership.module';
   controllers: [AppController, UploadController],
   providers: [
     AppService,
-    ConsoleLogger
+    ConsoleLogger,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: EncryptionInterceptor,
+    },
   ],
 })
 

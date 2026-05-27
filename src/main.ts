@@ -2,11 +2,13 @@ import { StorageDriver, initializeTransactionalContext } from 'typeorm-transacti
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import helmet from 'helmet';
 import { ConsoleLogger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { useContainer, ValidationError } from 'class-validator';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import fastifyCompress from '@fastify/compress';
+import fastifyHelmet from '@fastify/helmet';
 import { ValidationException } from './common/validation-error';
-import { NestExpressApplication } from '@nestjs/platform-express';
+
 import { join } from 'path';
 
 async function bootstrap() {
@@ -19,22 +21,20 @@ async function bootstrap() {
   // - If an error is thrown → rollback happens.
   initializeTransactionalContext({ storageDriver: StorageDriver.ASYNC_LOCAL_STORAGE });
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    rawBody: true,
-    logger: new ConsoleLogger('MyApp')
-  });
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({ logger: true }));
+  // Register compression plugin
+  await app.register(fastifyCompress, { encodings: ['gzip', 'deflate'] });
 
   // Used to load environment variables from .env files.
   const configService = app.get(ConfigService);
 
   // Helmet helps secure your app by setting various HTTP headers to prevent vulnerabilities like XSS, clickjacking, etc.
-  app.use(
-    helmet({
-      crossOriginResourcePolicy: { policy: "cross-origin" },
-    }),
-  );
+  await app.register(fastifyHelmet, {
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  });
 
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  app.useStaticAssets({
+    root: join(__dirname, '..', 'uploads'),
     prefix: '/uploads/',
   });
 
