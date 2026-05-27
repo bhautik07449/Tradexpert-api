@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { EventsService } from "./events.service";
 import { Events } from "./entities/events.entity";
@@ -15,8 +15,8 @@ export class EventsController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.eventsService.findAll();
+    findAll(@Query('country') country: string) {
+        return this.eventsService.findAll(country);
     }
 
     @Get(':id')

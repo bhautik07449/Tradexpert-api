@@ -22,6 +22,9 @@ export class Events {
     @Column({ name: 'description' })
     description: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: status,

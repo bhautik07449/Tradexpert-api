@@ -28,9 +28,12 @@ export class EventsService {
         }
     }
 
-    async findAll() {
+    async findAll(country: string) {
         try {
+            const wherecondition = country ? { country: country } : {}
+
             const data = await this.eventsRepository.find({
+                where: wherecondition,
                 order: { createdAt: 'DESC' },
             });
 
