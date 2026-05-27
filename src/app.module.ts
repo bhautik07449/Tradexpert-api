@@ -58,6 +58,7 @@ import { MultilingualModule } from './Multilingual/Multilingual.module';
 import { PolicyPreambleModule } from './policypreamble/policypreamble.module';
 import { FinancialModule } from './financialservice/financialservice.module';
 import { InvestorrelationsModule } from './investorrelations/investorrelations.module';
+import { AffiliationModule } from './resources/affiliation.module';
 
 
 @Module({
@@ -123,7 +124,8 @@ import { InvestorrelationsModule } from './investorrelations/investorrelations.m
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
-    MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, InvestorrelationsModule
+    MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, InvestorrelationsModule,
+    AffiliationModule
   ],
   controllers: [AppController, UploadController],
   providers: [
