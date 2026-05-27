@@ -56,6 +56,7 @@ import { MarketDataModule } from './marketData/marketData.module';
 import { DeliveryReachModule } from './deliveryreach/deliveryreach.module';
 import { MultilingualModule } from './Multilingual/Multilingual.module';
 import { PolicyPreambleModule } from './policypreamble/policypreamble.module';
+import { FinancialModule } from './financialservice/financialservice.module';
 
 
 @Module({
@@ -121,7 +122,7 @@ import { PolicyPreambleModule } from './policypreamble/policypreamble.module';
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
-    MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule
+    MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule
   ],
   controllers: [AppController, UploadController],
   providers: [
