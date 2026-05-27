@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PolicyPreamble } from './entities/policypreamble.entity';
 import { PolicyPreambleService } from './policypreamble.service';
 import { PolicyPreambleController } from './policypreamble.controller';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([PolicyPreamble])],
+    imports: [TypeOrmModule.forFeature([PolicyPreamble, Category])],
     providers: [PolicyPreambleService],
     controllers: [PolicyPreambleController],
     exports: [PolicyPreambleService],

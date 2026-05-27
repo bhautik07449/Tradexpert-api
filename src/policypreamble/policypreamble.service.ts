@@ -2,12 +2,16 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { PolicyPreamble } from "./entities/policypreamble.entity";
+import { Category } from "src/categories/entities/category.entity";
 
 @Injectable()
 export class PolicyPreambleService {
     constructor(
         @InjectRepository(PolicyPreamble)
-        private readonly policypreambleRepository: Repository<PolicyPreamble>
+        private readonly policypreambleRepository: Repository<PolicyPreamble>,
+
+        @InjectRepository(Category)
+        private readonly categoryRepository: Repository<Category>
     ) { }
 
     async create(data: Partial<PolicyPreamble>) {
@@ -15,7 +19,19 @@ export class PolicyPreambleService {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
-            const policypreamble = this.policypreambleRepository.create(data);
+
+            const category = await this.categoryRepository.findOne({
+                where: { id: Number(data.category) },
+            });
+
+            if (!category) throw new NotFoundException('Category not found');
+
+            const createData: Partial<PolicyPreamble> = {
+                ...data,
+                category: category,
+            };
+
+            const policypreamble = this.policypreambleRepository.create(createData);
             const saved = await this.policypreambleRepository.save(policypreamble);
 
             return {
@@ -35,6 +51,7 @@ export class PolicyPreambleService {
             const data = await this.policypreambleRepository.find({
                 where: wherecondition,
                 order: { createdAt: 'DESC' },
+                relations: ['category']
             });
 
             return {
@@ -51,6 +68,7 @@ export class PolicyPreambleService {
         try {
             const policypreamble = await this.policypreambleRepository.findOne({
                 where: { id },
+                relations: ['category']
             });
 
             if (!policypreamble) {
@@ -75,6 +93,14 @@ export class PolicyPreambleService {
 
             if (!policypreamble) {
                 throw new NotFoundException('Policy - Preamble & Upcoming Updates not found');
+            }
+
+            if (data.category) {
+                const category = await this.categoryRepository.findOne({
+                    where: { id: Number(data.category) },
+                });
+                if (!category) throw new NotFoundException('Category not found');
+                data.category = category as any;
             }
 
             Object.assign(policypreamble, data);
