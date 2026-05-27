@@ -59,6 +59,7 @@ import { PolicyPreambleModule } from './policypreamble/policypreamble.module';
 import { FinancialModule } from './financialservice/financialservice.module';
 import { InvestorrelationsModule } from './investorrelations/investorrelations.module';
 import { AffiliationModule } from './resources/affiliation.module';
+import { MembershipModule } from './resources/membership.module';
 
 
 @Module({
@@ -125,7 +126,7 @@ import { AffiliationModule } from './resources/affiliation.module';
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, InvestorrelationsModule,
-    AffiliationModule
+    AffiliationModule, MembershipModule
   ],
   controllers: [AppController, UploadController],
   providers: [
