@@ -28,10 +28,13 @@ export class MembershipService {
         }
     }
 
-    async findAll() {
+    async findAll(country: string) {
         try {
+            const wherecondition = country ? { country: country } : {}
+
             const data = await this.membershipRepository.find({
                 order: { createdAt: 'DESC' },
+                where: wherecondition
             });
 
             return {

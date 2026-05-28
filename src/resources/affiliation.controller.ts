@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { Affiliation } from "./entities/affiliation.entity";
 import { AffiliationService } from "./affiliation.service";
@@ -15,8 +15,8 @@ export class AffiliationController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.affiliationService.findAll();
+    findAll(@Query('country') country: string) {
+        return this.affiliationService.findAll(country);
     }
 
     @Get(':id')
