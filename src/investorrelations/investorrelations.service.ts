@@ -22,7 +22,7 @@ export class InvestorrelationsService {
 
             if (data.product) {
                 const product = await this.productRepository.findOne({
-                    where: { id: data.product.id },
+                    where: { id: Number(data.product) },
                 });
 
                 if (!product) throw new NotFoundException('Product not found');
