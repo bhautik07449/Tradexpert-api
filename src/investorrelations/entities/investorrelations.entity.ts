@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Product } from 'src/product/entities/product.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 export enum Status {
     ACTIVE = 'active',
@@ -18,6 +19,10 @@ export class Investorrelations {
 
     @Column({ name: 'country', nullable: true })
     country: string;
+
+    @ManyToOne(() => Product)
+    @JoinColumn({ name: 'product' })
+    product: Product;
 
     @Column({ name: 'message' })
     message: string;

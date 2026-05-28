@@ -53,7 +53,7 @@ export class ProductService {
         };
     }
 
-    async findAll(season?: any, category?: any) {
+    async findAll(season?: any, category?: any, country?: string) {
         const whereClause: any = {};
 
         if (season) {
@@ -62,6 +62,10 @@ export class ProductService {
 
         if (category) {
             whereClause.category = { id: category };
+        }
+
+        if (country) {
+            whereClause.country = country
         }
 
         const products = await this.productRepo.find({

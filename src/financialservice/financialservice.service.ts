@@ -28,9 +28,12 @@ export class FinancialService {
         }
     }
 
-    async findAll() {
+    async findAll(country: string) {
         try {
+            const whereCondition = country ? { country: country } : {}
+
             const data = await this.financialRepository.find({
+                where: whereCondition,
                 order: { createdAt: 'DESC' },
             });
 

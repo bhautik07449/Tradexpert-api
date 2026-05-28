@@ -2,12 +2,16 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Investorrelations } from "./entities/investorrelations.entity";
+import { Product } from "src/product/entities/product.entity";
 
 @Injectable()
 export class InvestorrelationsService {
     constructor(
         @InjectRepository(Investorrelations)
-        private readonly investorrelationsRepository: Repository<Investorrelations>
+        private readonly investorrelationsRepository: Repository<Investorrelations>,
+
+        @InjectRepository(Product)
+        private readonly productRepository: Repository<Product>,
     ) { }
 
     async create(data: Partial<Investorrelations>) {
@@ -15,16 +19,27 @@ export class InvestorrelationsService {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
+
+            if (data.product) {
+                const product = await this.productRepository.findOne({
+                    where: { id: data.product.id },
+                });
+
+                if (!product) throw new NotFoundException('Product not found');
+
+                data.product = product;
+            }
+
             const Investorrelations = this.investorrelationsRepository.create(data);
             const saved = await this.investorrelationsRepository.save(Investorrelations);
 
             return {
                 success: true,
-                message: 'Investor Relations created successfully',
+                message: 'Inquiry Send successfully',
                 data: saved,
             };
         } catch (error) {
-            throw new InternalServerErrorException('Failed to create Investor Relations');
+            throw new InternalServerErrorException('Failed to Inquiry Send');
         }
     }
 
@@ -32,6 +47,7 @@ export class InvestorrelationsService {
         try {
             const data = await this.investorrelationsRepository.find({
                 order: { createdAt: 'DESC' },
+                relations: ['product']
             });
 
             return {
@@ -46,18 +62,18 @@ export class InvestorrelationsService {
 
     async findOne(id: number) {
         try {
-            const abctype = await this.investorrelationsRepository.findOne({
+            const Investorrelations = await this.investorrelationsRepository.findOne({
                 where: { id },
             });
 
-            if (!abctype) {
+            if (!Investorrelations) {
                 throw new NotFoundException('Investor Relations not found');
             }
 
             return {
                 success: true,
                 message: 'Investor Relations fetched successfully',
-                data: abctype,
+                data: Investorrelations,
             };
         } catch (error) {
             throw error;
@@ -66,17 +82,27 @@ export class InvestorrelationsService {
 
     async update(id: number, data: Partial<Investorrelations>) {
         try {
-            const abctype = await this.investorrelationsRepository.findOne({
+            const Investorrelations = await this.investorrelationsRepository.findOne({
                 where: { id },
             });
 
-            if (!abctype) {
+            if (!Investorrelations) {
                 throw new NotFoundException('Investor Relations not found');
             }
 
-            Object.assign(abctype, data);
+            if (data.product) {
+                const product = await this.productRepository.findOne({
+                    where: { id: data.product.id },
+                });
 
-            const updated = await this.investorrelationsRepository.save(abctype);
+                if (!product) throw new NotFoundException('Product not found');
+
+                data.product = product;
+            }
+
+            Object.assign(Investorrelations, data);
+
+            const updated = await this.investorrelationsRepository.save(Investorrelations);
 
             return {
                 success: true,
@@ -90,15 +116,15 @@ export class InvestorrelationsService {
 
     async remove(id: number) {
         try {
-            const abctype = await this.investorrelationsRepository.findOne({
+            const Investorrelations = await this.investorrelationsRepository.findOne({
                 where: { id },
             });
 
-            if (!abctype) {
+            if (!Investorrelations) {
                 throw new NotFoundException('Investor Relations not found');
             }
 
-            await this.investorrelationsRepository.remove(abctype);
+            await this.investorrelationsRepository.remove(Investorrelations);
 
             return {
                 success: true,

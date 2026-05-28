@@ -8,13 +8,13 @@ export class InvestorrelationsController {
     constructor(private readonly InvestorrelationsService: InvestorrelationsService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Investorrelations>) {
         return this.InvestorrelationsService.create(body);
     }
 
     @Get()
-    // @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminAuthGuard)
     findAll() {
         return this.InvestorrelationsService.findAll();
     }

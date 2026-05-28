@@ -86,6 +86,9 @@ export class Product {
     @Column({ nullable: true })
     application: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: status,
