@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Career } from "./entities/career.entity";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CareerService {
@@ -15,7 +16,22 @@ export class CareerService {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
-            const career = this.careerRepository.create(data);
+
+            const existingEmail = await this.careerRepository.findOne({
+                where: { email: data.email }
+            })
+
+            if (existingEmail) {
+                throw new NotFoundException(`${data.email} this email id already exists`)
+            }
+
+            const hashedPassword = await bcrypt.hash(data.password, 10);
+
+            const career = this.careerRepository.create({
+                ...data,
+                password: hashedPassword
+            });
+
             const saved = await this.careerRepository.save(career);
 
             return {

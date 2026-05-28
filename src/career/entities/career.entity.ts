@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export enum Status {
@@ -18,6 +19,9 @@ export class Career {
 
     @Column({ name: 'email' })
     email: string;
+
+    @Exclude()
+    password?: string;
 
     @Column({ name: 'family_member' })
     family_member: string;
