@@ -31,8 +31,8 @@ export class BrandsController {
     }
 
     @Get('grouped')
-    groupByCategoryAndCountry() {
-        return this.brandsService.groupByCategoryAndCountry();
+    groupByCategoryAndCountry(@Query('country') country: string) {
+        return this.brandsService.groupByCategoryAndCountry(country);
     }
 
     @Get(':id')

@@ -28,6 +28,10 @@ export class Brand {
   @Column({ name: 'country', nullable: true })
   country: string;
 
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'subcategory' })
+  subcategory: Category;
+
   @Column({
     type: 'enum',
     enum: BrandStatus,

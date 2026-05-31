@@ -4,9 +4,10 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { Category } from '../categories/entities/category.entity';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class BrandsService {
@@ -16,6 +17,9 @@ export class BrandsService {
 
         @InjectRepository(Category)
         private readonly categoryRepository: Repository<Category>,
+
+        @InjectRepository(Product)
+        private readonly productRepository: Repository<Product>,
     ) { }
 
     async create(data: Partial<Brand>): Promise<Brand> {
@@ -56,50 +60,82 @@ export class BrandsService {
             relations: ['category'],
             order: {
                 country: 'ASC',
-                category: {
-                    id: 'ASC',
-                },
+                category: { id: 'ASC' },
             },
         });
 
-        const groupedData = list.reduce((acc, item) => {
-            const countryName = item.country || 'no-country';
-            const categoryId = item.category?.id || 'no-category';
+        const uniqueCategoryIds = [
+            ...new Set(
+                list
+                    .map((item) => item.category?.id)
+                    .filter((id): id is number => id !== undefined && id !== null),
+            ),
+        ];
 
-            if (!acc[countryName]) {
-                acc[countryName] = {
-                    country: countryName,
-                    category: {},
-                };
+        const categoriesWithChildren = await this.categoryRepository.find({
+            where: uniqueCategoryIds.map((id) => ({ id })),
+            relations: ['children'],
+        });
+
+        const subcategoryMap = new Map<number, Category[]>();
+        for (const cat of categoriesWithChildren) {
+            subcategoryMap.set(cat.id, cat.children ?? []);
+        }
+
+        const products = uniqueCategoryIds.length
+            ? await this.productRepository.find({
+                  where: { category: { id: In(uniqueCategoryIds) } },
+                  relations: ['category', 'subcategory'],
+              })
+            : [];
+
+        const productMap = new Map<number, Product[]>();
+        for (const product of products) {
+            const catId = product.category?.id;
+            if (catId !== undefined && catId !== null) {
+                if (!productMap.has(catId)) productMap.set(catId, []);
+                productMap.get(catId)!.push(product);
             }
+        }
 
-            if (!acc[countryName].category[categoryId]) {
-                acc[countryName].category[categoryId] = {
-                    category: item.category,
-                    data: [],
-                };
-            }
+        const groupedData = list.reduce(
+            (acc, item) => {
+                const countryName = item.country || 'no-country';
+                const categoryId = item.category?.id ?? 'no-category';
 
-            acc[countryName].category[categoryId].data.push(item);
+                if (!acc[countryName]) {
+                    acc[countryName] = { country: countryName, category: {} };
+                }
 
-            return acc;
-        }, {} as Record<
-            string,
-            {
-                country: string;
-                category: Record<
-                    string,
-                    {
-                        category: Category | null;
-                        data: Brand[];
-                    }
-                >;
-            }
-        >);
+                if (!acc[countryName].category[categoryId]) {
+                    acc[countryName].category[categoryId] = {
+                        category: item.category,
+                        brands: [],
+                    };
+                }
 
+                acc[countryName].category[categoryId].brands.push(item);
+                return acc;
+            },
+            {} as Record<
+                string,
+                {
+                    country: string;
+                    category: Record<
+                        string | number,
+                        { category: Category | null; brands: Brand[] }
+                    >;
+                }
+            >,
+        );
         const data = Object.values(groupedData).map((countryGroup) => ({
             country: countryGroup.country,
-            category: Object.values(countryGroup.category),
+            category: Object.values(countryGroup.category).map((catGroup) => ({
+                category: catGroup.category,
+                subcategories: subcategoryMap.get(catGroup.category?.id) ?? [],
+                products: productMap.get(catGroup.category?.id) ?? [],
+                brands: catGroup.brands,
+            })),
         }));
 
         return {
