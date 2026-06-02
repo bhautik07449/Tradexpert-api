@@ -13,6 +13,14 @@ export class ESGController {
         return this.esgService.create(body);
     }
 
+    @Get('grouped')
+    findAllGrouped(
+        @Query('country') country?: string,
+        @Query('category') category?: string,
+    ) {
+        return this.esgService.findAllGrouped(country, category);
+    }
+
     @Get()
     // @UseGuards(AdminAuthGuard)
     findAll(

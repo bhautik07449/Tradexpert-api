@@ -73,6 +73,48 @@ export class ESGService {
         }
     }
 
+    async findAllGrouped(country?: string, category?: string) {
+        try {
+            let whereCondition: any = {};
+
+            if (country) {
+                whereCondition.country = country;
+            }
+            if (category) {
+                whereCondition.category = { id: Number(category) };
+            }
+
+            const data = await this.esgRepository.find({
+                where: whereCondition,
+                order: { createdAt: 'DESC' },
+                relations: ['category']
+            });
+
+            const groupedData: Record<string, ESG[]> = {
+                environment: [],
+                social: [],
+                governance: [],
+            };
+
+            data.forEach(item => {
+                let tag = item.tag ? item.tag.toLowerCase() : 'other';
+                
+                if (!groupedData[tag]) {
+                    groupedData[tag] = [];
+                }
+                groupedData[tag].push(item);
+            });
+
+            return {
+                success: true,
+                message: 'ESG fetched and grouped successfully',
+                data: groupedData,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to fetch grouped ESG');
+        }
+    }
+
     async findOne(id: number) {
         try {
             const esg = await this.esgRepository.findOne({
