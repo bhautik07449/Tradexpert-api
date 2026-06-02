@@ -60,6 +60,7 @@ import { FinancialModule } from './financialservice/financialservice.module';
 import { InvestorrelationsModule } from './investorrelations/investorrelations.module';
 import { AffiliationModule } from './resources/affiliation.module';
 import { MembershipModule } from './resources/membership.module';
+import { ESGModule } from './ESG/ESG.module';
 
 
 @Module({
@@ -126,7 +127,7 @@ import { MembershipModule } from './resources/membership.module';
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, InvestorrelationsModule,
-    AffiliationModule, MembershipModule
+    AffiliationModule, MembershipModule, ESGModule
   ],
   controllers: [AppController, UploadController],
   providers: [

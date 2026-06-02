@@ -56,11 +56,19 @@ export class AbcService {
 
 
     async groupedData(country?: string) {
-        const data = await this.abcRepo.find({
-            where: { country },
-            relations: ['category', 'subcategory', 'products', 'abc_type'],
-            order: { createdAt: 'DESC' },
-        });
+        const query = this.abcRepo
+            .createQueryBuilder('abc')
+            .leftJoinAndSelect('abc.category', 'category')
+            .leftJoinAndSelect('abc.subcategory', 'subcategory')
+            .leftJoinAndSelect('abc.products', 'products')
+            .leftJoinAndSelect('abc.abc_type', 'abc_type')
+            .orderBy('abc.createdAt', 'DESC');
+
+        if (country) {
+            query.where('abc_type.country = :country', { country });
+        }
+
+        const data = await query.getMany();
 
         const grouped = data.reduce((acc, curr) => {
             const typeId = curr.abc_type?.id || 'other';
@@ -68,7 +76,7 @@ export class AbcService {
             if (!acc[typeId]) {
                 acc[typeId] = {
                     abc_type: curr.abc_type || { id: null, name: 'Other' },
-                    itemsMap: {}
+                    itemsMap: {},
                 };
             }
 
@@ -80,13 +88,16 @@ export class AbcService {
                 acc[typeId].itemsMap[itemKey] = {
                     category: curr.category,
                     sub_category: curr.subcategory,
-                    product_data: []
+                    product_data: [],
                 };
             }
 
             if (curr.products && Array.isArray(curr.products)) {
-                curr.products.forEach(newProd => {
-                    const alreadyAdded = acc[typeId].itemsMap[itemKey].product_data.some(p => p.id === newProd.id);
+                curr.products.forEach((newProd) => {
+                    const alreadyAdded = acc[typeId].itemsMap[itemKey].product_data.some(
+                        (p) => p.id === newProd.id,
+                    );
+
                     if (!alreadyAdded) {
                         acc[typeId].itemsMap[itemKey].product_data.push(newProd);
                     }
@@ -98,7 +109,7 @@ export class AbcService {
 
         const result = Object.values(grouped).map((group: any) => ({
             abc_type: group.abc_type,
-            item: Object.values(group.itemsMap)
+            item: Object.values(group.itemsMap),
         }));
 
         return {
