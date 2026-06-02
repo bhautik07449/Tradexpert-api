@@ -23,6 +23,16 @@ export class SuppliersController {
         return this.suppliersService.create(body);
     }
 
+    @Post('login')
+    login(@Body() body: any) {
+        return this.suppliersService.login(body);
+    }
+
+    @Post('forgot-password')
+    forgotPassword(@Body() body: any) {
+        return this.suppliersService.forgotPassword(body);
+    }
+
     @Get()
     findAll() {
         return this.suppliersService.findAll();
@@ -34,6 +44,7 @@ export class SuppliersController {
     }
 
     @Patch(':id')
+    @UseGuards(AdminAuthGuard)
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<Supplier>,
@@ -42,6 +53,7 @@ export class SuppliersController {
     }
 
     @Delete(':id')
+    @UseGuards(AdminAuthGuard)
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.suppliersService.remove(id);
     }
