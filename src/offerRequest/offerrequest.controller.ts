@@ -17,7 +17,7 @@ export class OfferRequestController {
     constructor(private readonly service: OfferRequestService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     create(@Body() body: any) {
         return this.service.create(body);
     }

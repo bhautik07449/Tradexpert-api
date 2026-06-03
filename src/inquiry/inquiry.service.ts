@@ -81,7 +81,7 @@ export class InquiryService {
     async findAll() {
         try {
             const data = await this.inquiryRepository.find({
-                relations: ["product"],
+                relations: ["product", 'product.offer_type'],
                 order: { createdAt: "DESC" },
             });
 
@@ -101,7 +101,7 @@ export class InquiryService {
         try {
             const inquiry = await this.inquiryRepository.findOne({
                 where: { id },
-                relations: ["product"],
+                relations: ["product", 'product.offer_type'],
             });
 
             if (!inquiry) {

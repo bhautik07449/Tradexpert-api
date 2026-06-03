@@ -59,7 +59,7 @@ export class DRMService {
 
     async findAll() {
         const dmr = await this.dmrRepo.find({
-            relations: ['category', 'subcategory', 'market', 'product'],
+            relations: ['category', 'subcategory', 'market', 'product', 'product.offer_type'],
             order: { id: 'DESC' },
         });
 
@@ -116,7 +116,7 @@ export class DRMService {
     async findOne(id: number) {
         const dmr = await this.dmrRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'market', 'product'],
+            relations: ['category', 'subcategory', 'market', 'product', 'product.offer_type'],
         });
 
         if (!dmr) {
@@ -133,7 +133,7 @@ export class DRMService {
     async update(id: number, body: any) {
         const dmr = await this.dmrRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'market', 'product'],
+            relations: ['category', 'subcategory', 'market', 'product', 'product.offer_type'],
         });
 
         if (!dmr) throw new NotFoundException('DMR not found');

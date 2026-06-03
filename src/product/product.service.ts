@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
+import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
 
 @Injectable()
 export class ProductService {
@@ -16,6 +17,9 @@ export class ProductService {
 
         @InjectRepository(Measurement)
         private readonly measureRepo: Repository<Measurement>,
+
+        @InjectRepository(Tradetype)
+        private readonly tradetypeRepo: Repository<Tradetype>,
     ) { }
 
     async create(body: any) {
@@ -37,11 +41,18 @@ export class ProductService {
 
         if (!measure) throw new NotFoundException('Measurement not found');
 
+        const tradeType = await this.tradetypeRepo.findOne({
+            where: { id: body.offer_type }
+        })
+
+        if (!tradeType) throw new NotFoundException('Offer not found');
+
         const product = this.productRepo.create({
             ...body,
             category,
             subcategory,
             measure,
+            tradeType
         });
 
         const savedProduct = await this.productRepo.save(product);
@@ -70,7 +81,7 @@ export class ProductService {
 
         const products = await this.productRepo.find({
             where: whereClause,
-            relations: ['category', 'subcategory', 'measure'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type'],
             order: { id: 'DESC' },
         });
 
@@ -88,7 +99,7 @@ export class ProductService {
     async findOne(id: number) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market'],
+            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market', 'offer_type'],
         });
 
         if (!product) {
@@ -109,7 +120,7 @@ export class ProductService {
                     slug: slug,
                 },
             },
-            relations: ['category', 'subcategory', 'measure'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type'],
         });
 
         if (!products.length) {
@@ -119,7 +130,7 @@ export class ProductService {
                         slug: slug,
                     },
                 },
-                relations: ['category', 'subcategory', 'measure'],
+                relations: ['category', 'subcategory', 'measure', 'offer_type'],
             });
         }
 
@@ -137,7 +148,7 @@ export class ProductService {
     async update(id: number, body: any) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type'],
         });
 
         if (!product) throw new NotFoundException('Product not found');

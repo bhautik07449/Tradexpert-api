@@ -32,7 +32,7 @@ export class AbcService {
 
         const fullData = await this.abcRepo.findOne({
             where: { id: savedId },
-            relations: ['category', 'subcategory', 'products', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
         });
 
         return {
@@ -44,7 +44,7 @@ export class AbcService {
 
     async findAll() {
         const data = await this.abcRepo.find({
-            relations: ['category', 'subcategory', 'products', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
             order: { createdAt: 'DESC' },
         });
         return {
@@ -61,6 +61,7 @@ export class AbcService {
             .leftJoinAndSelect('abc.category', 'category')
             .leftJoinAndSelect('abc.subcategory', 'subcategory')
             .leftJoinAndSelect('abc.products', 'products')
+            .leftJoinAndSelect('products.offer_type', 'offer_type')
             .leftJoinAndSelect('abc.abc_type', 'abc_type')
             .orderBy('abc.createdAt', 'DESC');
 
@@ -122,7 +123,7 @@ export class AbcService {
     async findOne(id: number) {
         const data = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
         });
 
         if (!data) throw new NotFoundException('ABC entry not found');
@@ -159,7 +160,7 @@ export class AbcService {
 
         const updated = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
         });
 
         return {

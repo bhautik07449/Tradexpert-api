@@ -29,6 +29,9 @@ export class OfferRequest {
     @Column({ name: 'message', type: 'text' })
     message: string;
 
+    @Column({ name: 'type', nullable: true })
+    type: string
+
     @Column({
         type: 'enum',
         enum: OfferRequestStatus,

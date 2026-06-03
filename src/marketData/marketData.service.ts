@@ -64,7 +64,7 @@ export class MarketDataService {
         try {
             const data = await this.marketDataRepository.find({
                 order: { createdAt: 'DESC' },
-                relations: ['category_id', 'sub_category_id', 'product_id'],
+                relations: ['category_id', 'sub_category_id', 'product_id', 'product_id.offer_type'],
             });
 
             return {
@@ -81,7 +81,7 @@ export class MarketDataService {
         try {
             const marketData = await this.marketDataRepository.findOne({
                 where: { id },
-                relations: ['category_id', 'sub_category_id', 'product_id'],
+                relations: ['category_id', 'sub_category_id', 'product_id', 'product_id.offer_type'],
             });
 
             if (!marketData) {

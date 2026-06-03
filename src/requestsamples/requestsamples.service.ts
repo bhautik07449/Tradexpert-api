@@ -71,7 +71,7 @@ export class RequestsamplesService {
     async findAll() {
         try {
             const data = await this.requestSampleRepository.find({
-                relations: ["product"],
+                relations: ["product", 'product.offer_type'],
                 order: { createdAt: "DESC" },
             });
 
@@ -91,7 +91,7 @@ export class RequestsamplesService {
         try {
             const requestSample = await this.requestSampleRepository.findOne({
                 where: { id },
-                relations: ["product"],
+                relations: ["product", 'product.offer_type'],
             });
 
             if (!requestSample) {
