@@ -52,7 +52,7 @@ export class ProductService {
             category,
             subcategory,
             measure,
-            tradeType
+            offer_type: tradeType
         });
 
         const savedProduct = await this.productRepo.save(product);
@@ -181,6 +181,16 @@ export class ProductService {
             if (!measure) throw new NotFoundException('Measurement not found');
 
             product.measure = measure;
+        }
+
+        if (body.offer_type) {
+            const tradeType = await this.tradetypeRepo.findOne({
+                where: { id: body.offer_type },
+            });
+
+            if (!tradeType) throw new NotFoundException('Offer not found');
+
+            product.offer_type = tradeType;
         }
 
         Object.assign(product, body);
