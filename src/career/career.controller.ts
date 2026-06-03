@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, Request } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CareerService } from "./career.service";
 import { Career } from "./entities/career.entity";
 
@@ -11,6 +12,22 @@ export class CareerController {
     // @UseGuards(AdminAuthGuard)
     create(@Body() body: Partial<Career>) {
         return this.careerService.create(body);
+    }
+
+    @Post('login')
+    login(@Body() body: any) {
+        return this.careerService.login(body);
+    }
+
+    @Post('forgot-password')
+    forgotPassword(@Body() body: any) {
+        return this.careerService.forgotPassword(body);
+    }
+
+    @Get('profile')
+    @UseGuards(JwtAuthGuard)
+    getProfile(@Request() req: any) {
+        return this.careerService.findOne(req.user.userId);
     }
 
     @Get()

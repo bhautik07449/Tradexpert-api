@@ -21,6 +21,7 @@ export class Career {
     email: string;
 
     @Exclude()
+    @Column({ nullable: true })
     password?: string;
 
     @Column({ name: 'family_member' })
