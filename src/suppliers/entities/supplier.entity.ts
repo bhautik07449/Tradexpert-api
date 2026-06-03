@@ -1,11 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export enum SupplierType {
-  MANUFACTURER = 'Manufacturer',
-  TRADER = 'Trader',
-  AGENT = 'Agent',
-}
-
 export enum SupplierStatus {
   ACTIVE = 'active',
   BLOCKED = 'blocked',
@@ -27,38 +21,13 @@ export class Supplier {
   email: string;
 
   @Column({ nullable: true })
-  password?: string;
-
-  @Column({ nullable: true })
   phone: string;
 
-  @Column({ name: 'firm_name', nullable: true })
-  firmName: string;
-
-  // @Column({ name: 'supplier_service_id', nullable: true })
-  // supplierServiceId: string;
-
-  @Column({ nullable: true })
-  productStatus: string;
+  @Column({ name: 'company_name', nullable: true })
+  company_name: string;
 
   @Column({ type: 'text', nullable: true })
   address: string;
-
-  @Column({ name: 'product_category', type: 'text', nullable: true })
-  productCategory: string;
-
-  @Column({ nullable: true })
-  products: string;
-
-  @Column({ nullable: true })
-  website: string;
-
-  @Column({
-    type: 'enum',
-    enum: SupplierType,
-    nullable: true,
-  })
-  supplierType: SupplierType;
 
   @Column({ nullable: true })
   city: string;
@@ -68,6 +37,15 @@ export class Supplier {
 
   @Column({ nullable: true })
   country: string;
+
+  @Column({ nullable: true })
+  website: string;
+
+  @Column({ nullable: true })
+  password?: string;
+
+  @Column({ name: 'service_type', nullable: true })
+  service_type: string;
 
   @Column({
     type: 'enum',
