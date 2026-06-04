@@ -41,6 +41,12 @@ export class BuyersController {
     return await this.buyersService.login(loginBuyerDto);
   }
 
+  @Post('forgot-password')
+  @Transactional()
+  async forgotPassword(@Body() body: any) {
+    return await this.buyersService.forgotPassword(body);
+  }
+
   @Get('verify/:activationCode')
   @Transactional()
   async verify(@Param('activationCode') activationCode: string) {

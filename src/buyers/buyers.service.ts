@@ -129,6 +129,30 @@ export class BuyersService {
     };
   }
 
+  async forgotPassword(data: any): Promise<{ success: boolean; message: string }> {
+    const { email, newPassword } = data;
+
+    if (!email || !newPassword) {
+      throw new BusinessException(ErrorCodes.ERR_RC_001, 'Email and new password are required', 'Buyers', BuyersService.name, 'forgotPassword');
+    }
+
+    const buyer = await this.buyerRepository.findOne({ where: { email } });
+
+    if (!buyer) {
+      throw new BusinessException(ErrorCodes.ERR_RC_001, `Buyer with email ${email} not found`, 'Buyers', BuyersService.name, 'forgotPassword');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    buyer.password = hashedPassword;
+
+    await this.buyerRepository.save(buyer);
+
+    return {
+      success: true,
+      message: 'Password updated successfully'
+    };
+  }
+
   async getBuyerIdByEmail(email: string): Promise<number | null> {
     const buyer = await this.buyerRepository.findOne({
       where: { email },
