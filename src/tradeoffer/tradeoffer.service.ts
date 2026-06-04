@@ -56,7 +56,7 @@ export class TradeofferService {
 
     async findAll() {
         const data = await this.tradeofferRepo.find({
-            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.product.offer_type'],
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
             order: { createdAt: 'DESC' },
         });
 
@@ -70,7 +70,7 @@ export class TradeofferService {
     async findAllByCountry(country: string) {
         const data = await this.tradeofferRepo.find({
             where: { country },
-            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.product.offer_type'],
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
             order: { createdAt: 'DESC' },
         });
 
@@ -84,7 +84,7 @@ export class TradeofferService {
     async findOne(id: number) {
         const data = await this.tradeofferRepo.findOne({
             where: { id },
-            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.product.offer_type'],
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
         });
 
         if (!data) throw new NotFoundException('Trade offer not found');
@@ -206,7 +206,7 @@ export class TradeofferService {
                 'items',
                 'items.category',
                 'items.subCategory',
-                'items.product', 'items.product.offer_type',
+                'items.product',
                 'items.product.measure',
             ],
         });

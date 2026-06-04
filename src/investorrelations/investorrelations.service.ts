@@ -47,7 +47,7 @@ export class InvestorrelationsService {
         try {
             const data = await this.investorrelationsRepository.find({
                 order: { createdAt: 'DESC' },
-                relations: ['product', 'product.offer_type']
+                relations: ['product']
             });
 
             return {

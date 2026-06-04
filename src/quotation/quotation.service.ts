@@ -99,7 +99,7 @@ export class QuotationService {
                 relations: [
                     "category",
                     "subCategory",
-                    "product", 'product.offer_type',
+                    "product",
                     "unit",
                     "currency"
                 ],
@@ -123,7 +123,7 @@ export class QuotationService {
                 relations: [
                     "category",
                     "subCategory",
-                    "product", 'product.offer_type',
+                    "product",
                     "unit",
                     "currency"
                 ],
