@@ -61,6 +61,7 @@ import { InvestorrelationsModule } from './investorrelations/investorrelations.m
 import { AffiliationModule } from './resources/affiliation.module';
 import { MembershipModule } from './resources/membership.module';
 import { ESGModule } from './ESG/ESG.module';
+import { IRProjectModule } from './IRProject/IRProject.module';
 
 
 @Module({
@@ -127,7 +128,7 @@ import { ESGModule } from './ESG/ESG.module';
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, InvestorrelationsModule,
-    AffiliationModule, MembershipModule, ESGModule
+    AffiliationModule, MembershipModule, ESGModule, IRProjectModule
   ],
   controllers: [AppController, UploadController],
   providers: [
