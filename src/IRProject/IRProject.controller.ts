@@ -24,7 +24,7 @@ export class IRProjectController {
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    // @UseGuards(AdminAuthGuard)
     findAll(
         @Query('country') country?: string,
         @Query('category') category?: string,

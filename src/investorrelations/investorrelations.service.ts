@@ -44,6 +44,16 @@ export class InvestorrelationsService {
                 data.service = service;
             }
 
+            if (data?.project) {
+                const service = await this.finacialserviceRepository.findOne({
+                    where: { id: Number(data.project) }
+                })
+
+                if (!service) throw new NotFoundException('Project not found');
+
+                data.project = service;
+            }
+
             const Investorrelations = this.investorrelationsRepository.create(data);
             const saved = await this.investorrelationsRepository.save(Investorrelations);
 
@@ -61,7 +71,7 @@ export class InvestorrelationsService {
         try {
             const data = await this.investorrelationsRepository.find({
                 order: { createdAt: 'DESC' },
-                relations: ['product', 'service']
+                relations: ['product', 'service', 'project']
             });
 
             return {
@@ -122,6 +132,16 @@ export class InvestorrelationsService {
                 if (!service) throw new NotFoundException('Product not found');
 
                 data.service = service;
+            }
+
+            if (data?.project) {
+                const service = await this.finacialserviceRepository.findOne({
+                    where: { id: Number(data.project) }
+                })
+
+                if (!service) throw new NotFoundException('Project not found');
+
+                data.project = service;
             }
 
             Object.assign(Investorrelations, data);
