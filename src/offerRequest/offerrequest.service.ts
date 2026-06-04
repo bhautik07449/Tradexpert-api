@@ -33,7 +33,7 @@ export class OfferRequestService {
 
         return {
             success: true,
-            message: 'Offer request created successfully',
+            message: 'Offer request send successfully',
             data: saved,
         };
     }

@@ -34,8 +34,11 @@ export class DMRController {
     }
 
     @Get('market-data/category')
-    getAllMarketDataByCategory(@Query('category') category: string) {
-        return this.dmrService.getAllMarketDataByCategory(+category);
+    getAllMarketDataByCategory(
+        @Query('category') category: string,
+        @Query('subCategory') subCategory?: string,
+    ) {
+        return this.dmrService.getAllMarketDataByCategory(+category, subCategory ? +subCategory : undefined);
     }
 
     @Get(':id')

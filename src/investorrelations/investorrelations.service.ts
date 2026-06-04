@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Investorrelations } from "./entities/investorrelations.entity";
 import { Product } from "src/product/entities/product.entity";
+import { Financial } from "src/financialservice/entities/financialservice.entity";
 
 @Injectable()
 export class InvestorrelationsService {
@@ -12,6 +13,9 @@ export class InvestorrelationsService {
 
         @InjectRepository(Product)
         private readonly productRepository: Repository<Product>,
+
+        @InjectRepository(Financial)
+        private readonly finacialserviceRepository: Repository<Financial>,
     ) { }
 
     async create(data: Partial<Investorrelations>) {
@@ -28,6 +32,16 @@ export class InvestorrelationsService {
                 if (!product) throw new NotFoundException('Product not found');
 
                 data.product = product;
+            }
+
+            if (data?.service) {
+                const service = await this.finacialserviceRepository.findOne({
+                    where: { id: Number(data.service) }
+                })
+
+                if (!service) throw new NotFoundException('Product not found');
+
+                data.service = service;
             }
 
             const Investorrelations = this.investorrelationsRepository.create(data);
@@ -47,7 +61,7 @@ export class InvestorrelationsService {
         try {
             const data = await this.investorrelationsRepository.find({
                 order: { createdAt: 'DESC' },
-                relations: ['product']
+                relations: ['product', 'service']
             });
 
             return {
@@ -98,6 +112,16 @@ export class InvestorrelationsService {
                 if (!product) throw new NotFoundException('Product not found');
 
                 data.product = product;
+            }
+
+            if (data?.service) {
+                const service = await this.finacialserviceRepository.findOne({
+                    where: { id: Number(data.service) }
+                })
+
+                if (!service) throw new NotFoundException('Product not found');
+
+                data.service = service;
             }
 
             Object.assign(Investorrelations, data);

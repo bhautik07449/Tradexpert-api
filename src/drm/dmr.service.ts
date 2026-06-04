@@ -88,16 +88,24 @@ export class DRMService {
         };
     }
 
-    async getAllMarketDataByCategory(category: number) {
-        const markets = await this.marketRepo.find({
-            where: {
-                dmr: {
-                    category: {
-                        id: category,
-                    },
+    async getAllMarketDataByCategory(category: number, subCategory?: number) {
+        const whereClause: any = {
+            dmr: {
+                category: {
+                    id: category,
                 },
             },
-            relations: ['dmr', 'dmr.category'],
+        };
+
+        if (subCategory) {
+            whereClause.dmr.subcategory = {
+                id: subCategory,
+            };
+        }
+
+        const markets = await this.marketRepo.find({
+            where: whereClause,
+            relations: ['dmr', 'dmr.category', 'dmr.subcategory'],
             order: { id: 'DESC' },
         });
 

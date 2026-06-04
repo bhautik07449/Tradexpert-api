@@ -1,3 +1,4 @@
+import { Financial } from 'src/financialservice/entities/financialservice.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
@@ -23,6 +24,10 @@ export class Investorrelations {
     @ManyToOne(() => Product)
     @JoinColumn({ name: 'product' })
     product: Product;
+
+    @ManyToOne(() => Financial)
+    @JoinColumn({ name: 'service' })
+    service: Financial
 
     @Column({ name: 'message' })
     message: string;
