@@ -62,6 +62,7 @@ import { AffiliationModule } from './resources/affiliation.module';
 import { MembershipModule } from './resources/membership.module';
 import { ESGModule } from './ESG/ESG.module';
 import { IRProjectModule } from './IRProject/IRProject.module';
+import { upcomingcollaborationserviceModule } from './UpcomingCollaboration/UpcomingCollaboration.module';
 
 
 @Module({
@@ -128,7 +129,7 @@ import { IRProjectModule } from './IRProject/IRProject.module';
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, InvestorrelationsModule,
-    AffiliationModule, MembershipModule, ESGModule, IRProjectModule
+    AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule
   ],
   controllers: [AppController, UploadController],
   providers: [

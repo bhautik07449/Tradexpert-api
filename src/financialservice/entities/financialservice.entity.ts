@@ -13,6 +13,9 @@ export class Financial {
     @Column({ name: 'name' })
     name: string;
 
+    @Column({ name: 'description', nullable: true })
+    description: string;
+
     @Column({ name: 'country', nullable: true })
     country: string;
 

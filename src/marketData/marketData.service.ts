@@ -21,9 +21,9 @@ export class MarketDataService {
 
     async create(data: Partial<MarketData>) {
         try {
-            const categoryId = (data as any).category_id || (data as any).category;
-            const subCategoryId = (data as any).sub_category_id || (data as any).subCategory;
-            const productId = (data as any).product_id || (data as any).product;
+            const categoryId = (data as any).category;
+            const subCategoryId = (data as any).subCategory;
+            const productId = (data as any).product;
 
             if (!data?.budget || !data?.budget_range || !categoryId || !subCategoryId || !productId || !data?.country) {
                 throw new BadRequestException('Fill all required fields');
@@ -111,9 +111,9 @@ export class MarketDataService {
                 where: { id },
             });
 
-            const categoryId = (data as any).category_id || (data as any).category;
-            const subCategoryId = (data as any).sub_category_id || (data as any).subCategory;
-            const productId = (data as any).product_id || (data as any).product;
+            const categoryId = (data as any).category;
+            const subCategoryId = (data as any).subCategory;
+            const productId = (data as any).product;
 
             if (!data?.budget || !data?.budget_range || !categoryId || !subCategoryId || !productId || !data?.country) {
                 throw new BadRequestException('Fill all required fields');
