@@ -9,7 +9,8 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
-    JoinColumn
+    JoinColumn,
+    Index
 } from 'typeorm';
 
 export enum status {
@@ -47,15 +48,15 @@ export class Quotation {
     @JoinColumn({ name: 'product_id' })
     product: Product;
 
-    @Column({ nullable: true })
-    quantity: string;
+    @Column('decimal', { precision: 10, scale: 2, nullable: true })
+    quantity: number;
 
     @ManyToOne(() => Measurement, { nullable: true })
     @JoinColumn({ name: 'unit_id' })
     unit: Measurement;
 
-    @Column({ nullable: true })
-    price: string;
+    @Column('decimal', { precision: 10, scale: 2, nullable: true })
+    price: number;
 
     @ManyToOne(() => Currency, { nullable: true })
     @JoinColumn({ name: 'currency_id' })
@@ -88,6 +89,7 @@ export class Quotation {
     @Column({ nullable: true })
     country: string;
 
+    @Index()
     @Column({
         type: 'enum',
         enum: status,

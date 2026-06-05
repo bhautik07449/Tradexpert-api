@@ -8,6 +8,7 @@ import {
     UpdateDateColumn,
     ManyToOne,
     JoinColumn,
+    Index,
 } from 'typeorm';
 
 export enum Status {
@@ -20,24 +21,25 @@ export class MarketData {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'budget' })
-    budget: string;
+    @Column('decimal', { precision: 15, scale: 2, default: 0, name: 'budget' })
+    budget: number;
 
     @Column({ name: 'budget_range' })
     budget_range: string;
 
     @ManyToOne(() => Category)
     @JoinColumn({ name: 'category_id' })
-    category_id: Category;
+    category: Category;
 
     @ManyToOne(() => Category)
     @JoinColumn({ name: 'sub_category_id' })
-    sub_category_id: Category;
+    subCategory: Category;
 
     @ManyToOne(() => Product)
     @JoinColumn({ name: 'product_id' })
-    product_id: Product;
+    product: Product;
 
+    @Index()
     @Column({ name: 'country' })
     country: string;
 
@@ -47,6 +49,7 @@ export class MarketData {
     })
     stages: any;
 
+    @Index()
     @Column({
         type: 'enum',
         enum: Status,

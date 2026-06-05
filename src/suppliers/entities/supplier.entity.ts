@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 
 export enum SupplierStatus {
   ACTIVE = 'active',
@@ -17,6 +17,7 @@ export class Supplier {
   @Column({ name: 'last_name', nullable: true })
   lastName: string;
 
+  @Index()
   @Column({ unique: true, nullable: true })
   email: string;
 
@@ -41,12 +42,13 @@ export class Supplier {
   @Column({ nullable: true })
   website: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   password?: string;
 
   @Column({ name: 'service_type', nullable: true })
   service_type: string;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: SupplierStatus,

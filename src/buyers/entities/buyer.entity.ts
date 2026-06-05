@@ -1,6 +1,6 @@
 import { Inquiry } from 'src/inquiry/entities/inquiry.entity';
 import { Requestsamples } from 'src/requestsamples/entities/requestsamples.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, Index } from 'typeorm';
 
 export enum BuyerGender {
   MR = 'Mr',
@@ -41,10 +41,11 @@ export class Buyer {
   @Column({ name: 'last_name' })
   lastName: string;
 
+  @Index()
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ name: 'company_name', nullable: true })
@@ -76,6 +77,7 @@ export class Buyer {
   @Column({ nullable: true })
   website: string;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: BuyerStatus,

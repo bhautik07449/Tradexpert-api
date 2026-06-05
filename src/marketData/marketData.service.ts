@@ -21,28 +21,35 @@ export class MarketDataService {
 
     async create(data: Partial<MarketData>) {
         try {
-            if (!data?.budget || !data?.budget_range || !data?.category_id || !data?.sub_category_id || !data?.product_id || !data?.country) {
+            const categoryId = (data as any).category_id || (data as any).category;
+            const subCategoryId = (data as any).sub_category_id || (data as any).subCategory;
+            const productId = (data as any).product_id || (data as any).product;
+
+            if (!data?.budget || !data?.budget_range || !categoryId || !subCategoryId || !productId || !data?.country) {
                 throw new BadRequestException('Fill all required fields');
             }
 
             const category = await this.categoryRepo.findOne({
-                where: { id: Number(data.category_id) },
+                where: { id: Number(categoryId) },
             });
 
             if (!category) throw new NotFoundException('Category not found');
 
             const subcategory = await this.categoryRepo.findOne({
-                where: { id: Number(data.sub_category_id) },
+                where: { id: Number(subCategoryId) },
             });
 
             if (!subcategory) throw new NotFoundException('Subcategory not found');
 
             const product = await this.productRepo.findOne({
-                where: { id: Number(data.product_id) },
+                where: { id: Number(productId) },
             });
 
             if (!product) throw new NotFoundException('Product not found');
 
+            (data as any).category = category;
+            (data as any).subCategory = subcategory;
+            (data as any).product = product;
             const marketData = this.marketDataRepository.create(data);
             const saved = await this.marketDataRepository.save(marketData);
 
@@ -64,7 +71,7 @@ export class MarketDataService {
         try {
             const data = await this.marketDataRepository.find({
                 order: { createdAt: 'DESC' },
-                relations: ['category_id', 'sub_category_id', 'product_id', 'product_id.offer_type'],
+                relations: ['category', 'subCategory', 'product', 'product.offer_type'],
             });
 
             return {
@@ -81,7 +88,7 @@ export class MarketDataService {
         try {
             const marketData = await this.marketDataRepository.findOne({
                 where: { id },
-                relations: ['category_id', 'sub_category_id', 'product_id', 'product_id.offer_type'],
+                relations: ['category', 'subCategory', 'product', 'product.offer_type'],
             });
 
             if (!marketData) {
@@ -104,28 +111,35 @@ export class MarketDataService {
                 where: { id },
             });
 
-            if (!data?.budget || !data?.budget_range || !data?.category_id || !data?.sub_category_id || !data?.product_id || !data?.country) {
+            const categoryId = (data as any).category_id || (data as any).category;
+            const subCategoryId = (data as any).sub_category_id || (data as any).subCategory;
+            const productId = (data as any).product_id || (data as any).product;
+
+            if (!data?.budget || !data?.budget_range || !categoryId || !subCategoryId || !productId || !data?.country) {
                 throw new BadRequestException('Fill all required fields');
             }
 
             const category = await this.categoryRepo.findOne({
-                where: { id: Number(data.category_id) },
+                where: { id: Number(categoryId) },
             });
 
             if (!category) throw new NotFoundException('Category not found');
 
             const subcategory = await this.categoryRepo.findOne({
-                where: { id: Number(data.sub_category_id) },
+                where: { id: Number(subCategoryId) },
             });
 
             if (!subcategory) throw new NotFoundException('Subcategory not found');
 
             const product = await this.productRepo.findOne({
-                where: { id: Number(data.product_id) },
+                where: { id: Number(productId) },
             });
 
             if (!product) throw new NotFoundException('Product not found');
 
+            (data as any).category = category;
+            (data as any).subCategory = subcategory;
+            (data as any).product = product;
             Object.assign(marketData, data);
 
             const updated = await this.marketDataRepository.save(marketData);

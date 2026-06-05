@@ -71,7 +71,11 @@ export class AdminService {
   }
 
   async findAdminByEmail(email: string): Promise<Admin | null> {
-    return await this.adminRepository.findOne({ where: { email } });
+    return await this.adminRepository
+      .createQueryBuilder('admin')
+      .addSelect('admin.password')
+      .where('admin.email = :email', { email })
+      .getOne();
   }
 
   async getAdmins(): Promise<AdminDto[]> {

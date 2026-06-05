@@ -92,7 +92,11 @@ export class BuyersService {
   }
 
   async getBuyerByEmailOrNull(email: string): Promise<Buyer | null> {
-    return this.buyerRepository.findOne({ where: { email } });
+    return this.buyerRepository
+      .createQueryBuilder('buyer')
+      .addSelect('buyer.password')
+      .where('buyer.email = :email', { email })
+      .getOne();
   }
 
   async login(loginBuyerDto: LoginBuyerDto): Promise<any> {

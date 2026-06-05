@@ -73,7 +73,11 @@ export class SuppliersService {
 
   async login(loginData: any): Promise<any> {
     const { email, password } = loginData;
-    const supplier = await this.supplierRepository.findOne({ where: { email } });
+    const supplier = await this.supplierRepository
+      .createQueryBuilder('supplier')
+      .addSelect('supplier.password')
+      .where('supplier.email = :email', { email })
+      .getOne();
 
     if (!supplier) {
       throw new UnauthorizedException('Invalid credentials');

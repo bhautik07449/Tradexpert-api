@@ -1,7 +1,7 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Abc } from 'src/abc/entities/abc.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany, Index } from 'typeorm';
 import { DMR } from 'src/drm/entities/dmr.entity';
 import { Countryproduct } from 'src/countryproduct/entities/countryproduct.entity';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
@@ -21,8 +21,8 @@ export class Product {
     @Column()
     name: string;
 
-    @Column()
-    price: string;
+    @Column('decimal', { precision: 10, scale: 2, default: 0 })
+    price: number;
 
     @ManyToOne(() => Measurement)
     @JoinColumn({ name: 'measure' })
@@ -31,6 +31,7 @@ export class Product {
     @Column()
     teriff: string;
 
+    @Index()
     @Column()
     slug: string;
 
@@ -87,6 +88,7 @@ export class Product {
     @Column({ nullable: true })
     application: string;
 
+    @Index()
     @Column({ name: 'country', nullable: true })
     country: string;
 
@@ -94,6 +96,7 @@ export class Product {
     @JoinColumn({ name: 'offer_type'})
     offer_type: Tradetype;
 
+    @Index()
     @Column({
         type: 'enum',
         enum: status,
