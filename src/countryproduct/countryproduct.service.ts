@@ -33,7 +33,7 @@ export class CountryproductService {
 
         const fullData = await this.countryproductRepo.findOne({
             where: { id: savedId },
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'productname'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
         });
 
         return {
@@ -48,7 +48,7 @@ export class CountryproductService {
 
         const data = await this.countryproductRepo.find({
             where: whereCondition,
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'productname'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
             order: { createdAt: 'DESC' },
         });
         return {
@@ -61,7 +61,7 @@ export class CountryproductService {
 
     async groupedData(country: any) {
         const data = await this.countryproductRepo.find({
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'productname'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
             order: { createdAt: 'DESC' },
             where: { country },
         });
@@ -115,7 +115,7 @@ export class CountryproductService {
     async findOne(id: number) {
         const data = await this.countryproductRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'productname'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
         });
 
         if (!data) throw new NotFoundException('Product entry not found');
@@ -153,7 +153,7 @@ export class CountryproductService {
 
         const updated = await this.countryproductRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'productname'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
         });
 
         return {

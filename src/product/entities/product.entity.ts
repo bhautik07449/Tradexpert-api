@@ -4,7 +4,7 @@ import { Abc } from 'src/abc/entities/abc.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany, Index } from 'typeorm';
 import { DMR } from 'src/drm/entities/dmr.entity';
 import { Countryproduct } from 'src/countryproduct/entities/countryproduct.entity';
-import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
+import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
 
 export enum status {
     INDENTING = 'Indenting',
@@ -92,9 +92,9 @@ export class Product {
     @Column({ name: 'country', nullable: true })
     country: string;
 
-    @ManyToOne(() => Tradetype)
+    @ManyToOne(() => Tradeoffer)
     @JoinColumn({ name: 'offer_type'})
-    offer_type: Tradetype;
+    offer_type: Tradeoffer;
 
     @Index()
     @Column({

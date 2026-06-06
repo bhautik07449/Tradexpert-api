@@ -28,9 +28,10 @@ export class ProductController {
     findAll(
         @Query('country') country?: string,
         @Query('season') season?: string,
-        @Query('category') category?: string
+        @Query('category') category?: string,
+        @Query('subcategory') subcategory?: string
     ) {
-        return this.productService.findAll(season, category, country);
+        return this.productService.findAll(season, category, country, subcategory);
     }
 
     @Get(':id')

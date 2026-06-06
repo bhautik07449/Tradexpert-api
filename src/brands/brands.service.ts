@@ -85,7 +85,7 @@ export class BrandsService {
         const products = uniqueCategoryIds.length
             ? await this.productRepository.find({
                   where: { category: { id: In(uniqueCategoryIds) } },
-                  relations: ['category', 'subcategory', 'offer_type'],
+                  relations: ['category', 'subcategory', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
               })
             : [];
 

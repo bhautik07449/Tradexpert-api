@@ -5,6 +5,7 @@ import { Product } from './entities/product.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
+import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
 
 @Injectable()
 export class ProductService {
@@ -18,8 +19,8 @@ export class ProductService {
         @InjectRepository(Measurement)
         private readonly measureRepo: Repository<Measurement>,
 
-        @InjectRepository(Tradetype)
-        private readonly tradetypeRepo: Repository<Tradetype>,
+        @InjectRepository(Tradeoffer)
+        private readonly tradeofferRepo: Repository<Tradeoffer>,
     ) { }
 
     async create(body: any) {
@@ -41,7 +42,7 @@ export class ProductService {
 
         if (!measure) throw new NotFoundException('Measurement not found');
 
-        const tradeType = await this.tradetypeRepo.findOne({
+        const tradeType = await this.tradeofferRepo.findOne({
             where: { id: body.offer_type }
         })
 
@@ -64,7 +65,7 @@ export class ProductService {
         };
     }
 
-    async findAll(season?: any, category?: any, country?: string) {
+    async findAll(season?: any, category?: any, country?: string, subcategory?: any) {
         const whereClause: any = {};
 
         if (season) {
@@ -72,16 +73,20 @@ export class ProductService {
         }
 
         if (category) {
-            whereClause.category = { id: category };
+            whereClause.category = { id: Number(category) };
+        }
+
+        if (subcategory) {
+            whereClause.subcategory = { id: Number(subcategory) };
         }
 
         if (country) {
-            whereClause.country = country
+            whereClause.country = country;
         }
 
         const products = await this.productRepo.find({
             where: whereClause,
-            relations: ['category', 'subcategory', 'measure', 'offer_type'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.category', 'offer_type.items.subCategory', 'offer_type.items.product'],
             order: { id: 'DESC' },
         });
 
@@ -99,7 +104,7 @@ export class ProductService {
     async findOne(id: number) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market', 'offer_type'],
+            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
         });
 
         if (!product) {
@@ -120,7 +125,7 @@ export class ProductService {
                     slug: slug,
                 },
             },
-            relations: ['category', 'subcategory', 'measure', 'offer_type'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
         });
 
         if (!products.length) {
@@ -130,7 +135,7 @@ export class ProductService {
                         slug: slug,
                     },
                 },
-                relations: ['category', 'subcategory', 'measure', 'offer_type'],
+                relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
             });
         }
 
@@ -148,7 +153,7 @@ export class ProductService {
     async update(id: number, body: any) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure', 'offer_type'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
         });
 
         if (!product) throw new NotFoundException('Product not found');
@@ -184,7 +189,7 @@ export class ProductService {
         }
 
         if (body.offer_type) {
-            const tradeType = await this.tradetypeRepo.findOne({
+            const tradeType = await this.tradeofferRepo.findOne({
                 where: { id: body.offer_type },
             });
 

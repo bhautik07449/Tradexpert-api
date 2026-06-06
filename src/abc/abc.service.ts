@@ -32,7 +32,7 @@ export class AbcService {
 
         const fullData = await this.abcRepo.findOne({
             where: { id: savedId },
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
         });
 
         return {
@@ -44,7 +44,7 @@ export class AbcService {
 
     async findAll() {
         const data = await this.abcRepo.find({
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
             order: { createdAt: 'DESC' },
         });
         return {
@@ -62,6 +62,8 @@ export class AbcService {
             .leftJoinAndSelect('abc.subcategory', 'subcategory')
             .leftJoinAndSelect('abc.products', 'products')
             .leftJoinAndSelect('products.offer_type', 'offer_type')
+            .leftJoinAndSelect('offer_type.items', 'items')
+            .leftJoinAndSelect('items.product', 'item_product')
             .leftJoinAndSelect('abc.abc_type', 'abc_type')
             .orderBy('abc.createdAt', 'DESC');
 
@@ -123,7 +125,7 @@ export class AbcService {
     async findOne(id: number) {
         const data = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
         });
 
         if (!data) throw new NotFoundException('ABC entry not found');
@@ -160,7 +162,7 @@ export class AbcService {
 
         const updated = await this.abcRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'abc_type'],
+            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
         });
 
         return {
