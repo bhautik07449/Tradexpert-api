@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { BlogCategoryService } from "./blogcategory.service";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { BlogCategory } from "./entities/blogcategory.entity";
@@ -15,8 +15,8 @@ export class BlogCategoryController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.blogcategoryService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.blogcategoryService.findAll(country);
     }
 
     @Get(':id')

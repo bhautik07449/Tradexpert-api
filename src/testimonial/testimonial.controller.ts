@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { Testimonial } from "./entities/testimonial.entity";
 import { TestimonialService } from "./testimonial.service";
@@ -15,8 +15,8 @@ export class TestimonialController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.testimonialService.findAll();
+    findAll(@Query('country') country) {
+        return this.testimonialService.findAll(country);
     }
 
     @Get(':id')

@@ -68,9 +68,14 @@ export class RequestsamplesService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause: any = {};
+            if (country) {
+                whereClause.country = country;
+            }
             const data = await this.requestSampleRepository.find({
+                where: whereClause,
                 relations: ["product"],
                 order: { createdAt: "DESC" },
             });

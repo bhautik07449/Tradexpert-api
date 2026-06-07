@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { ContactService } from "./contact.service";
 import { Contact } from "./entities/contact.entity";
@@ -15,8 +15,8 @@ export class ContactController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.contactService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.contactService.findAll(country);
     }
 
     @Get(':id')

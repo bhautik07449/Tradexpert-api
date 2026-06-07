@@ -22,6 +22,9 @@ export class MarketDevelopment {
     })
     market_data: any;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: Status,

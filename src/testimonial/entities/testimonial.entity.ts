@@ -18,6 +18,9 @@ export class Testimonial {
     @Column({ name: 'name' })
     review: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @Column({
         type: 'enum',
         enum: TestimonialStatus,

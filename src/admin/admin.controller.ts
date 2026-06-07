@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Patch, Delete, UseGuards, ParseIntPipe, Param, Request } from '@nestjs/common';
+import { Controller, Post, Body, Get, Patch, Delete, UseGuards, ParseIntPipe, Param, Request, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { RegisterAdminDto } from 'src/auth/dto/register-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
@@ -25,8 +25,8 @@ export class AdminController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    async findAll(): Promise<AdminDto[]> {
-        return await this.adminService.getAdmins();
+    async findAll(@Query('country') country?:string): Promise<AdminDto[]> {
+        return await this.adminService.getAdmins(country);
     }
 
     @Get('profile')

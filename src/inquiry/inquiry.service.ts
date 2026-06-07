@@ -78,9 +78,14 @@ export class InquiryService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause: any = {};
+            if (country) {
+                whereClause.country = country;
+            }
             const data = await this.inquiryRepository.find({
+                where: whereClause,
                 relations: ["product"],
                 order: { createdAt: "DESC" },
             });

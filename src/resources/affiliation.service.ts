@@ -30,11 +30,11 @@ export class AffiliationService {
 
     async findAll(country: string) {
         try {
-            const wherecondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.affiliationRepository.find({
                 order: { createdAt: 'DESC' },
-                where: wherecondition
+                where: whereClause
             });
 
             return {

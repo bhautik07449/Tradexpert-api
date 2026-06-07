@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { TeamService } from "./team.service";
 import { Team } from "./entities/team.entity";
@@ -15,8 +15,8 @@ export class TeamController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.teamService.findAll();
+    findAll(@Query('country') country?:string) {
+        return this.teamService.findAll(country);
     }
 
     @Get(':id')

@@ -42,10 +42,13 @@ export class AbcService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereClause = country ? { country: country } : {}
+
         const data = await this.abcRepo.find({
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
             order: { createdAt: 'DESC' },
+            where: whereClause
         });
         return {
             success: true,

@@ -8,6 +8,7 @@ import {
     Param,
     ParseIntPipe,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 import { OfferRequestService } from './offerrequest.service';
@@ -24,8 +25,8 @@ export class OfferRequestController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.service.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.service.findAll(country);
     }
 
     @Get(':id')

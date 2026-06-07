@@ -46,10 +46,10 @@ export class PolicyPreambleService {
 
     async findAll(country?: string) {
         try {
-            const wherecondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.policypreambleRepository.find({
-                where: wherecondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
                 relations: ['category']
             });

@@ -33,9 +33,14 @@ export class marketDevelopmentService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause: any = {};
+            if (country) {
+                whereClause.country = country;
+            }
             const data = await this.marketDevelopmentRepository.find({
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

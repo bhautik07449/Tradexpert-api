@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { Requestsamples } from "./entities/requestsamples.entity";
 import { RequestsamplesService } from "./requestsamples.service";
@@ -15,8 +15,8 @@ export class RequestsamplesController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.requestsamplesService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.requestsamplesService.findAll(country);
     }
 
     @Get(':id')

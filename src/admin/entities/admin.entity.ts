@@ -30,6 +30,9 @@ export class Admin {
   @Column()
   phone: string;
 
+  @Column({ nullable: true })
+  country: string | null;
+
   @Column({
     type: 'enum',
     enum: AdminStatus,

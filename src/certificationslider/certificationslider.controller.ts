@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { CertificationsliderService } from "./certificationslider.service";
 import { Certificationslider } from "./entities/certificationslider.entity";
@@ -15,8 +15,8 @@ export class CertificationsliderController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.certificationsliderService.findAll();
+    findAll(@Query('country') country?:string) {
+        return this.certificationsliderService.findAll(country);
     }
 
     @Get(':id')

@@ -28,8 +28,11 @@ export class Blog {
   @Column({ name: 'blog_detail', type: 'text' })
   blogDetail: string;
 
-  @Column({ name: 'slider', nullable:true })
+  @Column({ name: 'slider', nullable: true })
   slider: string;
+
+  @Column({ nullable: true })
+  country: string | null;
 
   @Column({
     type: 'enum',

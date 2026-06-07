@@ -8,6 +8,7 @@ import {
     Param,
     ParseIntPipe,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { Blog } from './entities/blog.entity';
@@ -25,8 +26,8 @@ export class BlogController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.blogService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.blogService.findAll(country);
     }
 
     @Get(':id')

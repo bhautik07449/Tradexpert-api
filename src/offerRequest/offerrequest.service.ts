@@ -38,8 +38,13 @@ export class OfferRequestService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereClause: any = {};
+        if (country) {
+            whereClause.country = country;
+        }
         const data = await this.offerRepo.find({
+            where: whereClause,
             relations: ['trade_offer'],
             order: { createdAt: 'DESC' },
         });

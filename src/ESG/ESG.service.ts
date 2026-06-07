@@ -44,21 +44,21 @@ export class ESGService {
 
     async findAll(country?: string, category?: string, tag?: string) {
         try {
-            let whereCondition: any = {};
+            let whereClause: any = {};
 
             if (country) {
-                whereCondition.country = country;
+                whereClause.country = country;
             }
             if (category) {
-                whereCondition.category = { id: Number(category) };
+                whereClause.category = { id: Number(category) };
             }
 
             if (tag) {
-                whereCondition.tag = tag;
+                whereClause.tag = tag;
             }
 
             const data = await this.esgRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
                 relations: ['category']
             });
@@ -75,17 +75,17 @@ export class ESGService {
 
     async findAllGrouped(country?: string, category?: string) {
         try {
-            let whereCondition: any = {};
+            let whereClause: any = {};
 
             if (country) {
-                whereCondition.country = country;
+                whereClause.country = country;
             }
             if (category) {
-                whereCondition.category = { id: Number(category) };
+                whereClause.category = { id: Number(category) };
             }
 
             const data = await this.esgRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
                 relations: ['category']
             });

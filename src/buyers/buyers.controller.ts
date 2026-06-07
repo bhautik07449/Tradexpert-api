@@ -65,8 +65,8 @@ export class BuyersController {
   @Get('admin')
   @UseGuards(AdminAuthGuard)
   @Transactional()
-  async findAll(@Query('all') all?: string): Promise<BuyerDto[]> {
-    return await this.buyersService.getBuyers();
+  async findAll(@Query('country') country?: string): Promise<BuyerDto[]> {
+    return await this.buyersService.getBuyers(country);
   }
 
   @Get('admin/:buyerId')

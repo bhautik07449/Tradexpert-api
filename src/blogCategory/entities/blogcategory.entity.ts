@@ -13,6 +13,9 @@ export class BlogCategory {
     @Column({ name: 'name' })
     name: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @Column({
         type: 'enum',
         enum: BlogCategoryStatus,

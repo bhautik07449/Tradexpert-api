@@ -30,10 +30,10 @@ export class FinancialService {
 
     async findAll(country: string) {
         try {
-            const whereCondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.financialRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

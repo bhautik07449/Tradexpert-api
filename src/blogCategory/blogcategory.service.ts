@@ -28,10 +28,13 @@ export class BlogCategoryService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.blogcategoryRepository.find({
                 order: { createdAt: 'DESC' },
+                where: whereClause
             });
 
             return {

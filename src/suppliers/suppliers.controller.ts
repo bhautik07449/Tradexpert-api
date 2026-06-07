@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     UseGuards,
     Patch,
+    Query,
 } from '@nestjs/common';
 import { SuppliersService } from './suppliers.service';
 import { Supplier } from './entities/supplier.entity';
@@ -34,8 +35,8 @@ export class SuppliersController {
     }
 
     @Get()
-    findAll() {
-        return this.suppliersService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.suppliersService.findAll(country);
     }
 
     @Get(':id')

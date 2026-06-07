@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { NewsletterService } from "./newsletter.service";
 import { Newsletter } from "./entities/newsletter.entity";
@@ -15,8 +15,8 @@ export class NewsletterController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.newsletterService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.newsletterService.findAll(country);
     }
 
     @Get(':id')

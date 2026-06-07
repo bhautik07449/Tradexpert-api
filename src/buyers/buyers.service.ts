@@ -165,9 +165,11 @@ export class BuyersService {
     return buyer ? buyer.id : null;
   }
 
-  async getBuyers(): Promise<BuyerDto[]> {
+  async getBuyers(country?: string): Promise<BuyerDto[]> {
+    const whereClause = country ? { country: country, status: Not(BuyerStatus.DELETED) } : { status: Not(BuyerStatus.DELETED) }
+
     const buyers = await this.buyerRepository.find({
-      where: { status: Not(BuyerStatus.DELETED) },
+      where: whereClause,
     });
     return plainToInstance(BuyerDto, buyers, { excludeExtraneousValues: true });
   }

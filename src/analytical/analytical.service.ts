@@ -30,10 +30,10 @@ export class AnalyticalService {
 
     async findAll(country?: string) {
         try {
-            const whereCondition = country ? { country } : {};
+            const whereClause = country ? { country } : {};
 
             const data = await this.analyticalRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 
@@ -69,9 +69,9 @@ export class AnalyticalService {
 
     async findByCountry(country?: string) {
         try {
-            const whereCondition = country ? { country } : { country: IsNull() };
+            const whereClause = country ? { country } : { country: IsNull() };
             const data = await this.analyticalRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

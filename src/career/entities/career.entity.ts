@@ -93,6 +93,9 @@ export class Career {
     @Column({ name: 'business_model' })
     business_model: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: Status,

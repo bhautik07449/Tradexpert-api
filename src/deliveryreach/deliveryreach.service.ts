@@ -43,10 +43,10 @@ export class DeliveryReachService {
 
     async findAll(country?: string) {
         try {
-            const whereCondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.deliveryreachRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

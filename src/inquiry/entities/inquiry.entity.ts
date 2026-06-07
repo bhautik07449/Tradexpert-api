@@ -35,6 +35,9 @@ export class Inquiry {
     @Column({ name: 'price', nullable: true })
     price: number;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: status,

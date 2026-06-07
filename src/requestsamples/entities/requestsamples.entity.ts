@@ -77,6 +77,9 @@ export class Requestsamples {
     @Column({ nullable: true })
     quantity: number;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: status,

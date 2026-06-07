@@ -44,19 +44,19 @@ export class BrandsService {
     }
 
     async findAll(country?: string): Promise<Brand[]> {
-        const whereCondition = country ? { country } : {};
+        const whereClause = country ? { country } : {};
 
         return this.brandRepository.find({
-            where: whereCondition,
+            where: whereClause,
             relations: ['category'],
         });
     }
 
     async groupByCategoryAndCountry(country?: string) {
-        const whereCondition = country ? { country } : {};
+        const whereClause = country ? { country } : {};
 
         const list = await this.brandRepository.find({
-            where: whereCondition,
+            where: whereClause,
             relations: ['category'],
             order: {
                 country: 'ASC',

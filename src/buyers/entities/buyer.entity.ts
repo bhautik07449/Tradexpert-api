@@ -77,6 +77,9 @@ export class Buyer {
   @Column({ nullable: true })
   website: string;
 
+  @Column({ nullable: true })
+  country: string | null;
+
   @Index()
   @Column({
     type: 'enum',

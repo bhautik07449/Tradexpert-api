@@ -67,11 +67,14 @@ export class InvestorrelationsService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.investorrelationsRepository.find({
                 order: { createdAt: 'DESC' },
-                relations: ['product', 'service', 'project']
+                relations: ['product', 'service', 'project'],
+                where: whereClause
             });
 
             return {

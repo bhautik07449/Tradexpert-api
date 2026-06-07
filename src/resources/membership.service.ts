@@ -30,11 +30,11 @@ export class MembershipService {
 
     async findAll(country: string) {
         try {
-            const wherecondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.membershipRepository.find({
                 order: { createdAt: 'DESC' },
-                where: wherecondition
+                where: whereClause
             });
 
             return {

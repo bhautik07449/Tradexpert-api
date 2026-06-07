@@ -31,18 +31,18 @@ export class IRProjectService {
 
     async findAll(country?: string, category?: string) {
         try {
-            const whereCondition: any = {}
+            const whereClause: any = {}
 
             if (country) {
-                whereCondition.country = country;
+                whereClause.country = country;
             }
             if (category) {
-                whereCondition.category = { id: Number(category) };
+                whereClause.category = { id: Number(category) };
             }
 
             const data = await this.IRProjectRepository.find({
                 order: { createdAt: 'DESC' },
-                where: whereCondition,
+                where: whereClause,
                 relations: ['category', 'subcategory']
             });
 

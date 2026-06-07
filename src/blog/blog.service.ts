@@ -52,10 +52,13 @@ export class BlogService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereClause = country ? { country: country } : {}
+
         const blogs = await this.blogRepository.find({
             relations: ['blog_category'],
             order: { createdAt: 'DESC' },
+            where: whereClause
         });
 
         return {

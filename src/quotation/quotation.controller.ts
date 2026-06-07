@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { QuotationService } from "./quotation.service";
 import { Quotation } from "./entities/quotation.entity";
@@ -15,8 +15,8 @@ export class QuotationController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.quotationService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.quotationService.findAll(country);
     }
 
     @Get(':id')

@@ -30,10 +30,10 @@ export class EventsService {
 
     async findAll(country: string) {
         try {
-            const wherecondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.eventsRepository.find({
-                where: wherecondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

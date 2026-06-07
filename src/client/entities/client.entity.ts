@@ -25,6 +25,9 @@ export class Client {
     @Column({ name: 'image' })
     image: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @Column({
         type: 'enum',
         enum: status,

@@ -46,7 +46,7 @@ export class AdminService {
     });
 
     const savedAdmin = await this.adminRepository.save(admin);
-    
+
     return {
       success: true,
       message: 'Admin created successfully',
@@ -78,8 +78,12 @@ export class AdminService {
       .getOne();
   }
 
-  async getAdmins(): Promise<AdminDto[]> {
-    const admins = await this.adminRepository.find();
+  async getAdmins(country?: string): Promise<AdminDto[]> {
+    const whereClause = country ? { country: country } : {}
+
+    const admins = await this.adminRepository.find({
+      where: whereClause
+    });
     return plainToInstance(AdminDto, admins, { excludeExtraneousValues: true });
   }
 

@@ -28,10 +28,13 @@ export class AbctypeService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.abctypeRepository.find({
                 order: { createdAt: 'DESC' },
+                where: whereClause
             });
 
             return {

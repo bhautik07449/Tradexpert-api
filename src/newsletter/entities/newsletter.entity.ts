@@ -13,6 +13,9 @@ export class Newsletter {
     @Column({ name: 'email' })
     email: string;
 
+    @Column({ name: 'country', nullable: true })
+    country: string;
+
     // @Column({ name: 'subject', type: 'text' })
     // subject: string;
 

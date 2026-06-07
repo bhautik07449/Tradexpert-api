@@ -33,6 +33,9 @@ export class Team {
     @Column({ name: 'youtube' })
     youtube: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @Column({
         type: 'enum',
         enum: status,

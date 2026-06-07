@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { Abctype } from "./entities/abctype.entity";
 import { AbctypeService } from "./abctype.service";
@@ -15,8 +15,8 @@ export class AbctypeController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.abctypeService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.abctypeService.findAll(country);
     }
 
     @Get(':id')

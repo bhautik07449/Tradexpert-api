@@ -54,9 +54,14 @@ export class CareerService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause: any = {};
+            if (country) {
+                whereClause.country = country;
+            }
             const data = await this.careerRepository.find({
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

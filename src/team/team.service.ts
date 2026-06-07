@@ -28,10 +28,13 @@ export class TeamService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.teamRepository.find({
                 order: { createdAt: 'DESC' },
+                where: whereClause
             });
 
             return {

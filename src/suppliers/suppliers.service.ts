@@ -26,9 +26,13 @@ export class SuppliersService {
     return await this.supplierRepository.save(supplier);
   }
 
-  async findAll(): Promise<Supplier[]> {
+  async findAll(country?: string): Promise<Supplier[]> {
+    const whereClause: any = { status: SupplierStatus.ACTIVE };
+    if (country) {
+      whereClause.country = country;
+    }
     return await this.supplierRepository.find({
-      where: { status: SupplierStatus.ACTIVE },
+      where: whereClause,
       order: { createdAt: 'DESC' },
     });
   }

@@ -30,11 +30,11 @@ export class UpcomingCollaborationService {
 
     async findAll(country?: string) {
         try {
-            const whereCondition = country ? { country: country } : {}
+            const whereClause = country ? { country: country } : {}
 
             const data = await this.upcomingcollaborationRepository.find({
                 order: { createdAt: 'DESC' },
-                where: whereCondition
+                where: whereClause
             });
 
             return {

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CareerService } from "./career.service";
@@ -32,8 +32,8 @@ export class CareerController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.careerService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.careerService.findAll(country);
     }
 
     @Get(':id')

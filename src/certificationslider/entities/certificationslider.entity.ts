@@ -13,6 +13,9 @@ export class Certificationslider {
     @Column({ name: 'image' })
     image: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @Column({
         type: 'enum',
         enum: status,

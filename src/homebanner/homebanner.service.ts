@@ -62,9 +62,9 @@ export class HomebannerService {
 
     async findByCountry(country?: string) {
         try {
-            const whereCondition = country ? { country } : { country: IsNull() };
+            const whereClause = country ? { country } : { country: IsNull() };
             const data = await this.homebannerRepository.find({
-                where: whereCondition,
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

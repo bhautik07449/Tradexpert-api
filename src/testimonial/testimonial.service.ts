@@ -38,10 +38,13 @@ export class TestimonialService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereClause = country ? { country: country } : {}
+
         const data = await this.testimonialManagementRepo.find({
             relations: ['client'],
             order: { createdAt: 'DESC' },
+            where: whereClause
         });
 
         return {

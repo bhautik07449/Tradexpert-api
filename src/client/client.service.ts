@@ -28,10 +28,13 @@ export class ClientService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.clientRepository.find({
                 order: { createdAt: 'DESC' },
+                where: whereClause
             });
 
             return {
