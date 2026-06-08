@@ -69,7 +69,7 @@ export class AnalyticalService {
 
     async findByCountry(country?: string) {
         try {
-            const whereClause = country ? { country } : { country: IsNull() };
+            const whereClause = country ? { country: country } : { country: IsNull() };
             const data = await this.analyticalRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },

@@ -31,7 +31,7 @@ export class TradeHistoryService {
     async findAll(country?: string) {
         try {
             const whereClause = country ? { country } : {};
-            
+
             const data = await this.tradeHistoryRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },
@@ -49,7 +49,7 @@ export class TradeHistoryService {
 
     async findByCountry(country?: string) {
         try {
-            const whereClause = country ? { country } : { country: IsNull() };
+            const whereClause = country ? { country: country } : { country: IsNull() };
             const data = await this.tradeHistoryRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },
