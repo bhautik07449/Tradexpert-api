@@ -32,9 +32,6 @@ export class OfferRequest {
     @Column({ name: 'type', nullable: true })
     type: string
 
-    @Column({ name: 'country', nullable: true })
-    country: string;
-
     @Column({
         type: 'enum',
         enum: OfferRequestStatus,

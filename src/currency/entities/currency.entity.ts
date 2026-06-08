@@ -20,6 +20,9 @@ export class Currency {
     @Column({ type: 'text', nullable: true })
     image: string;
 
+    @Column({ nullable: true })
+    country: string | null;
+
     @CreateDateColumn()
     createdAt: Date;
 

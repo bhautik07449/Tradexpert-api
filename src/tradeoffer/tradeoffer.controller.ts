@@ -25,8 +25,8 @@ export class TradeofferController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.service.findAll();
+    findAll(@Query('country') country) {
+        return this.service.findAll(country);
     }
 
     @Get('country')

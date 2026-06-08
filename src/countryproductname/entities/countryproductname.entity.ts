@@ -13,6 +13,9 @@ export class Countryproductname {
     @Column({ name: 'name' })
     name: string;
 
+    @Column({ nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: Status,

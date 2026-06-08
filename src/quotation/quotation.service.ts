@@ -95,10 +95,8 @@ export class QuotationService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
-            if (country) {
-                whereClause.country = country;
-            }
+            const whereClause = country ? { category: { country: country } } : {};
+
             const data = await this.quotationRepository.find({
                 where: whereClause,
                 relations: [

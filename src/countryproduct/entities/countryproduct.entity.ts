@@ -30,9 +30,6 @@ export class Countryproduct {
     @JoinColumn({ name: 'productname_id' })
     productname: Countryproductname;
 
-    @Column({ nullable: true })
-    country: string | null;
-
     @Column({
         type: 'enum',
         enum: Status,

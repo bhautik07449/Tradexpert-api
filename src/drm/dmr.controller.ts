@@ -24,8 +24,8 @@ export class DMRController {
     }
 
     @Get()
-    findAll() {
-        return this.dmrService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.dmrService.findAll(country);
     }
 
     @Get('market-data')

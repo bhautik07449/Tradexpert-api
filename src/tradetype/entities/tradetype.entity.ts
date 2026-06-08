@@ -13,6 +13,9 @@ export class Tradetype {
     @Column({ name: 'name' })
     name: string;
 
+    @Column({ nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: TradetypeStatus,

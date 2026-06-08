@@ -17,6 +17,10 @@ export class UpdateAdminDto {
   @IsOptional()
   phone?: string;
 
+  @IsOptional()
+  @IsString()
+  country: string | null;
+
   @IsEnum(['active', 'block', 'deleted'])
   @IsOptional()
   status?: string;

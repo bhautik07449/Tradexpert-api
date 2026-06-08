@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Patch, Query } from '@nestjs/common';
 import { CreditAccountService } from './creditaccount.service';
 import { CreditAccount } from './entity/creditaccount.entity';
 import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
@@ -14,8 +14,8 @@ export class CreditAccountController {
 
     @Get()
     @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.creditAccountService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.creditAccountService.findAll(country);
     }
 
     @Get(':id')

@@ -20,9 +20,13 @@ export class CreditAccountService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
-            const accounts = await this.creditAccountRepo.find();
+            const whereClause = country ? { country: country } : {}
+
+            const accounts = await this.creditAccountRepo.find({
+                where: whereClause
+            });
             return { message: 'Credit accounts retrieved successfully', accounts };
         } catch (error) {
             throw new Error(`Failed to retrieve credit accounts: ${error.message}`);

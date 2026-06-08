@@ -39,10 +39,13 @@ export class GalleryService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.galleryRepository.find({
                 order: { sr_no: 'ASC' },
+                where: whereClause
             });
 
             return {

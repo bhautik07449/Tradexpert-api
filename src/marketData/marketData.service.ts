@@ -67,11 +67,14 @@ export class MarketDataService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.marketDataRepository.find({
                 order: { createdAt: 'DESC' },
                 relations: ['category', 'subCategory', 'product', 'product.offer_type', 'product.offer_type.items', 'product.offer_type.items.product'],
+                where: whereClause
             });
 
             return {

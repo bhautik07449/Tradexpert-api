@@ -53,7 +53,7 @@ export class BlogService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country: country } : {}
+        const whereClause = country ? { blog_category: { country: country } } : {}
 
         const blogs = await this.blogRepository.find({
             relations: ['blog_category'],

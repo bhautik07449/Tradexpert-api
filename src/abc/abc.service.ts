@@ -43,7 +43,7 @@ export class AbcService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country: country } : {}
+        const whereClause = country ? { abc_type: { country: country } } : {}
 
         const data = await this.abcRepo.find({
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],

@@ -39,7 +39,7 @@ export class TestimonialService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country: country } : {}
+        const whereClause = country ? { client: { country: country } } : {}
 
         const data = await this.testimonialManagementRepo.find({
             relations: ['client'],

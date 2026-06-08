@@ -31,9 +31,6 @@ export class Blog {
   @Column({ name: 'slider', nullable: true })
   slider: string;
 
-  @Column({ nullable: true })
-  country: string | null;
-
   @Column({
     type: 'enum',
     enum: BlogStatus,

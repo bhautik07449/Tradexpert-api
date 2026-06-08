@@ -23,6 +23,9 @@ export class AdminDto {
   phone: string;
 
   @Expose()
+  country: string | null;
+
+  @Expose()
   status: string;
 
   @Expose()

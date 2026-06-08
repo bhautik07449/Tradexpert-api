@@ -57,10 +57,13 @@ export class DRMService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereClause = country ? { subcategory: { country: country } } : {}
+
         const dmr = await this.dmrRepo.find({
             relations: ['category', 'subcategory', 'market', 'product'],
             order: { id: 'DESC' },
+            where: whereClause
         });
 
         return {

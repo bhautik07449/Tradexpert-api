@@ -15,8 +15,8 @@ export class HomebannerController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.homebannerService.findAll();
+    findAll(@Query('country') country?: string) {
+        return this.homebannerService.findAll(country);
     }
 
     @Get('/country')

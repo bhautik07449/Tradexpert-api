@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     Patch,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { MeasurementService } from './measurements.service';
 import { Measurement } from './entities/measurement.entity';
@@ -25,8 +26,8 @@ export class MeasurementController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.measurementService.findAll();
+    findAll(@Query('country') country?:string) {
+        return this.measurementService.findAll(country);
     }
 
     @Get(':id')

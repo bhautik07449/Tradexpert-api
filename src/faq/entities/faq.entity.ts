@@ -14,6 +14,9 @@ export class Faq {
     @Column()
     title: string;
 
+    @Column({ nullable: true })
+    country: string;
+
     @Column()
     answer: string;
 

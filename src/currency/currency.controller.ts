@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     Patch,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { CurrencyService } from './currency.service';
 import { Currency } from './entities/currency.entity';
@@ -25,8 +26,8 @@ export class CurrencyController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll() {
-        return this.currencyService.findAll();
+    findAll(@Query('country') country?:string) {
+        return this.currencyService.findAll(country);
     }
 
     @Get(':id')

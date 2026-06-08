@@ -86,9 +86,6 @@ export class Quotation {
     @Column({ nullable: true })
     productImage: string;
 
-    @Column({ nullable: true })
-    country: string;
-
     @Index()
     @Column({
         type: 'enum',

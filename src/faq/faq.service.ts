@@ -27,10 +27,13 @@ export class FaqService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.faqRepository.find({
                 order: { createdAt: 'DESC' },
+                where: whereClause
             });
 
             return {

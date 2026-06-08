@@ -23,6 +23,9 @@ export class Gallery {
     @Column({ unique: true })
     sr_no: number;
 
+    @Column({ nullable: true })
+    country: string;
+
     @Column({
         type: 'enum',
         enum: status,

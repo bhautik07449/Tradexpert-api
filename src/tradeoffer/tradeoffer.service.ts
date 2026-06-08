@@ -54,10 +54,13 @@ export class TradeofferService {
         };
     }
 
-    async findAll() {
+    async findAll(country?: string) {
+        const whereClause = country ? { country: country } : {}
+
         const data = await this.tradeofferRepo.find({
             relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
             order: { createdAt: 'DESC' },
+            where: whereClause
         });
 
         return {

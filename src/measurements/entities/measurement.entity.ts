@@ -23,6 +23,9 @@ export class Measurement {
   @Column({ type: 'text' })
   description: string;
 
+  @Column({ nullable: true })
+  country: string;
+
   @Column({
     type: 'enum',
     enum: MeasurementStatus,

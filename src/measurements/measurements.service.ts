@@ -31,10 +31,12 @@ export class MeasurementService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.measurementRepo.find({
-                where: { status: MeasurementStatus.ACTIVE },
+                where: whereClause,
                 order: { createdAt: 'DESC' },
             });
 

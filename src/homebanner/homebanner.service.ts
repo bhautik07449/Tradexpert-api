@@ -43,11 +43,14 @@ export class HomebannerService {
         }
     }
 
-    async findAll() {
+    async findAll(country?: string) {
         try {
+            const whereClause = country ? { country: country } : {}
+
             const data = await this.homebannerRepository.find({
                 order: { createdAt: 'DESC' },
                 relations: ['category'],
+                where: whereClause
             });
 
             return {
