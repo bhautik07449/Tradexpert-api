@@ -125,7 +125,7 @@ export class AdminService {
 
   async updateAdminProfile(
     id: number,
-    dto: { firstName?: string; lastName?: string; photo?: string; password?: string; email?: string; phone?: string }
+    dto: { firstName?: string; lastName?: string; photo?: string; password?: string; email?: string; phone?: string; country?: string }
   ): Promise<Admin> {
 
     const admin = await this.adminRepository.findOne({ where: { id } });
@@ -157,6 +157,7 @@ export class AdminService {
     if (dto.photo !== undefined) admin.photo = dto.photo;
     if (dto.email !== undefined) admin.email = dto.email;
     if (dto.phone !== undefined) admin.phone = dto.phone;
+    if (dto.country !== undefined) admin.country = dto.country;
 
     if (dto.password && dto.password.trim() !== '') {
       admin.password = await bcrypt.hash(dto.password, 10);

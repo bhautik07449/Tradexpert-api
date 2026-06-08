@@ -16,6 +16,10 @@ export class EditProfileDto {
   @IsOptional()
   @IsString()
   photo?: string;
+
+  @IsOptional()
+  @IsString()
+  country?: string;
 }
 
 
