@@ -15,7 +15,7 @@ import { EmailModule } from 'src/common/email.module';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET_KEY'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_TOKEN_EXPIRY'),
+          expiresIn: configService.get<string>('JWT_TOKEN_EXPIRY') as any,
           issuer: configService.get<string>('JWT_ISSUER_NAME'),
         },
       }),
