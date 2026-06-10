@@ -61,7 +61,7 @@ async function bootstrap() {
     origin: configService.get<string>("CORS_ORIGINS").split(','),
     methods: configService.get<string>("ALLOW_HTTP_VERBS").split(',')
   })
-  const port = configService.get<number>("PORT") || configService.get<number>("API_PORT", 3030);
+  const port = configService.get<number>("API_PORT") || 3030;
   const host = configService.get<string>("API_HOST", "0.0.0.0");
 
   await app.listen(port, host, () => {
