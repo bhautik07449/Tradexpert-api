@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
@@ -24,29 +24,34 @@ export class ProductService {
     ) { }
 
     async create(body: any) {
+        if (!body.category) throw new BadRequestException('Category is required');
         const category = await this.categoryRepo.findOne({
             where: { id: body.category },
         });
 
         if (!category) throw new NotFoundException('Category not found');
 
+        if (!body.subCategory) throw new BadRequestException('Subcategory is required');
         const subcategory = await this.categoryRepo.findOne({
             where: { id: body.subCategory },
         });
 
         if (!subcategory) throw new NotFoundException('Subcategory not found');
 
+        if (!body.measure) throw new BadRequestException('Measurement is required');
         const measure = await this.measureRepo.findOne({
             where: { id: body.measure },
         });
 
         if (!measure) throw new NotFoundException('Measurement not found');
 
-        const tradeType = await this.tradeofferRepo.findOne({
-            where: { id: body.offer_type }
-        })
-
-        if (!tradeType) throw new NotFoundException('Offer not found');
+        let tradeType = null;
+        if (body.offer_type) {
+            tradeType = await this.tradeofferRepo.findOne({
+                where: { id: body.offer_type }
+            });
+            if (!tradeType) throw new NotFoundException('Offer not found');
+        }
 
         const product = this.productRepo.create({
             ...body,
@@ -198,7 +203,9 @@ export class ProductService {
             product.offer_type = tradeType;
         }
 
-        Object.assign(product, body);
+        // Remove relation IDs from body so Object.assign doesn't overwrite the resolved entities
+        const { category, subCategory, measure, offer_type, ...restBody } = body;
+        Object.assign(product, restBody);
 
         const updatedProduct = await this.productRepo.save(product);
 
