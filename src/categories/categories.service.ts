@@ -254,4 +254,53 @@ export class CategoriesService {
 
         return hierarchy;
     }
+
+    async updateHierarchy(categoryId?: number, subcategoryId?: number, productId?: number): Promise<{ message: string }> {
+        if (productId) {
+            const productRepo = this.categoryRepository.manager.getRepository(Product);
+            const product = await productRepo.findOne({ where: { id: productId } });
+            if (!product) throw new NotFoundException('Product not found');
+
+            if (categoryId !== undefined) {
+                if (categoryId) {
+                    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+                    if (!category) throw new NotFoundException('Category not found');
+                    product.category = category;
+                } else {
+                    product.category = null;
+                }
+            }
+
+            if (subcategoryId !== undefined) {
+                if (subcategoryId) {
+                    const subcategory = await this.categoryRepository.findOne({ where: { id: subcategoryId } });
+                    if (!subcategory) throw new NotFoundException('Subcategory not found');
+                    product.subcategory = subcategory;
+                } else {
+                    product.subcategory = null;
+                }
+            }
+
+            await productRepo.save(product);
+            return { message: 'Product hierarchy updated successfully' };
+        } else if (subcategoryId) {
+            const subcategory = await this.categoryRepository.findOne({ where: { id: subcategoryId } });
+            if (!subcategory) throw new NotFoundException('Subcategory not found');
+
+            if (categoryId !== undefined) {
+                if (categoryId) {
+                    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+                    if (!category) throw new NotFoundException('Category not found');
+                    subcategory.parent = category;
+                } else {
+                    subcategory.parent = null;
+                }
+            }
+
+            await this.categoryRepository.save(subcategory);
+            return { message: 'Subcategory hierarchy updated successfully' };
+        }
+
+        throw new BadRequestException('Must provide either productId or subcategoryId to update');
+    }
 }

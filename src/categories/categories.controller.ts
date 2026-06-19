@@ -54,6 +54,14 @@ export class CategoriesController {
         return this.categoriesService.findOne(id);
     }
 
+    @Patch('hierarchy/update')
+    @UseGuards(AdminAuthGuard)
+    updateHierarchy(
+        @Body() body: { categoryId?: number; subcategoryId?: number; productId?: number },
+    ): Promise<{ message: string }> {
+        return this.categoriesService.updateHierarchy(body.categoryId, body.subcategoryId, body.productId);
+    }
+
     @Patch(':id')
     @UseGuards(AdminAuthGuard)
     update(

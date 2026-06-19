@@ -6,12 +6,6 @@ import { DMR } from 'src/drm/entities/dmr.entity';
 import { Countryproduct } from 'src/countryproduct/entities/countryproduct.entity';
 import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
 
-export enum status {
-    INDENTING = 'Indenting',
-    ONBEHALF = 'On-behalf',
-    MARKETDEVELOPMENT = 'Market-Development',
-}
-
 @Entity('product')
 export class Product {
 
@@ -93,16 +87,11 @@ export class Product {
     country: string;
 
     @ManyToOne(() => Tradeoffer)
-    @JoinColumn({ name: 'offer_type'})
+    @JoinColumn({ name: 'offer_type' })
     offer_type: Tradeoffer;
 
-    @Index()
-    @Column({
-        type: 'enum',
-        enum: status,
-        default: status.INDENTING,
-    })
-    status: status;
+    @Column({ name: 'status', nullable: true })
+    status: string;
 
     @ManyToMany(() => Abc, abc => abc.products)
     abcs: Abc[];
