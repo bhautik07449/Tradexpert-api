@@ -24,33 +24,66 @@ export class ProductService {
     ) { }
 
     async create(body: any) {
+        if (Array.isArray(body)) {
+            const savedProducts = [];
+            const errors = [];
+            for (const [index, item] of body.entries()) {
+                try {
+                    const savedProduct = await this.createSingle(item);
+                    savedProducts.push(savedProduct);
+                } catch (error) {
+                    errors.push({ index, item: item?.name, reason: error.message });
+                }
+            }
+            return {
+                success: true,
+                message: `${savedProducts.length} Products created successfully. ${errors.length} failed.`,
+                data: savedProducts,
+                errors: errors.length > 0 ? errors : undefined
+            };
+        } else {
+            const savedProduct = await this.createSingle(body);
+            return {
+                success: true,
+                message: 'Product created successfully',
+                data: savedProduct,
+            };
+        }
+    }
+
+    private async createSingle(body: any) {
         if (!body.category) throw new BadRequestException('Category is required');
+        const categoryId = Number(body.category);
         const category = await this.categoryRepo.findOne({
-            where: { id: body.category },
+            where: isNaN(categoryId) ? { name: body.category } : { id: categoryId },
         });
 
-        if (!category) throw new NotFoundException('Category not found');
+        if (!category) throw new NotFoundException(`Category not found: ${body.category}`);
 
-        if (!body.subCategory) throw new BadRequestException('Subcategory is required');
+        const subCatVal = body.subCategory || body.subcategory;
+        if (!subCatVal) throw new BadRequestException('Subcategory is required');
+        const subCategoryId = Number(subCatVal);
         const subcategory = await this.categoryRepo.findOne({
-            where: { id: body.subCategory },
+            where: isNaN(subCategoryId) ? { name: subCatVal } : { id: subCategoryId },
         });
 
-        if (!subcategory) throw new NotFoundException('Subcategory not found');
+        if (!subcategory) throw new NotFoundException(`Subcategory not found: ${subCatVal}`);
 
         if (!body.measure) throw new BadRequestException('Measurement is required');
+        const measureId = Number(body.measure);
         const measure = await this.measureRepo.findOne({
-            where: { id: body.measure },
+            where: isNaN(measureId) ? { name: body.measure } : { id: measureId },
         });
 
-        if (!measure) throw new NotFoundException('Measurement not found');
+        if (!measure) throw new NotFoundException(`Measurement not found: ${body.measure}`);
 
         let tradeType = null;
         if (body.offer_type) {
+            const offerId = Number(body.offer_type);
             tradeType = await this.tradeofferRepo.findOne({
-                where: { id: body.offer_type }
+                where: isNaN(offerId) ? { name: body.offer_type } : { id: offerId }
             });
-            if (!tradeType) throw new NotFoundException('Offer not found');
+            if (!tradeType) throw new NotFoundException(`Offer not found: ${body.offer_type}`);
         }
 
         const product = this.productRepo.create({
@@ -63,11 +96,7 @@ export class ProductService {
 
         const savedProduct = await this.productRepo.save(product);
 
-        return {
-            success: true,
-            message: 'Product created successfully',
-            data: savedProduct,
-        };
+        return savedProduct;
     }
 
     async findAll(season?: any, category?: any, country?: string, subcategory?: any) {
