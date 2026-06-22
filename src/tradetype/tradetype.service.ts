@@ -2,12 +2,15 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Tradetype } from "./entities/tradetype.entity";
+import { Tradeoffer } from "src/tradeoffer/entities/tradeoffer.entity";
 
 @Injectable()
 export class TradetypeService {
     constructor(
         @InjectRepository(Tradetype)
-        private readonly tradetypeRepository: Repository<Tradetype>
+        private readonly tradetypeRepository: Repository<Tradetype>,
+        @InjectRepository(Tradeoffer)
+        private readonly tradeofferRepository: Repository<Tradeoffer>
     ) { }
 
     async create(data: Partial<Tradetype>) {
@@ -17,6 +20,15 @@ export class TradetypeService {
             }
             const tradetype = this.tradetypeRepository.create(data);
             const saved = await this.tradetypeRepository.save(tradetype);
+
+            const tradeoffer = this.tradeofferRepository.create({
+                trade_type: { id: saved.id } as any,
+                name: saved.name,
+                description: `Auto-generated trade offer for ${saved.name}`,
+                country: saved.country,
+                items: [],
+            });
+            await this.tradeofferRepository.save(tradeoffer);
 
             return {
                 success: true,
