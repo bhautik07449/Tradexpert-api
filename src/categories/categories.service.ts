@@ -207,9 +207,9 @@ export class CategoriesService {
                 description: prod.description,
                 images: prod.images,
                 status: prod.status,
-                featured: prod.featured,
-                trending: prod.trending,
-                newArrival: prod.newArrival,
+                // featured: prod.featured,
+                // trending: prod.trending,
+                // newArrival: prod.newArrival,
                 createdAt: prod.createdAt,
             };
 

@@ -6,11 +6,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Abc } from './entities/abc.entity';
 
+import { Abctype } from 'src/abcType/entities/abctype.entity';
+
 @Injectable()
 export class AbcService {
     constructor(
         @InjectRepository(Abc)
         private readonly abcRepo: Repository<Abc>,
+        @InjectRepository(Abctype)
+        private readonly abctypeRepo: Repository<Abctype>,
     ) { }
 
     async create(data: any) {
@@ -70,28 +74,63 @@ export class AbcService {
             .leftJoinAndSelect('abc.abc_type', 'abc_type')
             .orderBy('abc.createdAt', 'DESC');
 
+        const abcTypeQuery = this.abctypeRepo.createQueryBuilder('abctype').orderBy('abctype.createdAt', 'DESC');
+
         if (country) {
             query.where('abc_type.country = :country', { country });
+            abcTypeQuery.where('abctype.country = :country', { country });
         }
 
-        const data = await query.getMany();
+        const [data, abcTypes] = await Promise.all([
+            query.getMany(),
+            abcTypeQuery.getMany()
+        ]);
 
-        const grouped = data.reduce((acc, curr) => {
-            const typeId = curr.abc_type?.id || 'other';
+        const grouped = {};
+        
+        // Initialize all abc_types
+        abcTypes.forEach(type => {
+            grouped[type.id] = {
+                abc_type: type,
+                itemsMap: {}
+            };
+        });
 
-            if (!acc[typeId]) {
-                acc[typeId] = {
-                    abc_type: curr.abc_type || { id: null, name: 'Other' },
-                    itemsMap: {},
-                };
+        // Map existing Abc data
+        data.forEach(curr => {
+            const typeId = curr.abc_type?.id;
+            
+            // If the abc doesn't have an abc_type or we didn't fetch it, put it in 'other'
+            if (!typeId) {
+                if (!grouped['other']) {
+                    grouped['other'] = {
+                        abc_type: { id: null, name: 'Other' },
+                        itemsMap: {},
+                    };
+                }
+            } else if (!grouped[typeId]) {
+                 grouped[typeId] = {
+                     abc_type: curr.abc_type,
+                     itemsMap: {}
+                 };
+            }
+
+            const targetGroup = typeId ? grouped[typeId] : grouped['other'];
+
+            const hasCategory = !!curr.category;
+            const hasSubCategory = !!curr.subcategory;
+            const hasProducts = curr.products && Array.isArray(curr.products) && curr.products.length > 0;
+
+            if (!hasCategory && !hasSubCategory && !hasProducts) {
+                return;
             }
 
             const catId = curr.category?.id || 'none';
             const subCatId = curr.subcategory?.id || 'none';
             const itemKey = `${catId}-${subCatId}`;
 
-            if (!acc[typeId].itemsMap[itemKey]) {
-                acc[typeId].itemsMap[itemKey] = {
+            if (!targetGroup.itemsMap[itemKey]) {
+                targetGroup.itemsMap[itemKey] = {
                     category: curr.category,
                     sub_category: curr.subcategory,
                     product_data: [],
@@ -100,18 +139,16 @@ export class AbcService {
 
             if (curr.products && Array.isArray(curr.products)) {
                 curr.products.forEach((newProd) => {
-                    const alreadyAdded = acc[typeId].itemsMap[itemKey].product_data.some(
+                    const alreadyAdded = targetGroup.itemsMap[itemKey].product_data.some(
                         (p) => p.id === newProd.id,
                     );
 
                     if (!alreadyAdded) {
-                        acc[typeId].itemsMap[itemKey].product_data.push(newProd);
+                        targetGroup.itemsMap[itemKey].product_data.push(newProd);
                     }
                 });
             }
-
-            return acc;
-        }, {});
+        });
 
         const result = Object.values(grouped).map((group: any) => ({
             abc_type: group.abc_type,

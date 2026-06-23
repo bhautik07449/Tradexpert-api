@@ -1,12 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
 
-export enum Status {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    DELETED = 'deleted',
-}
-
 @Entity({ name: 'ir_project' })
 export class IRProject {
     @PrimaryGeneratedColumn()
@@ -35,12 +29,8 @@ export class IRProject {
     @Column({ nullable: true })
     country: string | null;
 
-    @Column({
-        type: 'enum',
-        enum: Status,
-        default: Status.ACTIVE
-    })
-    status: Status;
+    @Column({ name: 'status', nullable: true })
+    status: string;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

@@ -60,6 +60,7 @@ export class IRProjectService {
         try {
             const project = await this.IRProjectRepository.findOne({
                 where: { id },
+                relations: ['category', 'subcategory']
             });
 
             if (!project) {

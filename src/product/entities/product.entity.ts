@@ -37,15 +37,6 @@ export class Product {
     @JoinColumn({ name: 'subcategory' })
     subcategory: Category;
 
-    @Column({ default: true })
-    newArrival: boolean;
-
-    @Column({ default: false })
-    trending: boolean;
-
-    @Column({ default: false })
-    featured: boolean;
-
     @Column({ type: 'text', nullable: true })
     description: string;
 
