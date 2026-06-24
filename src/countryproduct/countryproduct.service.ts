@@ -6,11 +6,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Countryproduct } from './entities/countryproduct.entity';
 
+import { Countryproductname } from 'src/countryproductname/entities/countryproductname.entity';
+
 @Injectable()
 export class CountryproductService {
     constructor(
         @InjectRepository(Countryproduct)
         private readonly countryproductRepo: Repository<Countryproduct>,
+        @InjectRepository(Countryproductname)
+        private readonly countryproductnameRepo: Repository<Countryproductname>,
     ) { }
 
     async create(data: any) {
@@ -60,28 +64,70 @@ export class CountryproductService {
 
 
     async groupedData(country: any) {
-        const data = await this.countryproductRepo.find({
-            relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
-            order: { createdAt: 'DESC' },
-            where: { country: country },
+        const query = this.countryproductRepo.createQueryBuilder('countryproduct')
+            .leftJoinAndSelect('countryproduct.category', 'category')
+            .leftJoinAndSelect('countryproduct.subcategory', 'subcategory')
+            .leftJoinAndSelect('countryproduct.products', 'products')
+            .leftJoinAndSelect('products.offer_type', 'offer_type')
+            .leftJoinAndSelect('offer_type.items', 'items')
+            .leftJoinAndSelect('items.product', 'item_product')
+            .leftJoinAndSelect('countryproduct.productname', 'productname')
+            .orderBy('countryproduct.createdAt', 'DESC');
+
+        const typeQuery = this.countryproductnameRepo.createQueryBuilder('countryproductname').orderBy('countryproductname.createdAt', 'DESC');
+
+        if (country) {
+            query.where('countryproduct.country = :country', { country });
+            typeQuery.where('countryproductname.country = :country', { country });
+        }
+
+        const [data, productnames] = await Promise.all([
+            query.getMany(),
+            typeQuery.getMany()
+        ]);
+
+        const grouped = {};
+        
+        productnames.forEach(type => {
+            grouped[type.id] = {
+                productname: type,
+                itemsMap: {}
+            };
         });
 
-        const grouped = data.reduce((acc, curr) => {
-            const typeId = curr.productname?.id || 'other';
+        data.forEach(curr => {
+            const typeId = curr.productname?.id;
 
-            if (!acc[typeId]) {
-                acc[typeId] = {
-                    productname: curr.productname || { id: null, name: 'Other' },
+            if (!typeId) {
+                if (!grouped['other']) {
+                    grouped['other'] = {
+                        productname: { id: null, name: 'Other' },
+                        itemsMap: {}
+                    };
+                }
+            } else if (!grouped[typeId]) {
+                grouped[typeId] = {
+                    productname: curr.productname,
                     itemsMap: {}
                 };
+            }
+
+            const targetGroup = typeId ? grouped[typeId] : grouped['other'];
+
+            const hasCategory = !!curr.category;
+            const hasSubCategory = !!curr.subcategory;
+            const hasProducts = curr.products && Array.isArray(curr.products) && curr.products.length > 0;
+
+            if (!hasCategory && !hasSubCategory && !hasProducts) {
+                return;
             }
 
             const catId = curr.category?.id || 'none';
             const subCatId = curr.subcategory?.id || 'none';
             const itemKey = `${catId}-${subCatId}`;
 
-            if (!acc[typeId].itemsMap[itemKey]) {
-                acc[typeId].itemsMap[itemKey] = {
+            if (!targetGroup.itemsMap[itemKey]) {
+                targetGroup.itemsMap[itemKey] = {
                     category: curr.category,
                     sub_category: curr.subcategory,
                     product_data: []
@@ -90,15 +136,13 @@ export class CountryproductService {
 
             if (curr.products && Array.isArray(curr.products)) {
                 curr.products.forEach(newProd => {
-                    const alreadyAdded = acc[typeId].itemsMap[itemKey].product_data.some(p => p.id === newProd.id);
+                    const alreadyAdded = targetGroup.itemsMap[itemKey].product_data.some(p => p.id === newProd.id);
                     if (!alreadyAdded) {
-                        acc[typeId].itemsMap[itemKey].product_data.push(newProd);
+                        targetGroup.itemsMap[itemKey].product_data.push(newProd);
                     }
                 });
             }
-
-            return acc;
-        }, {});
+        });
 
         const result = Object.values(grouped).map((group: any) => ({
             productname: group.productname,

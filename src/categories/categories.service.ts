@@ -156,7 +156,7 @@ export class CategoriesService {
 
         // 2. Fetch products
         const products = await this.categoryRepository.manager.getRepository(Product).find({
-            relations: ['category', 'subcategory'],
+            relations: ['category', 'subcategory', 'finacial_service'],
             order: { id: 'ASC' },
         });
 
@@ -206,6 +206,7 @@ export class CategoriesService {
                 slug: prod.slug,
                 description: prod.description,
                 images: prod.images,
+                finacial_service: prod.finacial_service,
                 status: prod.status,
                 // featured: prod.featured,
                 // trending: prod.trending,

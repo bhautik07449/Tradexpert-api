@@ -16,6 +16,14 @@ export class IRProjectService {
                 throw new BadRequestException('Request body is required');
             }
 
+            if (data.finacial_service) {
+                if (Array.isArray(data.finacial_service)) {
+                    data.finacial_service = data.finacial_service.map((id: any) => typeof id === 'object' ? id : { id: Number(id) }) as any;
+                } else {
+                    data.finacial_service = [{ id: Number(data.finacial_service) }] as any;
+                }
+            }
+
             const project = this.IRProjectRepository.create(data);
             const saved = await this.IRProjectRepository.save(project);
 
@@ -43,7 +51,7 @@ export class IRProjectService {
             const data = await this.IRProjectRepository.find({
                 order: { createdAt: 'DESC' },
                 where: whereClause,
-                relations: ['category', 'subcategory']
+                relations: ['category', 'subcategory', 'finacial_service']
             });
 
             return {
@@ -60,7 +68,7 @@ export class IRProjectService {
         try {
             const project = await this.IRProjectRepository.findOne({
                 where: { id },
-                relations: ['category', 'subcategory']
+                relations: ['category', 'subcategory', 'finacial_service']
             });
 
             if (!project) {
@@ -85,6 +93,14 @@ export class IRProjectService {
 
             if (!project) {
                 throw new NotFoundException('Project not found');
+            }
+
+            if (data.finacial_service) {
+                if (Array.isArray(data.finacial_service)) {
+                    data.finacial_service = data.finacial_service.map((id: any) => typeof id === 'object' ? id : { id: Number(id) }) as any;
+                } else {
+                    data.finacial_service = [{ id: Number(data.finacial_service) }] as any;
+                }
             }
 
             Object.assign(project, data);

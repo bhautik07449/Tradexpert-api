@@ -15,8 +15,11 @@ export class FinacialController {
 
     @Get()
     // @UseGuards(AdminAuthGuard)
-    findAll(@Query('country') country?:string) {
-        return this.finacialService.findAll(country);
+    findAll(
+        @Query('country') country?: string,
+        @Query('finace') finace?: string
+    ) {
+        return this.finacialService.findAll(country, finace);
     }
 
     @Get(':id')

@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
-import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
 import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
 
 @Injectable()
@@ -86,6 +85,14 @@ export class ProductService {
             if (!tradeType) throw new NotFoundException(`Offer not found: ${body.offer_type}`);
         }
 
+        if (body.finacial_service) {
+            if (Array.isArray(body.finacial_service)) {
+                body.finacial_service = body.finacial_service.map(id => typeof id === 'object' ? id : { id: Number(id) });
+            } else {
+                body.finacial_service = [{ id: Number(body.finacial_service) }];
+            }
+        }
+
         const product = this.productRepo.create({
             ...body,
             category,
@@ -120,7 +127,7 @@ export class ProductService {
 
         const products = await this.productRepo.find({
             where: whereClause,
-            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.category', 'offer_type.items.subCategory', 'offer_type.items.product'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.category', 'offer_type.items.subCategory', 'offer_type.items.product', 'finacial_service'],
             order: { id: 'DESC' },
         });
 
@@ -138,7 +145,7 @@ export class ProductService {
     async findOne(id: number) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
+            relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
         });
 
         if (!product) {
@@ -159,7 +166,7 @@ export class ProductService {
                     slug: slug,
                 },
             },
-            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
         });
 
         if (!products.length) {
@@ -169,7 +176,7 @@ export class ProductService {
                         slug: slug,
                     },
                 },
-                relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
+                relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
             });
         }
 
@@ -187,7 +194,7 @@ export class ProductService {
     async update(id: number, body: any) {
         const product = await this.productRepo.findOne({
             where: { id },
-            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
+            relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
         });
 
         if (!product) throw new NotFoundException('Product not found');
@@ -230,6 +237,14 @@ export class ProductService {
             if (!tradeType) throw new NotFoundException('Offer not found');
 
             product.offer_type = tradeType;
+        }
+
+        if (body.finacial_service) {
+            if (Array.isArray(body.finacial_service)) {
+                body.finacial_service = body.finacial_service.map(id => typeof id === 'object' ? id : { id: Number(id) });
+            } else {
+                body.finacial_service = [{ id: Number(body.finacial_service) }];
+            }
         }
 
         // Remove relation IDs from body so Object.assign doesn't overwrite the resolved entities

@@ -19,6 +19,9 @@ export class Financial {
     @Column({ name: 'country', nullable: true })
     country: string;
 
+    @Column({ name: 'type', nullable: true })
+    type: string
+
     @Column({
         type: 'enum',
         enum: Status,

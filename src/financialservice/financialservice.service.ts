@@ -28,9 +28,17 @@ export class FinancialService {
         }
     }
 
-    async findAll(country: string) {
+    async findAll(country: string, finace?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            let whereClause = {}
+
+            if (country) {
+                whereClause = { country: country }
+            }
+
+            if (finace) {
+                whereClause = { type: finace }
+            }
 
             const data = await this.financialRepository.find({
                 where: whereClause,

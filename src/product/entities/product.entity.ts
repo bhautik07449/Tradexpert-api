@@ -1,10 +1,11 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
 import { Abc } from 'src/abc/entities/abc.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, UpdateDateColumn, CreateDateColumn, ManyToMany, JoinTable, Index } from 'typeorm';
 import { DMR } from 'src/drm/entities/dmr.entity';
 import { Countryproduct } from 'src/countryproduct/entities/countryproduct.entity';
 import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
+import { Financial } from 'src/financialservice/entities/financialservice.entity';
 
 @Entity('product')
 export class Product {
@@ -70,8 +71,9 @@ export class Product {
     @Column({ nullable: true })
     certification: string
 
-    @Column({ nullable: true })
-    application: string;
+    @ManyToMany('Financial')
+    @JoinTable({ name: 'product_financial_services' })
+    finacial_service: Financial[];
 
     @Index()
     @Column({ name: 'country', nullable: true })

@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
+import { Financial } from 'src/financialservice/entities/financialservice.entity';
 
 @Entity({ name: 'ir_project' })
 export class IRProject {
@@ -28,6 +29,10 @@ export class IRProject {
 
     @Column({ nullable: true })
     country: string | null;
+
+    @ManyToMany('Financial')
+    @JoinTable({ name: 'irproject_financial_services' })
+    finacial_service: Financial[];
 
     @Column({ name: 'status', nullable: true })
     status: string;
