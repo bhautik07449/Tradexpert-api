@@ -64,6 +64,7 @@ import { ESGModule } from './ESG/ESG.module';
 import { IRProjectModule } from './IRProject/IRProject.module';
 import { upcomingcollaborationserviceModule } from './UpcomingCollaboration/UpcomingCollaboration.module';
 import { ContactNoModule } from './contactByCountry/contactByCountry.module';
+import { TradeControllerModule } from './tradeController/tradeController.module';
 
 
 @Module({
@@ -129,9 +130,9 @@ import { ContactNoModule } from './contactByCountry/contactByCountry.module';
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
     CloudinaryModule, AbcModule, AbctypeModule, EventsModule, PresencesModule, AnalyticalModule,
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
-    MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule, 
+    MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule,
     InvestorrelationsModule,
-    AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule
+    AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule, TradeControllerModule,
   ],
   controllers: [AppController, UploadController],
   providers: [
