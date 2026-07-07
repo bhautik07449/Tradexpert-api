@@ -65,6 +65,7 @@ import { IRProjectModule } from './IRProject/IRProject.module';
 import { upcomingcollaborationserviceModule } from './UpcomingCollaboration/UpcomingCollaboration.module';
 import { ContactNoModule } from './contactByCountry/contactByCountry.module';
 import { TradeControllerModule } from './tradeController/tradeController.module';
+import { TradeLawModule } from './tradeLaw/tradeLaw.module';
 
 
 @Module({
@@ -132,7 +133,7 @@ import { TradeControllerModule } from './tradeController/tradeController.module'
     TradeHistoryModule, CountryproductnameModule, CountryproductModule, ContentOverviewModule, CareerModule, MarketDevelopmentModule,
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule,
     InvestorrelationsModule,
-    AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule, TradeControllerModule,
+    AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule, TradeControllerModule, TradeLawModule,
   ],
   controllers: [AppController, UploadController],
   providers: [
