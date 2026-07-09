@@ -8,6 +8,9 @@ export class TradeLawEntity {
     @Column({ name: 'department' })
     department: string;
 
+    @Column({name: 'country'})
+    country: string;
+
     @Column({ name: 'act_details', type: 'text' })
     act_details: string;
 

@@ -38,6 +38,16 @@ export class TradeControllerService {
                 }
             }
             hsn_code = `${prefix}${nextNumber.toString().padStart(4, '0')}`;
+            
+            // Assign the actual entity to body.category so TypeORM saves the relation
+            body.category = category;
+        }
+
+        if (body.import_data && body.import_data.length === 0) {
+            body.import_data = [];
+        }
+        if (body.export_data && body.export_data.length === 0) {
+            body.export_data = [];
         }
 
         const newTrade = this.tradeRepo.create({
@@ -49,7 +59,7 @@ export class TradeControllerService {
         return { message: 'Trade Controller added successfully', data: savedTrade };
     }
 
-    findAll(hsn_code?: string, description?: string) {
+    async findAll(hsn_code?: string, description?: string) {
         const where: any = {};
         
         if (hsn_code) {
@@ -60,18 +70,76 @@ export class TradeControllerService {
             where.description = ILike(`%${description}%`);
         }
 
-        return this.tradeRepo.find({ 
+        const records = await this.tradeRepo.find({ 
             where,
             relations: ['category'] 
         });
+
+        return records.map(record => {
+            if (record.import_data) {
+                record.import_data = record.import_data || [];
+            } else {
+                delete record.import_data;
+            }
+            
+            if (record.export_data) {
+                record.export_data = record.export_data || [];
+            } else {
+                delete record.export_data;
+            }
+            return record;
+        });
     }
 
-    findOne(id: number) {
-        return this.tradeRepo.findOne({ where: { id }, relations: ['category'] });
+    async findOne(id: number) {
+        const record = await this.tradeRepo.findOne({ where: { id }, relations: ['category'] });
+        if (record) {
+            if (record.import_data) {
+                record.import_data = record.import_data || [];
+            } else {
+                delete record.import_data;
+            }
+            
+            if (record.export_data) {
+                record.export_data = record.export_data || [];
+            } else {
+                delete record.export_data;
+            }
+        }
+        return record;
     }
 
-    async update(id: number, body: Partial<TradeControllerEntity>) {
-        await this.tradeRepo.update(id, body);
+    async update(id: number, body: any) {
+        const existing = await this.tradeRepo.findOne({ where: { id } });
+        if (!existing) throw new NotFoundException('Trade data not found');
+
+        if (body.category) {
+            const categoryId = typeof body.category === 'object' ? body.category.id : body.category;
+            const category = await this.categoryRepo.findOne({ where: { id: Number(categoryId) } });
+            if (!category) throw new NotFoundException('Category not found');
+            body.category = category;
+        }
+
+        this.tradeRepo.merge(existing, body);
+        
+        // Explicitly assign JSON fields to prevent TypeORM deep array merge issues
+        if (body.has_import_data === false) {
+            existing.import_data = [];
+        } else if (body.import_data !== undefined) {
+            existing.import_data = body.import_data;
+        }
+
+        if (body.has_export_data === false) {
+            existing.export_data = [];
+        } else if (body.export_data !== undefined) {
+            existing.export_data = body.export_data;
+        }
+        if (body.available_countries !== undefined) {
+            existing.available_countries = body.available_countries;
+        }
+
+        await this.tradeRepo.save(existing);
+        
         const data = await this.findOne(id);
         return { message: 'Trade Controller updated successfully', data };
     }

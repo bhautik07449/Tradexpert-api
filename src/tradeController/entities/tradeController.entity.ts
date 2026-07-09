@@ -22,10 +22,10 @@ export class TradeControllerEntity {
     @Column({ type: 'jsonb', nullable: true })
     available_countries: { country_name: string }[];
 
-    @Column({ type: 'jsonb', nullable: true })
+    @Column({ type: 'jsonb', nullable: true, default: [] })
     import_data: { country: string; status: string; description: string; no: string }[];
 
-    @Column({ type: 'jsonb', nullable: true })
+    @Column({ type: 'jsonb', nullable: true, default: [] })
     export_data: { country: string; status: string; description: string; no: string }[];
 
     @CreateDateColumn({ name: 'created_at' })

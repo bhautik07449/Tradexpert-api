@@ -4,7 +4,7 @@ import { TradeLawEntity } from './entities/tradeLaw.entity';
 
 @Controller('trade_law')
 export class TradeLawController {
-    constructor(private readonly tradeLawService: TradeLawService) {}
+    constructor(private readonly tradeLawService: TradeLawService) { }
 
     @Post()
     create(@Body() body: Partial<TradeLawEntity>) {
@@ -12,8 +12,11 @@ export class TradeLawController {
     }
 
     @Get()
-    findAll(@Query('department') department?: string) {
-        return this.tradeLawService.findAll(department);
+    findAll(
+        @Query('department') department?: string,
+        @Query('country') country?: string
+    ) {
+        return this.tradeLawService.findAll(department, country);
     }
 
     @Get(':id')

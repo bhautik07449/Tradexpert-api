@@ -16,11 +16,15 @@ export class TradeLawService {
         return { message: 'Trade Law added successfully', data: savedData };
     }
 
-    findAll(department?: string) {
+    findAll(department?: string, country?: string) {
         const where: any = {};
         
         if (department) {
             where.department = ILike(`%${department}%`);
+        }
+        
+        if (country) {
+            where.country = ILike(`%${country}%`);
         }
         
         return this.tradeLawRepo.find({ where });
