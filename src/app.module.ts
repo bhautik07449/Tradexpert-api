@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { BuyersModule } from './buyers/buyers.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
+import { InvestorsModule } from './investors/investors.module';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource, getDataSourceByName } from 'typeorm-transactional';
 import { CategoriesModule } from './categories/categories.module';
@@ -117,6 +118,7 @@ import { TradeLawModule } from './tradeLaw/tradeLaw.module';
     AdminModule,
     BuyersModule,
     SuppliersModule,
+    InvestorsModule,
     ProductModule,
     CategoriesModule,
     BrandsModule,

@@ -1,0 +1,64 @@
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+
+export enum InvestorStatus {
+  ACTIVE = 'active',
+  BLOCKED = 'blocked',
+  DELETED = 'deleted',
+}
+
+@Entity({ name: 'investors' })
+export class Investor {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ name: 'first_name', nullable: true })
+  firstName: string;
+
+  @Column({ name: 'last_name', nullable: true })
+  lastName: string;
+
+  @Index()
+  @Column({ unique: true, nullable: true })
+  email: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ name: 'company_name', nullable: true })
+  company_name: string;
+
+  @Column({ type: 'text', nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  state: string;
+
+  @Column({ nullable: true })
+  country: string;
+
+  @Column({ nullable: true })
+  website: string;
+
+  @Column({ nullable: true, select: false })
+  password?: string;
+
+  @Column({ name: 'service_type', nullable: true })
+  service_type: string;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: InvestorStatus,
+    default: InvestorStatus.ACTIVE,
+  })
+  status: InvestorStatus;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
+  lastUpdatedAt: Date;
+}
