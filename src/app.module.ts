@@ -67,6 +67,7 @@ import { upcomingcollaborationserviceModule } from './UpcomingCollaboration/Upco
 import { ContactNoModule } from './contactByCountry/contactByCountry.module';
 import { TradeControllerModule } from './tradeController/tradeController.module';
 import { TradeLawModule } from './tradeLaw/tradeLaw.module';
+import { FranchiseModule } from './franchise/franchise.module';
 
 
 @Module({
@@ -136,6 +137,7 @@ import { TradeLawModule } from './tradeLaw/tradeLaw.module';
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule,
     InvestorrelationsModule,
     AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule, TradeControllerModule, TradeLawModule,
+    FranchiseModule
   ],
   controllers: [AppController, UploadController],
   providers: [
