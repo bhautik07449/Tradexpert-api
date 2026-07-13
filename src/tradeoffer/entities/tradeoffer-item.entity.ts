@@ -41,4 +41,70 @@ export class TradeofferItem {
 
     @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
     discounted_price: number;
+
+    // Dealer Fields
+    @Column({ nullable: true })
+    franchise_type: string;
+
+    @Column({ nullable: true })
+    image: string;
+
+    @Column({ nullable: true })
+    video: string;
+
+    @Column({ type: 'text', nullable: true })
+    profile: string;
+
+    @Column({ type: 'text', nullable: true })
+    financials: string;
+
+    // Tender Fields
+    @Column({ nullable: true })
+    tender_level: string;
+
+    @Column({ nullable: true })
+    govt_private: string;
+
+    @Column({ nullable: true })
+    department: string;
+
+    @Column({ nullable: true })
+    extra_info: string;
+
+    @Column({ type: 'text', nullable: true })
+    description: string;
+
+    // Association Fields
+    @Column({ nullable: true })
+    state: string;
+
+    @Column({ nullable: true })
+    city: string;
+
+    @Column({ nullable: true })
+    company_type: string;
+
+    @Column({ nullable: true })
+    opportunity: string;
+
+    @Column({ nullable: true })
+    company_name: string;
+
+    @Column({ nullable: true })
+    status: string;
+
+    @Column({ type: 'text', nullable: true })
+    eoi: string;
+
+    @Column({ type: 'text', nullable: true })
+    mou: string;
+
+    @Column({ type: 'text', nullable: true })
+    moa: string;
+
+    @Column({ type: 'text', nullable: true })
+    mois: string;
+
+    @Column({ type: 'text', nullable: true })
+    track_progress: string;
 }

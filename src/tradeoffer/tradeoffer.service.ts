@@ -29,6 +29,28 @@ export class TradeofferService {
         private readonly productRepo: Repository<Product>,
     ) { }
 
+    private formatTradeofferResponse(tradeoffer: any) {
+        if (!tradeoffer) return tradeoffer;
+
+        const typeName = tradeoffer.trade_type?.name?.toLowerCase() || '';
+        const items = tradeoffer.items || [];
+
+        const formatted = { ...tradeoffer };
+        delete formatted.items;
+
+        if (typeName.includes('dealer') || typeName.includes('franchise')) {
+            formatted.dealer = items;
+        } else if (typeName.includes('tender')) {
+            formatted.tender = items;
+        } else if (typeName.includes('association') || typeName.includes('join')) {
+            formatted.association = items;
+        } else {
+            formatted.ready_stock = items;
+        }
+
+        return formatted;
+    }
+
     async create(data: any) {
         if (data.trade_type?.id) {
             const tradeType = await this.tradetypeRepo.findOne({
@@ -40,8 +62,9 @@ export class TradeofferService {
             data.trade_type = tradeType;
         }
 
-        if (data.items && Array.isArray(data.items)) {
-            data.items = await this.validateAndMapItems(data.items);
+        const payloadItems = data.dealer || data.tender || data.association || data.ready_stock || data.items;
+        if (payloadItems && Array.isArray(payloadItems)) {
+            data.items = await this.validateAndMapItems(payloadItems);
         }
 
         const tradeoffer = this.tradeofferRepo.create(data);
@@ -50,7 +73,7 @@ export class TradeofferService {
         return {
             success: true,
             message: 'Trade offer created successfully',
-            data: saved,
+            data: this.formatTradeofferResponse(saved),
         };
     }
 
@@ -66,7 +89,7 @@ export class TradeofferService {
         return {
             success: true,
             message: 'Trade offers fetched successfully',
-            data,
+            data: data.map(t => this.formatTradeofferResponse(t)),
         };
     }
 
@@ -80,7 +103,7 @@ export class TradeofferService {
         return {
             success: true,
             message: 'Trade offers fetched successfully',
-            data,
+            data: data.map(t => this.formatTradeofferResponse(t)),
         };
     }
 
@@ -95,7 +118,7 @@ export class TradeofferService {
         return {
             success: true,
             message: 'Trade offer fetched successfully',
-            data,
+            data: this.formatTradeofferResponse(data),
         };
     }
 
@@ -118,11 +141,12 @@ export class TradeofferService {
             tradeoffer.trade_type = tradeType;
         }
 
-        if (body.items && Array.isArray(body.items)) {
+        const bodyItems = body.dealer || body.tender || body.association || body.ready_stock || body.items;
+        if (bodyItems && Array.isArray(bodyItems)) {
             if (tradeoffer.items && tradeoffer.items.length > 0) {
                 await this.itemRepo.remove(tradeoffer.items);
             }
-            tradeoffer.items = await this.validateAndMapItems(body.items);
+            tradeoffer.items = await this.validateAndMapItems(bodyItems);
         }
 
         if (body.name) tradeoffer.name = body.name;
@@ -135,7 +159,7 @@ export class TradeofferService {
         return {
             success: true,
             message: 'Trade offer updated successfully',
-            data: updated,
+            data: this.formatTradeofferResponse(updated),
         };
     }
 
@@ -165,6 +189,30 @@ export class TradeofferService {
                 packing_configure: item.packing_configure,
                 actual_price: item.actual_price,
                 discounted_price: item.discounted_price,
+                
+                franchise_type: item.franchise_type,
+                image: item.image,
+                video: item.video,
+                profile: item.profile,
+                financials: item.financials,
+
+                tender_level: item.tender_level,
+                govt_private: item.govt_private,
+                department: item.department,
+                extra_info: item.extra_info,
+                description: item.description,
+
+                state: item.state,
+                city: item.city,
+                company_type: item.company_type,
+                opportunity: item.opportunity,
+                company_name: item.company_name,
+                status: item.status,
+                eoi: item.eoi,
+                mou: item.mou,
+                moa: item.moa,
+                mois: item.mois,
+                track_progress: item.track_progress,
             };
 
             const getRawId = (obj: any) => {
@@ -228,10 +276,10 @@ export class TradeofferService {
                 status: tradeoffer.status,
                 trade_type: tradeoffer.trade_type,
             },
-            data: {
+            data: this.formatTradeofferResponse({
                 trade_type: tradeoffer.trade_type,
                 items: tradeoffer.items || []
-            },
+            }),
         };
     }
 }
