@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Tradeoffer } from './tradeoffer.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
+import { Franchise } from 'src/franchise/entities/franchise.entity';
 
 @Entity({ name: 'tradeoffer_items' })
 export class TradeofferItem {
@@ -43,8 +44,9 @@ export class TradeofferItem {
     discounted_price: number;
 
     // Dealer Fields
-    @Column({ nullable: true })
-    franchise_type: string;
+    @ManyToOne(() => Franchise, { nullable: true })
+    @JoinColumn({ name: 'franchise_type_id' })
+    franchise_type: Franchise;
 
     @Column({ nullable: true })
     image: string;
@@ -80,6 +82,9 @@ export class TradeofferItem {
 
     @Column({ nullable: true })
     city: string;
+
+    @Column({ nullable: true })
+    association_image: string;
 
     @Column({ nullable: true })
     company_type: string;

@@ -9,6 +9,7 @@ import { TradeofferItem } from './entities/tradeoffer-item.entity';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
+import { Franchise } from 'src/franchise/entities/franchise.entity';
 
 @Injectable()
 export class TradeofferService {
@@ -27,6 +28,9 @@ export class TradeofferService {
 
         @InjectRepository(Product)
         private readonly productRepo: Repository<Product>,
+
+        @InjectRepository(Franchise)
+        private readonly franchiseRepo: Repository<Franchise>,
     ) { }
 
     private formatTradeofferResponse(tradeoffer: any) {
@@ -81,7 +85,7 @@ export class TradeofferService {
         const whereClause = country ? { country: country } : {}
 
         const data = await this.tradeofferRepo.find({
-            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
             order: { createdAt: 'DESC' },
             where: whereClause
         });
@@ -96,7 +100,7 @@ export class TradeofferService {
     async findAllByCountry(country: string) {
         const data = await this.tradeofferRepo.find({
             where: { country },
-            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
             order: { createdAt: 'DESC' },
         });
 
@@ -110,7 +114,7 @@ export class TradeofferService {
     async findOne(id: number) {
         const data = await this.tradeofferRepo.findOne({
             where: { id },
-            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product'],
+            relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
         });
 
         if (!data) throw new NotFoundException('Trade offer not found');
@@ -204,6 +208,7 @@ export class TradeofferService {
 
                 state: item.state,
                 city: item.city,
+                association_image: item.association_image,
                 company_type: item.company_type,
                 opportunity: item.opportunity,
                 company_name: item.company_name,
@@ -244,6 +249,12 @@ export class TradeofferService {
                 if (product) newItem.product = product;
             }
 
+            const franchiseId = getRawId(item.franchise_type);
+            if (franchiseId) {
+                const franchise = await this.franchiseRepo.findOne({ where: { id: franchiseId as any } });
+                if (franchise) newItem.franchise_type = franchise;
+            }
+
             mappedItems.push(newItem);
         }
         return mappedItems;
@@ -259,6 +270,7 @@ export class TradeofferService {
                 'items.subCategory',
                 'items.product',
                 'items.product.measure',
+                'items.franchise_type',
             ],
         });
 
