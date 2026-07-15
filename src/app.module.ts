@@ -68,6 +68,7 @@ import { ContactNoModule } from './contactByCountry/contactByCountry.module';
 import { TradeControllerModule } from './tradeController/tradeController.module';
 import { TradeLawModule } from './tradeLaw/tradeLaw.module';
 import { FranchiseModule } from './franchise/franchise.module';
+import { RequestInfoModule } from './requestInfo/requestInfo.module';
 
 
 @Module({
@@ -137,7 +138,7 @@ import { FranchiseModule } from './franchise/franchise.module';
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule,
     InvestorrelationsModule,
     AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule, TradeControllerModule, TradeLawModule,
-    FranchiseModule
+    FranchiseModule, RequestInfoModule
   ],
   controllers: [AppController, UploadController],
   providers: [
