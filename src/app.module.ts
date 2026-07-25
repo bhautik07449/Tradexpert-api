@@ -69,6 +69,7 @@ import { TradeControllerModule } from './tradeController/tradeController.module'
 import { TradeLawModule } from './tradeLaw/tradeLaw.module';
 import { FranchiseModule } from './franchise/franchise.module';
 import { RequestInfoModule } from './requestInfo/requestInfo.module';
+import { ElearningApiKeyModule } from './ElearningApiKey/ElearningApiKey.module';
 
 
 @Module({
@@ -138,7 +139,10 @@ import { RequestInfoModule } from './requestInfo/requestInfo.module';
     MarketDataModule, DeliveryReachModule, MultilingualModule, PolicyPreambleModule, FinancialModule,
     InvestorrelationsModule,
     AffiliationModule, MembershipModule, ESGModule, IRProjectModule, upcomingcollaborationserviceModule, ContactNoModule, TradeControllerModule, TradeLawModule,
-    FranchiseModule, RequestInfoModule
+    FranchiseModule, RequestInfoModule,
+
+    //elearning api key module
+    ElearningApiKeyModule
   ],
   controllers: [AppController, UploadController],
   providers: [
