@@ -9,6 +9,7 @@ import {
     UseGuards,
     Patch,
     Query,
+    Res,
 } from '@nestjs/common';
 import { InvestorsService } from './investors.service';
 import { Investor } from './entities/investor.entity';
@@ -25,8 +26,18 @@ export class InvestorsController {
     }
 
     @Post('login')
-    login(@Body() body: any) {
-        return this.investorsService.login(body);
+    async login(@Body() body: any, @Res({ passthrough: true }) response: any) {
+        const result = await this.investorsService.login(body);
+        if (result && result.data && result.data.id) {
+            response.cookie('investor_token', String(result.data.id), {
+                domain: '.sourceseas.com',
+                path: '/',
+                httpOnly: false,
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+        }
+        return result;
     }
 
     @Post('forgot-password')
