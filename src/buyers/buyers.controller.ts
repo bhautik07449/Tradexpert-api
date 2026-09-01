@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -37,8 +38,19 @@ export class BuyersController {
 
   @Post('login')
   @Transactional()
-  async login(@Body() loginBuyerDto: LoginBuyerDto): Promise<LoginBuyerResultDto> {
-    return await this.buyersService.login(loginBuyerDto);
+  async login(@Body() loginBuyerDto: LoginBuyerDto, @Res({ passthrough: true }) response: any): Promise<LoginBuyerResultDto> {
+    const result = await this.buyersService.login(loginBuyerDto);
+    const buyerId = (result as any)?.data?.id || (result as any)?.id || (result as any)?.buyer?.id;
+    if (buyerId) {
+      response.cookie('buyer_token', String(buyerId), {
+        domain: '.sourceseas.com',
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+    }
+    return result;
   }
 
   @Post('forgot-password')

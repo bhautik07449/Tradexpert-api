@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request, Res } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CareerService } from "./career.service";
@@ -15,8 +15,19 @@ export class CareerController {
     }
 
     @Post('login')
-    login(@Body() body: any) {
-        return this.careerService.login(body);
+    async login(@Body() body: any, @Res({ passthrough: true }) response: any) {
+        const result: any = await this.careerService.login(body);
+        const serviceId = result?.data?.id || result?.id || result?.user?.id;
+        if (serviceId) {
+            response.cookie('public_private_token', String(serviceId), {
+                domain: '.sourceseas.com',
+                path: '/',
+                httpOnly: false,
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+        }
+        return result;
     }
 
     @Post('forgot-password')

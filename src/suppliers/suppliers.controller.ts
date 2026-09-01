@@ -9,6 +9,7 @@ import {
     UseGuards,
     Patch,
     Query,
+    Res,
 } from '@nestjs/common';
 import { SuppliersService } from './suppliers.service';
 import { Supplier } from './entities/supplier.entity';
@@ -25,8 +26,19 @@ export class SuppliersController {
     }
 
     @Post('login')
-    login(@Body() body: any) {
-        return this.suppliersService.login(body);
+    async login(@Body() body: any, @Res({ passthrough: true }) response: any) {
+        const result = await this.suppliersService.login(body);
+        const supplierId = result?.supplier?.id || result?.data?.id || result?.id;
+        if (supplierId) {
+            response.cookie('supplier_token', String(supplierId), {
+                domain: '.sourceseas.com',
+                path: '/',
+                httpOnly: false,
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+        }
+        return result;
     }
 
     @Post('forgot-password')
