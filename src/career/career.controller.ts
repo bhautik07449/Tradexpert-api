@@ -53,6 +53,11 @@ export class CareerController {
         return this.careerService.findOne(id);
     }
 
+    @Get('profile/:id')
+    findProfile(@Param('id', ParseIntPipe) id: number) {
+        return this.careerService.findOne(id);
+    }
+
     @Patch(':id')
     @UseGuards(AdminAuthGuard)
     update(
