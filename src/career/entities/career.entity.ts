@@ -3,7 +3,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 export enum Status {
     ACTIVE = 'active',
+    PENDING = 'pending',
     INACTIVE = 'inactive',
+    BLOCKED = 'blocked',
+    REVOKED = 'revoked',
 }
 
 @Entity({ name: 'career' })

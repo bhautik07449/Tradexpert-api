@@ -23,12 +23,15 @@ export class InvestorsService {
       if (data.password) {
         data.password = await bcrypt.hash(data.password, 10);
       }
+      if (!data.status) {
+        data.status = InvestorStatus.PENDING;
+      }
       const investor = this.investorRepository.create(data);
       const saved = await this.investorRepository.save(investor);
 
       return {
         success: true,
-        message: 'Investor registered successfully',
+        message: 'Investor registered successfully. Pending admin approval.',
         data: saved,
       };
     } catch (error) {
@@ -39,7 +42,7 @@ export class InvestorsService {
 
   async findAll(country?: string) {
     try {
-      const whereClause: any = { status: InvestorStatus.ACTIVE };
+      const whereClause: any = { status: Not(InvestorStatus.DELETED) };
       if (country) {
         whereClause.country = country;
       }
@@ -150,6 +153,14 @@ export class InvestorsService {
 
       if (!isPasswordMatching) {
         throw new UnauthorizedException('Invalid credentials');
+      }
+
+      if (investor.status === InvestorStatus.PENDING) {
+        throw new UnauthorizedException('Your account is pending admin approval. Please contact admin.');
+      }
+
+      if (investor.status === InvestorStatus.BLOCKED || investor.status === InvestorStatus.REVOKED) {
+        throw new UnauthorizedException('Your access to this app has been revoked by admin.');
       }
 
       const { password: _, ...result } = investor;

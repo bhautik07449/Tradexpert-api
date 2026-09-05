@@ -22,12 +22,15 @@ export class SuppliersService {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
+    if (!data.status) {
+      data.status = SupplierStatus.PENDING;
+    }
     const supplier = this.supplierRepository.create(data);
     return await this.supplierRepository.save(supplier);
   }
 
   async findAll(country?: string): Promise<Supplier[]> {
-    const whereClause: any = { status: SupplierStatus.ACTIVE };
+    const whereClause: any = { status: Not(SupplierStatus.DELETED) };
     if (country) {
       whereClause.country = country;
     }
@@ -95,6 +98,14 @@ export class SuppliersService {
 
     if (!isPasswordMatching) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (supplier.status === SupplierStatus.PENDING) {
+      throw new UnauthorizedException('Your account is pending admin approval. Please contact admin.');
+    }
+
+    if (supplier.status === SupplierStatus.BLOCKED || supplier.status === SupplierStatus.REVOKED) {
+      throw new UnauthorizedException('Your access to this app has been revoked by admin.');
     }
 
     const { password: _, ...result } = supplier;

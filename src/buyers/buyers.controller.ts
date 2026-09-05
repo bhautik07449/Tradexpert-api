@@ -82,11 +82,15 @@ export class BuyersController {
   }
 
   @Get('admin/:buyerId')
-  // @UseGuards(AdminAuthGuard)
+  @Transactional()
+  async getBuyerByIdAdmin(@Param('buyerId') buyerId: string): Promise<BuyerDto> {
+    return await this.buyersService.getBuyerById(buyerId);
+  }
+
+  @Get(':buyerId')
   @Transactional()
   async getBuyerById(@Param('buyerId') buyerId: string): Promise<BuyerDto> {
-    const id = Number(buyerId);
-    return await this.buyersService.getBuyerById(id);
+    return await this.buyersService.getBuyerById(buyerId);
   }
 
   @Patch('admin/:buyerId')

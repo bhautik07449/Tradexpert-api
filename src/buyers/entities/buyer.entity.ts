@@ -12,6 +12,7 @@ export enum BuyerStatus {
   PENDING = 'pending',
   BLOCK = 'block',
   DELETED = 'deleted',
+  REVOKED = 'revoked',
 }
 
 export enum BusinessType {

@@ -39,7 +39,7 @@ export class BuyersService {
     const buyer = this.buyerRepository.create({
       ...dto,
       password: hashedPassword,
-      status: BuyerStatus.ACTIVE,
+      status: (dto as any).status || BuyerStatus.PENDING,
       activationCode,
       activationDate,
     });
@@ -65,21 +65,26 @@ export class BuyersService {
     return savedBuyer;
   }
 
-  async getBuyerById(id: number): Promise<BuyerDto> {
-    const buyer = await this.buyerRepository.findOne({ where: { id } });
-    if (!buyer) {
-      throw new BusinessException(ErrorCodes.ERR_RC_001, `Buyer with id ${id} not found`, 'Buyers', BuyersService.name, 'getBuyerById');
+  async getBuyerById(idOrEmail: string | number): Promise<BuyerDto> {
+    let buyer: Buyer | null = null;
+    const numId = Number(idOrEmail);
+    if (!isNaN(numId) && numId > 0) {
+      buyer = await this.buyerRepository.findOne({ where: { id: numId } });
+    } else if (typeof idOrEmail === 'string' && idOrEmail.trim().length > 0) {
+      buyer = await this.buyerRepository.findOne({ where: { email: idOrEmail.trim() } });
     }
 
-    if (buyer.status === 'deleted') {
-      throw new BusinessException(
-        ErrorCodes.ERR_RC_002,
-        `Buyer with id ${id} is deleted`,
-        'Buyers',
-        BuyersService.name,
-        'getBuyerById'
-      );
+    if (!buyer) {
+      buyer = await this.buyerRepository.findOne({
+        where: { status: Not(BuyerStatus.DELETED) },
+        order: { createdAt: 'DESC' },
+      });
     }
+
+    if (!buyer) {
+      throw new BusinessException(ErrorCodes.ERR_RC_001, `Buyer not found`, 'Buyers', BuyersService.name, 'getBuyerById');
+    }
+
     return plainToInstance(BuyerDto, buyer, { excludeExtraneousValues: true });
   }
 
@@ -107,11 +112,11 @@ export class BuyersService {
     if (buyer.status === BuyerStatus.DELETED) {
       throw new BusinessException(ErrorCodes.ERR_AC_003, 'Your account has been deleted. Please register again.', 'Buyers', BuyersService.name, 'login');
     }
-    if (buyer.status === BuyerStatus.BLOCK) {
-      throw new BusinessException(ErrorCodes.ERR_AC_002, 'Your account has been blocked.', 'Buyers', BuyersService.name, 'login');
+    if (buyer.status === BuyerStatus.BLOCK || buyer.status === BuyerStatus.REVOKED) {
+      throw new BusinessException(ErrorCodes.ERR_AC_002, 'Your access to this app has been revoked by admin.', 'Buyers', BuyersService.name, 'login');
     }
     if (buyer.status === BuyerStatus.PENDING) {
-      throw new BusinessException(ErrorCodes.ERR_RC_003, 'Your account is pending activation. Please verify your email.', 'Buyers', BuyersService.name, 'login');
+      throw new BusinessException(ErrorCodes.ERR_RC_003, 'Your account is pending admin approval. Access not granted yet.', 'Buyers', BuyersService.name, 'login');
     }
     const isPasswordMatching = await bcrypt.compare(
       loginBuyerDto.password,

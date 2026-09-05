@@ -2,8 +2,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 export enum InvestorStatus {
   ACTIVE = 'active',
+  PENDING = 'pending',
   BLOCKED = 'blocked',
   DELETED = 'deleted',
+  REVOKED = 'revoked',
 }
 
 @Entity({ name: 'investors' })

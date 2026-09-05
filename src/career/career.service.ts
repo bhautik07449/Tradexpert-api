@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, ConflictException, HttpException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, Not } from "typeorm";
-import { Career } from "./entities/career.entity";
+import { Career, Status } from "./entities/career.entity";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -33,6 +33,9 @@ export class CareerService {
             }
 
             const careerData = { ...data };
+            if (!careerData.status) {
+                careerData.status = Status.PENDING;
+            }
             if (data.password) {
                 careerData.password = await bcrypt.hash(data.password, 10);
             }
@@ -168,6 +171,14 @@ export class CareerService {
 
         if (!isPasswordMatching) {
             throw new UnauthorizedException('Invalid credentials');
+        }
+
+        if (career.status === Status.PENDING) {
+            throw new UnauthorizedException('Your account is pending admin approval. Access not granted yet.');
+        }
+
+        if (career.status === Status.INACTIVE || career.status === Status.BLOCKED || career.status === Status.REVOKED) {
+            throw new UnauthorizedException('Your access to this app has been revoked by admin.');
         }
 
         const payload = { email: career.email, sub: career.id, role: 'career' };
