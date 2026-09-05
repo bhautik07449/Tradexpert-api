@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import { ConsoleLogger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { useContainer, ValidationError } from 'class-validator';
 import { ValidationException } from './common/validation-error';
+import { BusinessExceptionFilter } from './common/business-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
@@ -53,6 +54,7 @@ async function bootstrap() {
       return new ValidationException(errors);
     }
   }));
+  app.useGlobalFilters(new BusinessExceptionFilter());
 
   // Makes class-validator use Nest's DI system so you can inject services into your Custom validators.
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
