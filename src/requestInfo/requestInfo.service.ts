@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { RequestInfo } from "./entities/requestInfo.entity";
+import { Not, Repository } from "typeorm";
+import { RequestInfo, Status } from "./entities/requestInfo.entity";
 
 @Injectable()
 export class RequestInfoService {
@@ -30,7 +30,8 @@ export class RequestInfoService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.requestInfoRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +51,7 @@ export class RequestInfoService {
     async findOne(id: number) {
         try {
             const requestInfo = await this.requestInfoRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!requestInfo) {
@@ -70,7 +71,7 @@ export class RequestInfoService {
     async update(id: number, data: Partial<RequestInfo>) {
         try {
             const requestInfo = await this.requestInfoRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!requestInfo) {
@@ -94,14 +95,15 @@ export class RequestInfoService {
     async remove(id: number) {
         try {
             const requestInfo = await this.requestInfoRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!requestInfo) {
                 throw new NotFoundException('Request Info not found');
             }
 
-            await this.requestInfoRepository.remove(requestInfo);
+            requestInfo.status = Status.DELETED;
+            await this.requestInfoRepository.save(requestInfo);
 
             return {
                 success: true,

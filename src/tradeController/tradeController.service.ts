@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, ILike } from 'typeorm';
-import { TradeControllerEntity } from './entities/tradeController.entity';
+import { Repository, Like, ILike, Not } from 'typeorm';
+import { TradeControllerEntity, Status } from './entities/tradeController.entity';
 import { Category } from '../categories/entities/category.entity';
 
 @Injectable()
@@ -60,7 +60,7 @@ export class TradeControllerService {
     }
 
     async findAll(hsn_code?: string, description?: string) {
-        const where: any = {};
+        const where: any = { status: Not(Status.DELETED) };
         
         if (hsn_code) {
             where.hsn_code = ILike(`%${hsn_code}%`);
@@ -92,7 +92,7 @@ export class TradeControllerService {
     }
 
     async findOne(id: number) {
-        const record = await this.tradeRepo.findOne({ where: { id }, relations: ['category'] });
+        const record = await this.tradeRepo.findOne({ where: { id, status: Not(Status.DELETED) }, relations: ['category'] });
         if (record) {
             if (record.import_data) {
                 record.import_data = record.import_data || [];
@@ -110,7 +110,7 @@ export class TradeControllerService {
     }
 
     async update(id: number, body: any) {
-        const existing = await this.tradeRepo.findOne({ where: { id } });
+        const existing = await this.tradeRepo.findOne({ where: { id, status: Not(Status.DELETED) } });
         if (!existing) throw new NotFoundException('Trade data not found');
 
         if (body.category) {
@@ -145,9 +145,10 @@ export class TradeControllerService {
     }
 
     async remove(id: number) {
-        const record = await this.findOne(id);
+        const record = await this.tradeRepo.findOne({ where: { id, status: Not(Status.DELETED) } });
         if (record) {
-            await this.tradeRepo.remove(record);
+            record.status = Status.DELETED;
+            await this.tradeRepo.save(record);
         }
         return { message: 'Trade Controller deleted successfully' };
     }

@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, IsOptional, IsBoolean } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsOptional, IsBoolean, IsEnum } from 'class-validator';
+import { AdminRole } from 'src/admin/entities/admin.entity';
 
 export class LoginAdminDto {
   @IsNotEmpty()
@@ -8,6 +9,10 @@ export class LoginAdminDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsOptional()
+  @IsEnum(AdminRole)
+  role?: AdminRole;
 
   @IsOptional()
   @IsBoolean()

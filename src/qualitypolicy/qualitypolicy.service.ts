@@ -4,8 +4,8 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Qualitypolicy } from './entities/qualitypolicy.entity';
+import { Not, Repository } from 'typeorm';
+import { Qualitypolicy, QualityPoliciesStatus } from './entities/qualitypolicy.entity';
 import { Category } from '../categories/entities/category.entity';
 
 @Injectable()
@@ -46,7 +46,8 @@ export class QualitypolicyService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country } : {};
+        const whereClause: any = country ? { country } : {};
+        whereClause.status = Not(QualityPoliciesStatus.DELETED);
 
         const list = await this.qualityRepository.find({
             relations: ['category'],
@@ -62,6 +63,7 @@ export class QualitypolicyService {
 
     async groupByCategoryAndCountry() {
         const list = await this.qualityRepository.find({
+            where: { status: Not(QualityPoliciesStatus.DELETED) },
             relations: ['category'],
             order: {
                 category: {
@@ -102,7 +104,7 @@ export class QualitypolicyService {
 
     async findOne(id: number) {
         const quality = await this.qualityRepository.findOne({
-            where: { id },
+            where: { id, status: Not(QualityPoliciesStatus.DELETED) },
             relations: ['category'],
         });
 
@@ -121,7 +123,7 @@ export class QualitypolicyService {
 
     async update(id: number, data: Partial<Qualitypolicy>) {
         const quality = await this.qualityRepository.findOne({
-            where: { id },
+            where: { id, status: Not(QualityPoliciesStatus.DELETED) },
             relations: ['category'],
         });
 
@@ -154,14 +156,15 @@ export class QualitypolicyService {
 
     async remove(id: number) {
         const quality = await this.qualityRepository.findOne({
-            where: { id },
+            where: { id, status: Not(QualityPoliciesStatus.DELETED) },
         });
 
         if (!quality) {
             throw new NotFoundException('Quality Policy not found');
         }
 
-        await this.qualityRepository.remove(quality);
+        quality.status = QualityPoliciesStatus.DELETED;
+        await this.qualityRepository.save(quality);
 
         return {
             success: true,

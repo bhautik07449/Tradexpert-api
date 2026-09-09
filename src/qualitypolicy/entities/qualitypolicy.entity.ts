@@ -12,6 +12,7 @@ import {
 export enum QualityPoliciesStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 
 @Entity('Qualitypolicy')

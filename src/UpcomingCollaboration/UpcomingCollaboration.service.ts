@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { UpcomingCollaboration } from "./entities/UpcomingCollaboration.entity";
+import { Not, Repository } from "typeorm";
+import { UpcomingCollaboration, Status } from "./entities/UpcomingCollaboration.entity";
 
 @Injectable()
 export class UpcomingCollaborationService {
@@ -30,7 +30,8 @@ export class UpcomingCollaborationService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.upcomingcollaborationRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +51,7 @@ export class UpcomingCollaborationService {
     async findOne(id: number) {
         try {
             const upcoming = await this.upcomingcollaborationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!upcoming) {
@@ -70,7 +71,7 @@ export class UpcomingCollaborationService {
     async update(id: number, data: Partial<UpcomingCollaboration>) {
         try {
             const upcoming = await this.upcomingcollaborationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!upcoming) {
@@ -94,14 +95,15 @@ export class UpcomingCollaborationService {
     async remove(id: number) {
         try {
             const upcoming = await this.upcomingcollaborationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!upcoming) {
                 throw new NotFoundException('Upcoming Collaboration not found');
             }
 
-            await this.upcomingcollaborationRepository.remove(upcoming);
+            upcoming.status = Status.DELETED;
+            await this.upcomingcollaborationRepository.save(upcoming);
 
             return {
                 success: true,

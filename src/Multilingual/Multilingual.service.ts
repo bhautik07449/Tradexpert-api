@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Multilingual } from "./entities/Multilingual.entity";
+import { Not, Repository } from "typeorm";
+import { Multilingual, Status } from "./entities/Multilingual.entity";
 
 @Injectable()
 export class MultilingualService {
@@ -30,7 +30,8 @@ export class MultilingualService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.multilingualRepository.find({
                 where: whereClause,
@@ -50,7 +51,7 @@ export class MultilingualService {
     async findOne(id: number) {
         try {
             const multilingual = await this.multilingualRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!multilingual) {
@@ -70,7 +71,7 @@ export class MultilingualService {
     async update(id: number, data: Partial<Multilingual>) {
         try {
             const multilingual = await this.multilingualRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!multilingual) {
@@ -94,14 +95,15 @@ export class MultilingualService {
     async remove(id: number) {
         try {
             const multilingual = await this.multilingualRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!multilingual) {
                 throw new NotFoundException('Multilingual not found');
             }
 
-            await this.multilingualRepository.remove(multilingual);
+            multilingual.status = Status.DELETED;
+            await this.multilingualRepository.save(multilingual);
 
             return {
                 success: true,

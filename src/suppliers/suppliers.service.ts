@@ -13,7 +13,9 @@ export class SuppliersService {
 
   async create(data: Partial<Supplier>): Promise<Supplier> {
     if (data.email) {
-      const existingSupplier = await this.supplierRepository.findOne({ where: { email: data.email } });
+      const existingSupplier = await this.supplierRepository.findOne({ 
+        where: { email: data.email, status: Not(SupplierStatus.DELETED) } 
+      });
       if (existingSupplier) {
         throw new ConflictException('Email already exists');
       }

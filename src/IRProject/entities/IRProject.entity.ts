@@ -2,6 +2,12 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Category } from 'src/categories/entities/category.entity';
 import { Financial } from 'src/financialservice/entities/financialservice.entity';
 
+export enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    DELETED = 'deleted',
+}
+
 @Entity({ name: 'ir_project' })
 export class IRProject {
     @PrimaryGeneratedColumn()
@@ -34,8 +40,12 @@ export class IRProject {
     @JoinTable({ name: 'irproject_financial_services' })
     finacial_service: Financial[];
 
-    @Column({ name: 'status', nullable: true })
-    status: string;
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.ACTIVE,
+    })
+    status: Status;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

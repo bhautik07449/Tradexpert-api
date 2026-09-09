@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Repository } from "typeorm";
-import { TradeHistory } from "./entities/tradeHistory.entity";
+import { IsNull, Not, Repository } from "typeorm";
+import { TradeHistory, status } from "./entities/tradeHistory.entity";
 
 @Injectable()
 export class TradeHistoryService {
@@ -30,7 +30,8 @@ export class TradeHistoryService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country } : {};
+            const whereClause: any = country ? { country } : {};
+            whereClause.status = Not(status.DELETED);
 
             const data = await this.tradeHistoryRepository.find({
                 where: whereClause,
@@ -49,7 +50,9 @@ export class TradeHistoryService {
 
     async findByCountry(country?: string) {
         try {
-            const whereClause = country ? { country: country } : { country: IsNull() };
+            const whereClause: any = country ? { country: country } : { country: IsNull() };
+            whereClause.status = Not(status.DELETED);
+
             const data = await this.tradeHistoryRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },
@@ -72,7 +75,7 @@ export class TradeHistoryService {
     async findOne(id: number) {
         try {
             const event = await this.tradeHistoryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!event) {
@@ -92,7 +95,7 @@ export class TradeHistoryService {
     async update(id: number, data: Partial<TradeHistory>) {
         try {
             const event = await this.tradeHistoryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!event) {
@@ -116,14 +119,15 @@ export class TradeHistoryService {
     async remove(id: number) {
         try {
             const event = await this.tradeHistoryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!event) {
                 throw new NotFoundException('Trade History not found');
             }
 
-            await this.tradeHistoryRepository.remove(event);
+            event.status = status.DELETED;
+            await this.tradeHistoryRepository.save(event);
 
             return {
                 success: true,

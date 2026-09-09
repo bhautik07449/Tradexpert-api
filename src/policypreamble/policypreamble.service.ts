@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { PolicyPreamble } from "./entities/policypreamble.entity";
+import { Not, Repository } from "typeorm";
+import { PolicyPreamble, Status } from "./entities/policypreamble.entity";
 import { Category } from "src/categories/entities/category.entity";
 
 @Injectable()
@@ -46,7 +46,8 @@ export class PolicyPreambleService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.policypreambleRepository.find({
                 where: whereClause,
@@ -67,7 +68,7 @@ export class PolicyPreambleService {
     async findOne(id: number) {
         try {
             const policypreamble = await this.policypreambleRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
                 relations: ['category']
             });
 
@@ -88,7 +89,7 @@ export class PolicyPreambleService {
     async update(id: number, data: Partial<PolicyPreamble>) {
         try {
             const policypreamble = await this.policypreambleRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!policypreamble) {
@@ -120,14 +121,15 @@ export class PolicyPreambleService {
     async remove(id: number) {
         try {
             const policypreamble = await this.policypreambleRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!policypreamble) {
                 throw new NotFoundException('Policy - Preamble & Upcoming Updates not found');
             }
 
-            await this.policypreambleRepository.remove(policypreamble);
+            policypreamble.status = Status.DELETED;
+            await this.policypreambleRepository.save(policypreamble);
 
             return {
                 success: true,

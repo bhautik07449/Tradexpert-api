@@ -14,6 +14,7 @@ import {
 export enum Status {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 
 @Entity({ name: 'marketdata' })

@@ -7,6 +7,7 @@ export enum Status {
     INACTIVE = 'inactive',
     BLOCKED = 'blocked',
     REVOKED = 'revoked',
+    DELETED = 'deleted',
 }
 
 @Entity({ name: 'career' })

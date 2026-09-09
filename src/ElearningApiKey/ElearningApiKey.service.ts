@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { ElearningApiKey } from "./entities/ElearningApiKey.entity";
+import { Repository, Not } from "typeorm";
+import { ElearningApiKey, Status } from "./entities/ElearningApiKey.entity";
 
 @Injectable()
 export class ElearningApiKeyService {
@@ -32,6 +32,7 @@ export class ElearningApiKeyService {
         try {
 
             const data = await this.apikeyRepository.find({
+                where: { status: Not(Status.DELETED) },
                 order: { createdAt: 'DESC' },
             });
 
@@ -48,7 +49,7 @@ export class ElearningApiKeyService {
     async findOne(id: number) {
         try {
             const apikey = await this.apikeyRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!apikey) {
@@ -68,7 +69,7 @@ export class ElearningApiKeyService {
     async update(id: number, data: Partial<ElearningApiKey>) {
         try {
             const apikey = await this.apikeyRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!apikey) {
@@ -92,14 +93,15 @@ export class ElearningApiKeyService {
     async remove(id: number) {
         try {
             const apikey = await this.apikeyRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!apikey) {
                 throw new NotFoundException('API Key not found');
             }
 
-            await this.apikeyRepository.remove(apikey);
+            apikey.status = Status.DELETED;
+            await this.apikeyRepository.save(apikey);
 
             return {
                 success: true,

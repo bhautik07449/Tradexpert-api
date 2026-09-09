@@ -3,9 +3,9 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Client } from 'src/client/entities/client.entity';
-import { Testimonial } from './entities/testimonial.entity';
+import { Testimonial, TestimonialStatus } from './entities/testimonial.entity';
 
 @Injectable()
 export class TestimonialService {
@@ -39,7 +39,8 @@ export class TestimonialService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { client: { country: country } } : {}
+        const whereClause: any = country ? { client: { country: country } } : {};
+        whereClause.status = Not(TestimonialStatus.DELETED);
 
         const data = await this.testimonialManagementRepo.find({
             relations: ['client'],
@@ -56,7 +57,7 @@ export class TestimonialService {
 
     async findOne(id: number) {
         const data = await this.testimonialManagementRepo.findOne({
-            where: { id },
+            where: { id, status: Not(TestimonialStatus.DELETED) },
             relations: ['client'],
         });
 
@@ -71,7 +72,7 @@ export class TestimonialService {
 
     async update(id: number, body: Partial<Testimonial>) {
         const testimonial = await this.testimonialManagementRepo.findOne({
-            where: { id },
+            where: { id, status: Not(TestimonialStatus.DELETED) },
             relations: ['client'],
         });
 
@@ -100,12 +101,13 @@ export class TestimonialService {
 
     async remove(id: number) {
         const testimonial = await this.testimonialManagementRepo.findOne({
-            where: { id },
+            where: { id, status: Not(TestimonialStatus.DELETED) },
         });
 
         if (!testimonial) throw new NotFoundException('Testimonial not found');
 
-        await this.testimonialManagementRepo.remove(testimonial);
+        testimonial.status = TestimonialStatus.DELETED;
+        await this.testimonialManagementRepo.save(testimonial);
 
         return {
             success: true,

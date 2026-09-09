@@ -3,8 +3,8 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Abc } from './entities/abc.entity';
+import { Repository, Not } from 'typeorm';
+import { Abc, AbcStatus } from './entities/abc.entity';
 
 import { Abctype } from 'src/abcType/entities/abctype.entity';
 
@@ -35,7 +35,7 @@ export class AbcService {
         const savedId = Array.isArray(saved) ? saved[0].id : saved.id;
 
         const fullData = await this.abcRepo.findOne({
-            where: { id: savedId },
+            where: { id: savedId, status: Not(AbcStatus.DELETED) },
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
         });
 
@@ -47,7 +47,7 @@ export class AbcService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { abc_type: { country: country } } : {}
+        const whereClause: any = country ? { abc_type: { country: country }, status: Not(AbcStatus.DELETED) } : { status: Not(AbcStatus.DELETED) };
 
         const data = await this.abcRepo.find({
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
@@ -72,12 +72,13 @@ export class AbcService {
             .leftJoinAndSelect('offer_type.items', 'items')
             .leftJoinAndSelect('items.product', 'item_product')
             .leftJoinAndSelect('abc.abc_type', 'abc_type')
+            .where('abc.status != :deletedStatus', { deletedStatus: AbcStatus.DELETED })
             .orderBy('abc.createdAt', 'DESC');
 
         const abcTypeQuery = this.abctypeRepo.createQueryBuilder('abctype').orderBy('abctype.createdAt', 'DESC');
 
         if (country) {
-            query.where('abc_type.country = :country', { country });
+            query.andWhere('abc_type.country = :country', { country });
             abcTypeQuery.where('abctype.country = :country', { country });
         }
 
@@ -164,7 +165,7 @@ export class AbcService {
 
     async findOne(id: number) {
         const data = await this.abcRepo.findOne({
-            where: { id },
+            where: { id, status: Not(AbcStatus.DELETED) },
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
         });
 
@@ -179,7 +180,7 @@ export class AbcService {
 
     async update(id: number, body: any) {
         const abc = await this.abcRepo.findOne({
-            where: { id },
+            where: { id, status: Not(AbcStatus.DELETED) },
         });
 
         if (!abc)
@@ -201,7 +202,7 @@ export class AbcService {
         await this.abcRepo.save(abc);
 
         const updated = await this.abcRepo.findOne({
-            where: { id },
+            where: { id, status: Not(AbcStatus.DELETED) },
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
         });
 
@@ -214,13 +215,14 @@ export class AbcService {
 
     async remove(id: number) {
         const abc = await this.abcRepo.findOne({
-            where: { id },
+            where: { id, status: Not(AbcStatus.DELETED) },
         });
 
         if (!abc)
             throw new NotFoundException('ABC entry not found');
 
-        await this.abcRepo.remove(abc);
+        abc.status = AbcStatus.DELETED;
+        await this.abcRepo.save(abc);
 
         return {
             success: true,

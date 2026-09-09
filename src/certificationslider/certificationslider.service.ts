@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Certificationslider } from "./entities/certificationslider.entity";
+import { Repository, Not } from "typeorm";
+import { Certificationslider, status } from "./entities/certificationslider.entity";
 
 @Injectable()
 export class CertificationsliderService {
@@ -30,7 +30,7 @@ export class CertificationsliderService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
             const data = await this.certificationsliderRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +50,7 @@ export class CertificationsliderService {
     async findOne(id: number) {
         try {
             const certificationslider = await this.certificationsliderRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!certificationslider) {
@@ -70,7 +70,7 @@ export class CertificationsliderService {
     async update(id: number, data: Partial<Certificationslider>) {
         try {
             const certificationslider = await this.certificationsliderRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!certificationslider) {
@@ -94,14 +94,15 @@ export class CertificationsliderService {
     async remove(id: number) {
         try {
             const certificationslider = await this.certificationsliderRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!certificationslider) {
                 throw new NotFoundException('Certification Slider not found');
             }
 
-            await this.certificationsliderRepository.remove(certificationslider);
+            certificationslider.status = status.DELETED;
+            await this.certificationsliderRepository.save(certificationslider);
 
             return {
                 success: true,

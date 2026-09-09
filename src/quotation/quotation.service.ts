@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Quotation } from "./entities/quotation.entity";
+import { Not, Repository } from "typeorm";
+import { Quotation, status } from "./entities/quotation.entity";
 import { Category } from "src/categories/entities/category.entity";
 import { Measurement } from "src/measurements/entities/measurement.entity";
 import { Currency } from "src/currency/entities/currency.entity";
@@ -95,7 +95,8 @@ export class QuotationService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { category: { country: country } } : {};
+            const whereClause: any = country ? { category: { country: country } } : {};
+            whereClause.status = Not(status.DELETED);
 
             const data = await this.quotationRepository.find({
                 where: whereClause,
@@ -122,7 +123,7 @@ export class QuotationService {
     async findOne(id: number) {
         try {
             const quotation = await this.quotationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
                 relations: [
                     "category",
                     "subCategory",
@@ -149,7 +150,7 @@ export class QuotationService {
     async update(id: number, data: Partial<Quotation>) {
         try {
             const quotation = await this.quotationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!quotation) {
@@ -173,14 +174,15 @@ export class QuotationService {
     async remove(id: number) {
         try {
             const quotation = await this.quotationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!quotation) {
                 throw new NotFoundException('Quotation not found');
             }
 
-            await this.quotationRepository.remove(quotation);
+            quotation.status = status.DELETED;
+            await this.quotationRepository.save(quotation);
 
             return {
                 success: true,

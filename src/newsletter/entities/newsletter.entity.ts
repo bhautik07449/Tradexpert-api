@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export enum Status {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 
 @Entity({ name: 'newsletter' })

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { DeliveryReach } from "./entities/deliveryreach.entity";
+import { Repository, Not } from "typeorm";
+import { DeliveryReach, Status } from "./entities/deliveryreach.entity";
 
 @Injectable()
 export class DeliveryReachService {
@@ -21,7 +21,7 @@ export class DeliveryReachService {
             }
 
             const existingPresence = await this.deliveryreachRepository.findOne({
-                where: { country: data.country },
+                where: { country: data.country, status: Not(Status.DELETED) },
             });
 
             if (existingPresence) {
@@ -43,7 +43,7 @@ export class DeliveryReachService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
             const data = await this.deliveryreachRepository.find({
                 where: whereClause,
@@ -63,7 +63,7 @@ export class DeliveryReachService {
     async findOne(id: number) {
         try {
             const data = await this.deliveryreachRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!data) {
@@ -83,7 +83,7 @@ export class DeliveryReachService {
     async update(id: number, data: Partial<DeliveryReach>) {
         try {
             const deliveryreach = await this.deliveryreachRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!deliveryreach) {
@@ -92,7 +92,7 @@ export class DeliveryReachService {
 
             if (data.country) {
                 const existingPresence = await this.deliveryreachRepository.findOne({
-                    where: { country: data.country },
+                    where: { country: data.country, status: Not(Status.DELETED) },
                 });
 
                 if (existingPresence && existingPresence.id !== id) {
@@ -117,14 +117,15 @@ export class DeliveryReachService {
     async remove(id: number) {
         try {
             const data = await this.deliveryreachRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!data) {
                 throw new NotFoundException('Delivery Reach not found');
             }
 
-            await this.deliveryreachRepository.remove(data);
+            data.status = Status.DELETED;
+            await this.deliveryreachRepository.save(data);
 
             return {
                 success: true,

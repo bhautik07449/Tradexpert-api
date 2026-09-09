@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Repository } from "typeorm";
-import { Homebanner } from "./entities/homebanner.entity";
+import { IsNull, Not, Repository } from "typeorm";
+import { Homebanner, status } from "./entities/homebanner.entity";
 import { Category } from "src/categories/entities/category.entity";
 
 @Injectable()
@@ -45,7 +45,8 @@ export class HomebannerService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(status.DELETED);
 
             const data = await this.homebannerRepository.find({
                 order: { createdAt: 'DESC' },
@@ -65,7 +66,9 @@ export class HomebannerService {
 
     async findByCountry(country?: string) {
         try {
-            const whereClause = country ? { country } : { country: IsNull() };
+            const whereClause: any = country ? { country } : { country: IsNull() };
+            whereClause.status = Not(status.DELETED);
+
             const data = await this.homebannerRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },
@@ -93,6 +96,7 @@ export class HomebannerService {
                     category: {
                         id: Number(category),
                     },
+                    status: Not(status.DELETED),
                 },
                 relations: ['category'],
                 order: { createdAt: 'DESC' },
@@ -115,7 +119,7 @@ export class HomebannerService {
     async findOne(id: number) {
         try {
             const homebanner = await this.homebannerRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
                 relations: ['category'],
             });
 
@@ -136,7 +140,7 @@ export class HomebannerService {
     async update(id: number, data: Partial<Homebanner>) {
         try {
             const homebanner = await this.homebannerRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!homebanner) {
@@ -170,14 +174,15 @@ export class HomebannerService {
     async remove(id: number) {
         try {
             const homebanner = await this.homebannerRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!homebanner) {
                 throw new NotFoundException('Home Banner not found');
             }
 
-            await this.homebannerRepository.remove(homebanner);
+            homebanner.status = status.DELETED;
+            await this.homebannerRepository.save(homebanner);
 
             return {
                 success: true,

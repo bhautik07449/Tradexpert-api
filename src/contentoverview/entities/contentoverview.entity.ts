@@ -5,6 +5,7 @@ import { GlobalImpotance } from './global.entity';
 export enum status {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 
 @Entity({ name: 'contentoverview' })

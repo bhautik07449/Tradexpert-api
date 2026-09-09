@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Affiliation } from "./entities/affiliation.entity";
+import { Not, Repository } from "typeorm";
+import { Affiliation, Status } from "./entities/affiliation.entity";
 
 @Injectable()
 export class AffiliationService {
@@ -30,7 +30,8 @@ export class AffiliationService {
 
     async findAll(country: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.affiliationRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +51,7 @@ export class AffiliationService {
     async findOne(id: number) {
         try {
             const affiliation = await this.affiliationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!affiliation) {
@@ -70,7 +71,7 @@ export class AffiliationService {
     async update(id: number, data: Partial<Affiliation>) {
         try {
             const affiliation = await this.affiliationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!affiliation) {
@@ -94,14 +95,15 @@ export class AffiliationService {
     async remove(id: number) {
         try {
             const affiliation = await this.affiliationRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!affiliation) {
                 throw new NotFoundException('Affiliation Resources not found');
             }
 
-            await this.affiliationRepository.remove(affiliation);
+            affiliation.status = Status.DELETED;
+            await this.affiliationRepository.save(affiliation);
 
             return {
                 success: true,

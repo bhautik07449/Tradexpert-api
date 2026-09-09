@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Admin, AdminStatus } from './entities/admin.entity';
+import { Repository, Not } from 'typeorm';
+import { Admin, AdminStatus, AdminRole } from './entities/admin.entity';
 import { RegisterAdminDto } from 'src/auth/dto/register-admin.dto';
 import { BusinessException } from 'src/common/business.exception';
 import { ErrorCodes } from 'src/common/error-codes.constant';
@@ -20,9 +20,22 @@ export class AdminService {
   ) { }
 
   async createAdmin(dto: RegisterAdminDto): Promise<{ success: boolean; message: string; data: Admin }> {
+    const targetRole = dto.role || AdminRole.SUPER_ADMIN;
+
+    if (targetRole === AdminRole.SUPER_ADMIN) {
+      const existingSuperAdmin = await this.adminRepository.findOne({
+        where: { role: AdminRole.SUPER_ADMIN },
+      });
+      if (existingSuperAdmin) {
+        throw new BusinessException(
+          ErrorCodes.ERR_RC_002,
+          'Only one Super Admin account can exist in the system.',
+        );
+      }
+    }
 
     const existingAdminByEmail = await this.adminRepository.findOne({
-      where: { email: dto.email },
+      where: { email: dto.email, status: Not(AdminStatus.DELETED) },
     });
 
     if (existingAdminByEmail) {
@@ -41,6 +54,7 @@ export class AdminService {
 
     const admin = this.adminRepository.create({
       ...dto,
+      role: targetRole,
       password: hashedPassword,
       status: AdminStatus.ACTIVE,
     });
@@ -55,7 +69,7 @@ export class AdminService {
   }
 
   async getAdminById(id: number): Promise<AdminDto> {
-    const admin = await this.adminRepository.findOne({ where: { id } });
+    const admin = await this.adminRepository.findOne({ where: { id, status: Not(AdminStatus.DELETED) } });
     if (!admin) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`, 'Admin', AdminService.name, 'getAdminById');
     }
@@ -63,7 +77,7 @@ export class AdminService {
   }
 
   async getAdminByEmail(email: string): Promise<Admin> {
-    const admin = await this.adminRepository.findOne({ where: { email } });
+    const admin = await this.adminRepository.findOne({ where: { email, status: Not(AdminStatus.DELETED) } });
     if (!admin) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with email id ${email} not found.`, 'Admin', AdminService.name, 'getAdminByEmail');
     }
@@ -78,8 +92,24 @@ export class AdminService {
       .getOne();
   }
 
+  async findAdminsByEmail(email: string): Promise<Admin[]> {
+    return await this.adminRepository
+      .createQueryBuilder('admin')
+      .addSelect('admin.password')
+      .where('admin.email = :email', { email })
+      .getMany();
+  }
+
+  async findAdminByEmailAndRole(email: string, role: AdminRole): Promise<Admin | null> {
+    return await this.adminRepository
+      .createQueryBuilder('admin')
+      .addSelect('admin.password')
+      .where('admin.email = :email AND admin.role = :role', { email, role })
+      .getOne();
+  }
+
   async getAdmins(country?: string): Promise<AdminDto[]> {
-    const whereClause = country ? { country: country } : {}
+    const whereClause: any = country ? { country: country, status: Not(AdminStatus.DELETED) } : { status: Not(AdminStatus.DELETED) };
 
     const admins = await this.adminRepository.find({
       where: whereClause
@@ -171,11 +201,12 @@ export class AdminService {
 
     if (!admin) throw new NotFoundException('This Admin user not found');
 
-    await this.adminRepository.remove(admin);
+    admin.status = AdminStatus.DELETED;
+    await this.adminRepository.save(admin);
 
     return {
       success: true,
-      message: 'Admi user deleted successfully',
+      message: 'Admin user deleted successfully',
     };
   }
 }

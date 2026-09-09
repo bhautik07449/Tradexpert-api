@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Events } from "./entities/events.entity";
+import { Repository, Not } from "typeorm";
+import { Events, status } from "./entities/events.entity";
 
 @Injectable()
 export class EventsService {
@@ -28,9 +28,9 @@ export class EventsService {
         }
     }
 
-    async findAll(country: string) {
+    async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
             const data = await this.eventsRepository.find({
                 where: whereClause,
@@ -50,7 +50,7 @@ export class EventsService {
     async findOne(id: number) {
         try {
             const event = await this.eventsRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!event) {
@@ -70,7 +70,7 @@ export class EventsService {
     async update(id: number, data: Partial<Events>) {
         try {
             const event = await this.eventsRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!event) {
@@ -94,14 +94,15 @@ export class EventsService {
     async remove(id: number) {
         try {
             const event = await this.eventsRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!event) {
                 throw new NotFoundException('Event not found');
             }
 
-            await this.eventsRepository.remove(event);
+            event.status = status.DELETED;
+            await this.eventsRepository.save(event);
 
             return {
                 success: true,

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { BlogCategory } from "./entities/blogcategory.entity";
-import { Repository } from "typeorm";
+import { BlogCategory, BlogCategoryStatus } from "./entities/blogcategory.entity";
+import { Repository, Not } from "typeorm";
 
 @Injectable()
 export class BlogCategoryService {
@@ -30,7 +30,7 @@ export class BlogCategoryService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(BlogCategoryStatus.DELETED) } : { status: Not(BlogCategoryStatus.DELETED) };
 
             const data = await this.blogcategoryRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +50,7 @@ export class BlogCategoryService {
     async findOne(id: number) {
         try {
             const blogcategory = await this.blogcategoryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(BlogCategoryStatus.DELETED) },
             });
 
             if (!blogcategory) {
@@ -70,7 +70,7 @@ export class BlogCategoryService {
     async update(id: number, data: Partial<BlogCategory>) {
         try {
             const blogcategory = await this.blogcategoryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(BlogCategoryStatus.DELETED) },
             });
 
             if (!blogcategory) {
@@ -94,14 +94,15 @@ export class BlogCategoryService {
     async remove(id: number) {
         try {
             const blogcategory = await this.blogcategoryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(BlogCategoryStatus.DELETED) },
             });
 
             if (!blogcategory) {
                 throw new NotFoundException('Blog category not found');
             }
 
-            await this.blogcategoryRepository.remove(blogcategory);
+            blogcategory.status = BlogCategoryStatus.DELETED;
+            await this.blogcategoryRepository.save(blogcategory);
 
             return {
                 success: true,

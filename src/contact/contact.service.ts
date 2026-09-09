@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Contact } from "./entities/contact.entity";
+import { Repository, Not } from "typeorm";
+import { Contact, status } from "./entities/contact.entity";
 
 @Injectable()
 export class ContactService {
@@ -30,10 +30,7 @@ export class ContactService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
-            if (country) {
-                whereClause.country = country;
-            }
+            const whereClause: any = country ? { country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
             const data = await this.contactRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },
@@ -52,7 +49,7 @@ export class ContactService {
     async findOne(id: number) {
         try {
             const contact = await this.contactRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!contact) {
@@ -72,7 +69,7 @@ export class ContactService {
     async update(id: number, data: Partial<Contact>) {
         try {
             const contact = await this.contactRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!contact) {
@@ -95,15 +92,16 @@ export class ContactService {
 
     async remove(id: number) {
         try {
-            const team = await this.contactRepository.findOne({
-                where: { id },
+            const contact = await this.contactRepository.findOne({
+                where: { id, status: Not(status.DELETED) },
             });
 
-            if (!team) {
+            if (!contact) {
                 throw new NotFoundException('Contact not found');
             }
 
-            await this.contactRepository.remove(team);
+            contact.status = status.DELETED;
+            await this.contactRepository.save(contact);
 
             return {
                 success: true,

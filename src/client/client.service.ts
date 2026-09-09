@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Client } from "./entities/client.entity";
+import { Repository, Not } from "typeorm";
+import { Client, status } from "./entities/client.entity";
 
 @Injectable()
 export class ClientService {
@@ -30,7 +30,7 @@ export class ClientService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
             const data = await this.clientRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +50,7 @@ export class ClientService {
     async findOne(id: number) {
         try {
             const Client = await this.clientRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!Client) {
@@ -70,7 +70,7 @@ export class ClientService {
     async update(id: number, data: Partial<Client>) {
         try {
             const Client = await this.clientRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!Client) {
@@ -93,15 +93,16 @@ export class ClientService {
 
     async remove(id: number) {
         try {
-            const Client = await this.clientRepository.findOne({
-                where: { id },
+            const client = await this.clientRepository.findOne({
+                where: { id, status: Not(status.DELETED) },
             });
 
-            if (!Client) {
+            if (!client) {
                 throw new NotFoundException('Client not found');
             }
 
-            await this.clientRepository.remove(Client);
+            client.status = status.DELETED;
+            await this.clientRepository.save(client);
 
             return {
                 success: true,

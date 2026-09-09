@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { MarketDevelopment } from "./entities/marketDevelopment.entity";
+import { Not, Repository } from "typeorm";
+import { MarketDevelopment, Status } from "./entities/marketDevelopment.entity";
 
 @Injectable()
 export class marketDevelopmentService {
@@ -35,7 +35,7 @@ export class marketDevelopmentService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
+            const whereClause: any = { status: Not(Status.DELETED) };
             if (country) {
                 whereClause.country = country;
             }
@@ -57,7 +57,7 @@ export class marketDevelopmentService {
     async findOne(id: number) {
         try {
             const marketDevelopment = await this.marketDevelopmentRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!marketDevelopment) {
@@ -77,7 +77,7 @@ export class marketDevelopmentService {
     async update(id: number, data: Partial<MarketDevelopment>) {
         try {
             const marketDevelopment = await this.marketDevelopmentRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!marketDevelopment) {
@@ -101,14 +101,15 @@ export class marketDevelopmentService {
     async remove(id: number) {
         try {
             const marketDevelopment = await this.marketDevelopmentRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!marketDevelopment) {
                 throw new NotFoundException('Market Development not found');
             }
 
-            await this.marketDevelopmentRepository.remove(marketDevelopment);
+            marketDevelopment.status = Status.DELETED;
+            await this.marketDevelopmentRepository.save(marketDevelopment);
 
             return {
                 success: true,

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { ESG } from "./entities/ESG.entity";
+import { Repository, Not } from "typeorm";
+import { ESG, Status } from "./entities/ESG.entity";
 import { Category } from "src/categories/entities/category.entity";
 
 @Injectable()
@@ -44,7 +44,7 @@ export class ESGService {
 
     async findAll(country?: string, category?: string, tag?: string) {
         try {
-            let whereClause: any = {};
+            let whereClause: any = { status: Not(Status.DELETED) };
 
             if (country) {
                 whereClause.country = country;
@@ -75,7 +75,7 @@ export class ESGService {
 
     async findAllGrouped(country?: string, category?: string) {
         try {
-            let whereClause: any = {};
+            let whereClause: any = { status: Not(Status.DELETED) };
 
             if (country) {
                 whereClause.country = country;
@@ -118,7 +118,7 @@ export class ESGService {
     async findOne(id: number) {
         try {
             const esg = await this.esgRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
                 relations: ['category']
             });
 
@@ -139,7 +139,7 @@ export class ESGService {
     async update(id: number, data: Partial<ESG>) {
         try {
             const esg = await this.esgRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
                 relations: ['category']
             });
 
@@ -173,14 +173,15 @@ export class ESGService {
     async remove(id: number) {
         try {
             const esg = await this.esgRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!esg) {
                 throw new NotFoundException('ESG not found');
             }
 
-            await this.esgRepository.remove(esg);
+            esg.status = Status.DELETED;
+            await this.esgRepository.save(esg);
 
             return {
                 success: true,

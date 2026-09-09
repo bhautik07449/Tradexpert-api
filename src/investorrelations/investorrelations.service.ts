@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Investorrelations } from "./entities/investorrelations.entity";
+import { Not, Repository } from "typeorm";
+import { Investorrelations, Status } from "./entities/investorrelations.entity";
 import { Product } from "src/product/entities/product.entity";
 import { Financial } from "src/financialservice/entities/financialservice.entity";
 
@@ -69,7 +69,8 @@ export class InvestorrelationsService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.investorrelationsRepository.find({
                 order: { createdAt: 'DESC' },
@@ -90,7 +91,7 @@ export class InvestorrelationsService {
     async findOne(id: number) {
         try {
             const Investorrelations = await this.investorrelationsRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!Investorrelations) {
@@ -110,7 +111,7 @@ export class InvestorrelationsService {
     async update(id: number, data: Partial<Investorrelations>) {
         try {
             const Investorrelations = await this.investorrelationsRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!Investorrelations) {
@@ -164,14 +165,15 @@ export class InvestorrelationsService {
     async remove(id: number) {
         try {
             const Investorrelations = await this.investorrelationsRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!Investorrelations) {
                 throw new NotFoundException('Investor Relations not found');
             }
 
-            await this.investorrelationsRepository.remove(Investorrelations);
+            Investorrelations.status = Status.DELETED;
+            await this.investorrelationsRepository.save(Investorrelations);
 
             return {
                 success: true,

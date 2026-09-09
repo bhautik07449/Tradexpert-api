@@ -4,8 +4,8 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Blog } from './entities/blog.entity';
+import { Repository, Not } from 'typeorm';
+import { Blog, BlogStatus } from './entities/blog.entity';
 import { BlogCategory } from 'src/blogCategory/entities/blogcategory.entity';
 
 @Injectable()
@@ -37,9 +37,9 @@ export class BlogService {
         const postDate = new Date(data.postDate);
 
         if (postDate <= today) {
-            data.status = 'active' as any;
+            data.status = BlogStatus.ACTIVE;
         } else {
-            data.status = 'inactive' as any;
+            data.status = BlogStatus.INACTIVE;
         }
 
         const blog = this.blogRepository.create(data);
@@ -53,7 +53,7 @@ export class BlogService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { blog_category: { country: country } } : {}
+        const whereClause: any = country ? { blog_category: { country: country }, status: Not(BlogStatus.DELETED) } : { status: Not(BlogStatus.DELETED) };
 
         const blogs = await this.blogRepository.find({
             relations: ['blog_category'],
@@ -69,7 +69,7 @@ export class BlogService {
 
     async findOne(id: number) {
         const blog = await this.blogRepository.findOne({
-            where: { id },
+            where: { id, status: Not(BlogStatus.DELETED) },
             relations: ['blog_category'],
         });
 
@@ -83,7 +83,7 @@ export class BlogService {
 
     async update(id: number, data: Partial<Blog>) {
         const blog = await this.blogRepository.findOne({
-            where: { id },
+            where: { id, status: Not(BlogStatus.DELETED) },
             relations: ['blog_category'],
         });
 
@@ -103,7 +103,7 @@ export class BlogService {
             const today = new Date();
             const postDate = new Date(data.postDate);
 
-            blog.status = postDate <= today ? 'active' as any : 'inactive' as any;
+            blog.status = postDate <= today ? BlogStatus.ACTIVE : BlogStatus.INACTIVE;
         }
 
         Object.assign(blog, data);
@@ -118,11 +118,12 @@ export class BlogService {
     }
 
     async remove(id: number) {
-        const blog = await this.blogRepository.findOne({ where: { id } });
+        const blog = await this.blogRepository.findOne({ where: { id, status: Not(BlogStatus.DELETED) } });
 
         if (!blog) throw new NotFoundException('Blog not found');
 
-        await this.blogRepository.remove(blog);
+        blog.status = BlogStatus.DELETED;
+        await this.blogRepository.save(blog);
 
         return {
             success: true,

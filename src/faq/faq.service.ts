@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Faq } from "./entities/faq.entity";
+import { Repository, Not } from "typeorm";
+import { Faq, status } from "./entities/faq.entity";
 
 @Injectable()
 export class FaqService {
@@ -29,7 +29,7 @@ export class FaqService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
             const data = await this.faqRepository.find({
                 order: { createdAt: 'DESC' },
@@ -49,7 +49,7 @@ export class FaqService {
     async findOne(id: number) {
         try {
             const faq = await this.faqRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!faq) {
@@ -69,7 +69,7 @@ export class FaqService {
     async update(id: number, data: Partial<Faq>) {
 
         const faq = await this.faqRepository.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
         });
 
         if (!faq) {
@@ -90,14 +90,15 @@ export class FaqService {
     async remove(id: number) {
         try {
             const faq = await this.faqRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!faq) {
                 throw new NotFoundException('Faq not found');
             }
 
-            await this.faqRepository.remove(faq);
+            faq.status = status.DELETED;
+            await this.faqRepository.save(faq);
 
             return {
                 success: true,

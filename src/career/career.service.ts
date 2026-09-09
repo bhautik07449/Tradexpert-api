@@ -21,7 +21,7 @@ export class CareerService {
 
             if (data.email) {
                 const existingEmail = await this.careerRepository.findOne({
-                    where: { email: data.email }
+                    where: { email: data.email, status: Not(Status.DELETED) }
                 });
 
                 if (existingEmail) {
@@ -59,7 +59,7 @@ export class CareerService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
+            const whereClause: any = { status: Not(Status.DELETED) };
             if (country) {
                 whereClause.country = country;
             }
@@ -84,7 +84,7 @@ export class CareerService {
     async findOne(id: number) {
         try {
             const career = await this.careerRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!career) {
@@ -104,7 +104,7 @@ export class CareerService {
     async update(id: number, data: Partial<Career>) {
         try {
             const career = await this.careerRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!career) {
@@ -144,7 +144,8 @@ export class CareerService {
                 throw new NotFoundException('Career Type not found');
             }
 
-            await this.careerRepository.remove(career);
+            career.status = Status.DELETED;
+            await this.careerRepository.save(career);
 
             return {
                 success: true,

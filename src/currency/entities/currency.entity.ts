@@ -1,5 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+export enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    DELETED = 'deleted',
+}
+
 @Entity('currency')
 export class Currency {
     @PrimaryGeneratedColumn()
@@ -22,6 +28,13 @@ export class Currency {
 
     @Column({ nullable: true })
     country: string | null;
+
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.ACTIVE,
+    })
+    status: Status;
 
     @CreateDateColumn()
     createdAt: Date;

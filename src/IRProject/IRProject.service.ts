@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { IRProject } from "./entities/IRProject.entity";
+import { Not, Repository } from "typeorm";
+import { IRProject, Status } from "./entities/IRProject.entity";
 
 @Injectable()
 export class IRProjectService {
@@ -39,7 +39,7 @@ export class IRProjectService {
 
     async findAll(country?: string, category?: string) {
         try {
-            const whereClause: any = {}
+            const whereClause: any = { status: Not(Status.DELETED) }
 
             if (country) {
                 whereClause.country = country;
@@ -67,7 +67,7 @@ export class IRProjectService {
     async findOne(id: number) {
         try {
             const project = await this.IRProjectRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
                 relations: ['category', 'subcategory', 'finacial_service']
             });
 
@@ -88,7 +88,7 @@ export class IRProjectService {
     async update(id: number, data: Partial<IRProject>) {
         try {
             const project = await this.IRProjectRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!project) {
@@ -120,14 +120,15 @@ export class IRProjectService {
     async remove(id: number) {
         try {
             const project = await this.IRProjectRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!project) {
                 throw new NotFoundException('Project not found');
             }
 
-            await this.IRProjectRepository.remove(project);
+            project.status = Status.DELETED;
+            await this.IRProjectRepository.save(project);
 
             return {
                 success: true,

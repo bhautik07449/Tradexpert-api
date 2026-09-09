@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { MarketData } from "./entities/marketData.entity";
+import { Not, Repository } from "typeorm";
+import { MarketData, Status } from "./entities/marketData.entity";
 import { MarketDevelopment } from "src/markerDevelopment/entities/marketDevelopment.entity";
 import { Product } from "src/product/entities/product.entity";
 import { Category } from "src/categories/entities/category.entity";
@@ -69,7 +69,8 @@ export class MarketDataService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.marketDataRepository.find({
                 order: { createdAt: 'DESC' },
@@ -90,7 +91,7 @@ export class MarketDataService {
     async findOne(id: number) {
         try {
             const marketData = await this.marketDataRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
                 relations: ['category', 'subCategory', 'product', 'product.offer_type', 'product.offer_type.items', 'product.offer_type.items.product'],
             });
 
@@ -111,7 +112,7 @@ export class MarketDataService {
     async update(id: number, data: Partial<MarketData>) {
         try {
             const marketData = await this.marketDataRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             const categoryId = (data as any).category;
@@ -160,14 +161,15 @@ export class MarketDataService {
     async remove(id: number) {
         try {
             const marketData = await this.marketDataRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!marketData) {
                 throw new NotFoundException('Market Data not found');
             }
 
-            await this.marketDataRepository.remove(marketData);
+            marketData.status = Status.DELETED;
+            await this.marketDataRepository.save(marketData);
 
             return {
                 success: true,

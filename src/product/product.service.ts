@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { Measurement } from 'src/measurements/entities/measurement.entity';
@@ -107,7 +107,7 @@ export class ProductService {
     }
 
     async findAll(season?: any, category?: any, country?: string, subcategory?: any) {
-        const whereClause: any = {};
+        const whereClause: any = { status: Not('deleted') };
 
         if (season) {
             whereClause.season = season;
@@ -144,7 +144,7 @@ export class ProductService {
 
     async findOne(id: number) {
         const product = await this.productRepo.findOne({
-            where: { id },
+            where: { id, status: Not('deleted') },
             relations: ['category', 'subcategory', 'measure', 'dmrs', 'dmrs.market', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
         });
 
@@ -162,6 +162,7 @@ export class ProductService {
     async findBycat(slug: string) {
         let products = await this.productRepo.find({
             where: {
+                status: Not('deleted'),
                 category: {
                     slug: slug,
                 },
@@ -172,6 +173,7 @@ export class ProductService {
         if (!products.length) {
             products = await this.productRepo.find({
                 where: {
+                    status: Not('deleted'),
                     subcategory: {
                         slug: slug,
                     },
@@ -267,7 +269,8 @@ export class ProductService {
 
         if (!product) throw new NotFoundException('Product not found');
 
-        await this.productRepo.remove(product);
+        product.status = 'deleted';
+        await this.productRepo.save(product);
 
         return {
             success: true,

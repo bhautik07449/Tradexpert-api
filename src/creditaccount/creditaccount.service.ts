@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreditAccount } from './entity/creditaccount.entity';
+import { Repository, Not } from 'typeorm';
+import { CreditAccount, Status } from './entity/creditaccount.entity';
 
 @Injectable()
 export class CreditAccountService {
@@ -22,7 +22,7 @@ export class CreditAccountService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
             const accounts = await this.creditAccountRepo.find({
                 where: whereClause
@@ -35,7 +35,7 @@ export class CreditAccountService {
 
     async findOne(id: string) {
         try {
-            const account = await this.creditAccountRepo.findOne({ where: { id } });
+            const account = await this.creditAccountRepo.findOne({ where: { id, status: Not(Status.DELETED) } });
 
             if (!account) {
                 throw new NotFoundException(`Credit account with ID ${id} not found`);
@@ -62,7 +62,8 @@ export class CreditAccountService {
     async remove(id: string) {
         try {
             const account = await this.findOne(id);
-            await this.creditAccountRepo.remove(account);
+            account.status = Status.DELETED;
+            await this.creditAccountRepo.save(account);
             return { message: 'Credit account deleted successfully', account };
         } catch (error) {
             throw new Error(`Failed to delete credit account: ${error.message}`);

@@ -29,6 +29,9 @@ export class AdminDto {
   status: string;
 
   @Expose()
+  role: string;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()

@@ -4,6 +4,7 @@ import { Client } from 'src/client/entities/client.entity';
 export enum TestimonialStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 
 @Entity({ name: 'testimonial' })

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Team } from "./entities/team.entity";
+import { Not, Repository } from "typeorm";
+import { Team, status } from "./entities/team.entity";
 
 @Injectable()
 export class TeamService {
@@ -30,7 +30,8 @@ export class TeamService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(status.DELETED);
 
             const data = await this.teamRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +51,7 @@ export class TeamService {
     async findOne(id: number) {
         try {
             const team = await this.teamRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!team) {
@@ -70,7 +71,7 @@ export class TeamService {
     async update(id: number, data: Partial<Team>) {
         try {
             const team = await this.teamRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!team) {
@@ -94,14 +95,15 @@ export class TeamService {
     async remove(id: number) {
         try {
             const team = await this.teamRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!team) {
                 throw new NotFoundException('Team not found');
             }
 
-            await this.teamRepository.remove(team);
+            team.status = status.DELETED;
+            await this.teamRepository.save(team);
 
             return {
                 success: true,

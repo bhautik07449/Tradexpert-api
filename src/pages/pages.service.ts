@@ -31,7 +31,7 @@ export class PagesService {
 
     async findAll() {
         const pages = await this.pageRepo.find({
-            // where: { status: Not(PageStatus.INACTIVE) },
+            where: { status: Not(PageStatus.DELETED) },
             order: { createdAt: 'ASC' },
         });
 
@@ -44,7 +44,7 @@ export class PagesService {
 
     async findOne(id: number) {
         const page = await this.pageRepo.findOne({
-            where: { id },
+            where: { id, status: Not(PageStatus.DELETED) },
         });
 
         if (!page) {
@@ -60,7 +60,7 @@ export class PagesService {
 
     async findSlug(page_url: string) {
         const page = await this.pageRepo.findOne({
-            where: { page_url },
+            where: { page_url, status: Not(PageStatus.DELETED) },
         });
 
         if (!page) {
@@ -75,7 +75,7 @@ export class PagesService {
     }
 
     async update(id: number, data: Partial<Page>) {
-        const page = await this.pageRepo.findOne({ where: { id } });
+        const page = await this.pageRepo.findOne({ where: { id, status: Not(PageStatus.DELETED) } });
 
         if (!page) {
             throw new NotFoundException('Page not found');
@@ -92,13 +92,14 @@ export class PagesService {
     }
 
     async remove(id: number) {
-        const page = await this.pageRepo.findOne({ where: { id } });
+        const page = await this.pageRepo.findOne({ where: { id, status: Not(PageStatus.DELETED) } });
 
         if (!page) {
             throw new NotFoundException('Page not found');
         }
 
-        await this.pageRepo.remove(page);
+        page.status = PageStatus.DELETED;
+        await this.pageRepo.save(page);
 
         return {
             success: true,

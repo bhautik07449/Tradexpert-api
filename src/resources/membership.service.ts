@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Membership } from "./entities/membership.entity";
+import { Not, Repository } from "typeorm";
+import { Membership, Status } from "./entities/membership.entity";
 
 @Injectable()
 export class MembershipService {
@@ -30,7 +30,8 @@ export class MembershipService {
 
     async findAll(country: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(Status.DELETED);
 
             const data = await this.membershipRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +51,7 @@ export class MembershipService {
     async findOne(id: number) {
         try {
             const membership = await this.membershipRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!membership) {
@@ -70,7 +71,7 @@ export class MembershipService {
     async update(id: number, data: Partial<Membership>) {
         try {
             const membership = await this.membershipRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!membership) {
@@ -94,14 +95,15 @@ export class MembershipService {
     async remove(id: number) {
         try {
             const membership = await this.membershipRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!membership) {
                 throw new NotFoundException('Membership Resources not found');
             }
 
-            await this.membershipRepository.remove(membership);
+            membership.status = Status.DELETED;
+            await this.membershipRepository.save(membership);
 
             return {
                 success: true,

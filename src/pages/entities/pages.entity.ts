@@ -9,6 +9,7 @@ import {
 export enum PageStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 
 @Entity('pages')

@@ -1,6 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 
+export enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    DELETED = 'deleted',
+}
+
 @Entity({ name: 'trade_data' })
 export class TradeControllerEntity {
     @PrimaryGeneratedColumn()
@@ -27,6 +33,13 @@ export class TradeControllerEntity {
 
     @Column({ type: 'jsonb', nullable: true, default: [] })
     export_data: { country: string; status: string; description: string; no: string }[];
+
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.ACTIVE,
+    })
+    status: Status;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Franchise } from "./entities/franchise.entity";
+import { Repository, Not } from "typeorm";
+import { Franchise, Status } from "./entities/franchise.entity";
 
 @Injectable()
 export class FranchiseService {
@@ -30,7 +30,7 @@ export class FranchiseService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
             const data = await this.franchiseRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +50,7 @@ export class FranchiseService {
     async findOne(id: number) {
         try {
             const franchise = await this.franchiseRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!franchise) {
@@ -70,7 +70,7 @@ export class FranchiseService {
     async update(id: number, data: Partial<Franchise>) {
         try {
             const franchise = await this.franchiseRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!franchise) {
@@ -94,14 +94,15 @@ export class FranchiseService {
     async remove(id: number) {
         try {
             const franchise = await this.franchiseRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!franchise) {
                 throw new NotFoundException('Franchise not found');
             }
 
-            await this.franchiseRepository.remove(franchise);
+            franchise.status = Status.DELETED;
+            await this.franchiseRepository.save(franchise);
 
             return {
                 success: true,

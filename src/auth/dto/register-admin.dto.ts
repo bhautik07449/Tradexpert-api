@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { AdminRole } from 'src/admin/entities/admin.entity';
 
 export class RegisterAdminDto {
   @IsNotEmpty()
@@ -25,4 +26,8 @@ export class RegisterAdminDto {
   @IsOptional()
   @IsString()
   country?: string;
+
+  @IsOptional()
+  @IsEnum(AdminRole)
+  role?: AdminRole;
 }

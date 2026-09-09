@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Newsletter } from "./entities/newsletter.entity";
+import { Not, Repository } from "typeorm";
+import { Newsletter, Status } from "./entities/newsletter.entity";
 
 @Injectable()
 export class NewsletterService {
@@ -30,7 +30,7 @@ export class NewsletterService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
+            const whereClause: any = { status: Not(Status.DELETED) };
             if (country) {
                 whereClause.country = country;
             }
@@ -52,7 +52,7 @@ export class NewsletterService {
     async findOne(id: number) {
         try {
             const newsletter = await this.newsletterRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!newsletter) {
@@ -72,7 +72,7 @@ export class NewsletterService {
     async update(id: number, data: Partial<Newsletter>) {
         try {
             const newsletter = await this.newsletterRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!newsletter) {
@@ -96,14 +96,15 @@ export class NewsletterService {
     async remove(id: number) {
         try {
             const newsletter = await this.newsletterRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!newsletter) {
                 throw new NotFoundException('Newsletter not found');
             }
 
-            await this.newsletterRepository.remove(newsletter);
+            newsletter.status = Status.DELETED;
+            await this.newsletterRepository.save(newsletter);
 
             return {
                 success: true,

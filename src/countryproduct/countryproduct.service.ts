@@ -3,8 +3,8 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Countryproduct } from './entities/countryproduct.entity';
+import { Repository, Not } from 'typeorm';
+import { Countryproduct, Status } from './entities/countryproduct.entity';
 
 import { Countryproductname } from 'src/countryproductname/entities/countryproductname.entity';
 
@@ -36,7 +36,7 @@ export class CountryproductService {
         const savedId = Array.isArray(saved) ? saved[0].id : saved.id;
 
         const fullData = await this.countryproductRepo.findOne({
-            where: { id: savedId },
+            where: { id: savedId, status: Not(Status.DELETED) },
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
         });
 
@@ -48,7 +48,7 @@ export class CountryproductService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country: country } : {};
+        const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
         const data = await this.countryproductRepo.find({
             where: whereClause,
@@ -72,12 +72,13 @@ export class CountryproductService {
             .leftJoinAndSelect('offer_type.items', 'items')
             .leftJoinAndSelect('items.product', 'item_product')
             .leftJoinAndSelect('countryproduct.productname', 'productname')
+            .where('countryproduct.status != :deletedStatus', { deletedStatus: Status.DELETED })
             .orderBy('countryproduct.createdAt', 'DESC');
 
         const typeQuery = this.countryproductnameRepo.createQueryBuilder('countryproductname').orderBy('countryproductname.createdAt', 'DESC');
 
         if (country) {
-            query.where('countryproduct.country = :country', { country });
+            query.andWhere('countryproduct.country = :country', { country });
             typeQuery.where('countryproductname.country = :country', { country });
         }
 
@@ -158,7 +159,7 @@ export class CountryproductService {
 
     async findOne(id: number) {
         const data = await this.countryproductRepo.findOne({
-            where: { id },
+            where: { id, status: Not(Status.DELETED) },
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
         });
 
@@ -173,7 +174,7 @@ export class CountryproductService {
 
     async update(id: number, body: any) {
         const countryproduct = await this.countryproductRepo.findOne({
-            where: { id },
+            where: { id, status: Not(Status.DELETED) },
         });
 
         if (!countryproduct)
@@ -196,7 +197,7 @@ export class CountryproductService {
         await this.countryproductRepo.save(countryproduct);
 
         const updated = await this.countryproductRepo.findOne({
-            where: { id },
+            where: { id, status: Not(Status.DELETED) },
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'productname'],
         });
 
@@ -209,13 +210,14 @@ export class CountryproductService {
 
     async remove(id: number) {
         const countryproduct = await this.countryproductRepo.findOne({
-            where: { id },
+            where: { id, status: Not(Status.DELETED) },
         });
 
         if (!countryproduct)
             throw new NotFoundException('Product entry not found');
 
-        await this.countryproductRepo.remove(countryproduct);
+        countryproduct.status = Status.DELETED;
+        await this.countryproductRepo.save(countryproduct);
 
         return {
             success: true,

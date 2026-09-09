@@ -1,5 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 
+export enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    DELETED = 'deleted',
+}
+
 @Entity()
 export class CreditAccount {
     @PrimaryGeneratedColumn()
@@ -73,6 +79,13 @@ export class CreditAccount {
 
     @Column()
     agree: string;
+
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.ACTIVE,
+    })
+    status: Status;
 
     @UpdateDateColumn({ name: 'last_updated_at', nullable: true })
     lastUpdatedAt: Date;

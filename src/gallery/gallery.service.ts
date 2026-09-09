@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Gallery } from "./entities/gallery.entity";
+import { Repository, Not } from "typeorm";
+import { Gallery, status } from "./entities/gallery.entity";
 
 @Injectable()
 export class GalleryService {
@@ -18,7 +18,7 @@ export class GalleryService {
             }
 
             const existing = await this.galleryRepository.findOne({
-                where: { sr_no: data.sr_no }
+                where: { sr_no: data.sr_no, status: Not(status.DELETED) }
             });
 
             if (existing) {
@@ -41,7 +41,7 @@ export class GalleryService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
             const data = await this.galleryRepository.find({
                 order: { sr_no: 'ASC' },
@@ -61,7 +61,7 @@ export class GalleryService {
     async findOne(id: number) {
         try {
             const gallery = await this.galleryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!gallery) {
@@ -81,7 +81,7 @@ export class GalleryService {
     async update(id: number, data: Partial<Gallery>) {
 
         const gallery = await this.galleryRepository.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
         });
 
         if (!gallery) {
@@ -90,7 +90,7 @@ export class GalleryService {
 
         if (data.sr_no) {
             const existing = await this.galleryRepository.findOne({
-                where: { sr_no: data.sr_no }
+                where: { sr_no: data.sr_no, status: Not(status.DELETED) }
             });
 
             if (existing && existing.id !== id) {
@@ -112,14 +112,15 @@ export class GalleryService {
     async remove(id: number) {
         try {
             const gallery = await this.galleryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!gallery) {
                 throw new NotFoundException('gallery not found');
             }
 
-            await this.galleryRepository.remove(gallery);
+            gallery.status = status.DELETED;
+            await this.galleryRepository.save(gallery);
 
             return {
                 success: true,

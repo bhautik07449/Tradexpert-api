@@ -2,8 +2,17 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 export enum AdminStatus {
   ACTIVE = 'active',
+  PENDING = 'pending',
   BLOCK = 'block',
   DELETED = 'deleted',
+}
+
+export enum AdminRole {
+  SUPER_ADMIN = 'super_admin',
+  SUPPLIER = 'supplier',
+  SERVICE = 'service',
+  CLIENT = 'client',
+  MONETILE = 'monetile',
 }
 
 @Entity({ name: 'admins' })
@@ -23,6 +32,9 @@ export class Admin {
 
   @Column({ select: false })
   password: string;
+
+  @Column({ type: 'enum', enum: AdminRole, default: AdminRole.SUPER_ADMIN })
+  role: AdminRole;
 
   @Column()
   photo: string;

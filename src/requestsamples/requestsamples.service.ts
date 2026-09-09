@@ -5,8 +5,8 @@ import {
     NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Requestsamples } from "./entities/requestsamples.entity";
+import { Not, Repository } from "typeorm";
+import { Requestsamples, status } from "./entities/requestsamples.entity";
 import { Product } from "src/product/entities/product.entity";
 import { Buyer } from "src/buyers/entities/buyer.entity";
 
@@ -70,7 +70,7 @@ export class RequestsamplesService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
+            const whereClause: any = { status: Not(status.DELETED) };
             if (country) {
                 whereClause.country = country;
             }
@@ -95,7 +95,7 @@ export class RequestsamplesService {
     async findOne(id: number) {
         try {
             const requestSample = await this.requestSampleRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
                 relations: ["product"],
             });
 
@@ -116,7 +116,7 @@ export class RequestsamplesService {
     async update(id: number, data: any) {
         try {
             const requestSample = await this.requestSampleRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!requestSample) {
@@ -164,14 +164,15 @@ export class RequestsamplesService {
     async remove(id: number) {
         try {
             const requestSample = await this.requestSampleRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!requestSample) {
                 throw new NotFoundException("Request sample not found");
             }
 
-            await this.requestSampleRepository.remove(requestSample);
+            requestSample.status = status.DELETED;
+            await this.requestSampleRepository.save(requestSample);
 
             return {
                 success: true,

@@ -4,8 +4,8 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { Brand } from './entities/brand.entity';
+import { In, Not, Repository } from 'typeorm';
+import { Brand, BrandStatus } from './entities/brand.entity';
 import { Category } from '../categories/entities/category.entity';
 import { Product } from '../product/entities/product.entity';
 
@@ -44,7 +44,7 @@ export class BrandsService {
     }
 
     async findAll(country?: string): Promise<Brand[]> {
-        const whereClause = country ? { country } : {};
+        const whereClause: any = country ? { country, status: Not(BrandStatus.DELETED) } : { status: Not(BrandStatus.DELETED) };
 
         return this.brandRepository.find({
             where: whereClause,
@@ -53,7 +53,7 @@ export class BrandsService {
     }
 
     async groupByCategoryAndCountry(country?: string) {
-        const whereClause = country ? { country } : {};
+        const whereClause: any = country ? { country, status: Not(BrandStatus.DELETED) } : { status: Not(BrandStatus.DELETED) };
 
         const list = await this.brandRepository.find({
             where: whereClause,
@@ -84,7 +84,7 @@ export class BrandsService {
 
         const products = uniqueCategoryIds.length
             ? await this.productRepository.find({
-                  where: { category: { id: In(uniqueCategoryIds) } },
+                  where: { category: { id: In(uniqueCategoryIds) }, status: Not('deleted') },
                   relations: ['category', 'subcategory', 'offer_type', 'offer_type.items', 'offer_type.items.product'],
               })
             : [];
@@ -147,7 +147,7 @@ export class BrandsService {
 
     async findOne(id: number): Promise<Brand> {
         const brand = await this.brandRepository.findOne({
-            where: { id },
+            where: { id, status: Not(BrandStatus.DELETED) },
             relations: ['category'],
         });
 
@@ -180,20 +180,15 @@ export class BrandsService {
 
     async remove(id: number): Promise<{ message: string }> {
         const brand = await this.brandRepository.findOne({
-            where: { id }
+            where: { id, status: Not(BrandStatus.DELETED) }
         });
 
         if (!brand) {
             throw new NotFoundException('Brand not found');
         }
 
-        // if (brand.products.length > 0) {
-        //     throw new BadRequestException(
-        //         'Cannot delete brand with associated products',
-        //     );
-        // }
-
-        await this.brandRepository.remove(brand);
+        brand.status = BrandStatus.DELETED;
+        await this.brandRepository.save(brand);
 
         return { message: 'Brand deleted successfully' };
     }

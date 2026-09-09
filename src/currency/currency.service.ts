@@ -4,8 +4,8 @@ import {
     InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Currency } from './entities/currency.entity';
+import { Repository, Not } from 'typeorm';
+import { Currency, Status } from './entities/currency.entity';
 
 @Injectable()
 export class CurrencyService {
@@ -31,7 +31,7 @@ export class CurrencyService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
             const data = await this.currencyRepo.find({
                 order: { createdAt: 'DESC' },
@@ -51,7 +51,7 @@ export class CurrencyService {
     async findOne(id: number) {
         try {
             const currency = await this.currencyRepo.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!currency) {
@@ -71,7 +71,7 @@ export class CurrencyService {
     async update(id: number, data: Partial<Currency>) {
         try {
             const currency = await this.currencyRepo.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!currency) {
@@ -95,14 +95,15 @@ export class CurrencyService {
     async remove(id: number) {
         try {
             const currency = await this.currencyRepo.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!currency) {
                 throw new NotFoundException('Currency not found');
             }
 
-            await this.currencyRepo.remove(currency);
+            currency.status = Status.DELETED;
+            await this.currencyRepo.save(currency);
 
             return {
                 success: true,

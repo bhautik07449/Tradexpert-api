@@ -14,7 +14,9 @@ export class InvestorsService {
   async create(data: Partial<Investor>) {
     try {
       if (data.email) {
-        const existingInvestor = await this.investorRepository.findOne({ where: { email: data.email } });
+        const existingInvestor = await this.investorRepository.findOne({ 
+          where: { email: data.email, status: Not(InvestorStatus.DELETED) } 
+        });
         if (existingInvestor) {
           throw new ConflictException('Email already exists');
         }

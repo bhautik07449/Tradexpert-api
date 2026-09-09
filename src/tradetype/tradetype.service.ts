@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Tradetype } from "./entities/tradetype.entity";
+import { Not, Repository } from "typeorm";
+import { Tradetype, TradetypeStatus } from "./entities/tradetype.entity";
 import { Tradeoffer } from "src/tradeoffer/entities/tradeoffer.entity";
 
 @Injectable()
@@ -42,7 +42,8 @@ export class TradetypeService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country } : {};
+            whereClause.status = Not(TradetypeStatus.DELETED);
 
             const data = await this.tradetypeRepository.find({
                 order: { createdAt: 'DESC' },
@@ -62,7 +63,7 @@ export class TradetypeService {
     async findOne(id: number) {
         try {
             const tradetype = await this.tradetypeRepository.findOne({
-                where: { id },
+                where: { id, status: Not(TradetypeStatus.DELETED) },
             });
 
             if (!tradetype) {
@@ -82,7 +83,7 @@ export class TradetypeService {
     async update(id: number, data: Partial<Tradetype>) {
         try {
             const tradetype = await this.tradetypeRepository.findOne({
-                where: { id },
+                where: { id, status: Not(TradetypeStatus.DELETED) },
             });
 
             if (!tradetype) {
@@ -106,14 +107,15 @@ export class TradetypeService {
     async remove(id: number) {
         try {
             const tradetype = await this.tradetypeRepository.findOne({
-                where: { id },
+                where: { id, status: Not(TradetypeStatus.DELETED) },
             });
 
             if (!tradetype) {
                 throw new NotFoundException('Trade Type not found');
             }
 
-            await this.tradetypeRepository.remove(tradetype);
+            tradetype.status = TradetypeStatus.DELETED;
+            await this.tradetypeRepository.save(tradetype);
 
             return {
                 success: true,

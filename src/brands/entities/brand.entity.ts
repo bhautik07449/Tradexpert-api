@@ -5,6 +5,7 @@ import { Category } from '../../categories/entities/category.entity';
 export enum BrandStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
+  DELETED = 'deleted',
 }
 
 @Entity({ name: 'brands' })

@@ -3,9 +3,9 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
-import { OfferRequest } from './entities/offerrequest.entity';
+import { OfferRequest, OfferRequestStatus } from './entities/offerrequest.entity';
 
 @Injectable()
 export class OfferRequestService {
@@ -39,7 +39,8 @@ export class OfferRequestService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { trade_offer: { country: country } } : {}
+        const whereClause: any = country ? { trade_offer: { country: country } } : {};
+        whereClause.status = Not(OfferRequestStatus.DELETED);
 
         const data = await this.offerRepo.find({
             where: whereClause,
@@ -56,7 +57,7 @@ export class OfferRequestService {
 
     async findOne(id: number) {
         const data = await this.offerRepo.findOne({
-            where: { id },
+            where: { id, status: Not(OfferRequestStatus.DELETED) },
             relations: ['trade_offer'],
         });
 
@@ -71,7 +72,7 @@ export class OfferRequestService {
 
     async update(id: number, body: Partial<OfferRequest>) {
         const request = await this.offerRepo.findOne({
-            where: { id },
+            where: { id, status: Not(OfferRequestStatus.DELETED) },
             relations: ['trade_offer'],
         });
 
@@ -101,13 +102,14 @@ export class OfferRequestService {
 
     async remove(id: number) {
         const request = await this.offerRepo.findOne({
-            where: { id },
+            where: { id, status: Not(OfferRequestStatus.DELETED) },
         });
 
         if (!request)
             throw new NotFoundException('Offer request not found');
 
-        await this.offerRepo.remove(request);
+        request.status = OfferRequestStatus.DELETED;
+        await this.offerRepo.save(request);
 
         return {
             success: true,

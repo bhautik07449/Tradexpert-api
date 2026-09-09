@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Abctype } from "./entities/abctype.entity";
+import { Repository, Not } from "typeorm";
+import { Abctype, AbctypeStatus } from "./entities/abctype.entity";
 
 @Injectable()
 export class AbctypeService {
@@ -30,7 +30,7 @@ export class AbctypeService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(AbctypeStatus.DELETED) } : { status: Not(AbctypeStatus.DELETED) };
 
             const data = await this.abctypeRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +50,7 @@ export class AbctypeService {
     async findOne(id: number) {
         try {
             const abctype = await this.abctypeRepository.findOne({
-                where: { id },
+                where: { id, status: Not(AbctypeStatus.DELETED) },
             });
 
             if (!abctype) {
@@ -70,7 +70,7 @@ export class AbctypeService {
     async update(id: number, data: Partial<Abctype>) {
         try {
             const abctype = await this.abctypeRepository.findOne({
-                where: { id },
+                where: { id, status: Not(AbctypeStatus.DELETED) },
             });
 
             if (!abctype) {
@@ -94,14 +94,15 @@ export class AbctypeService {
     async remove(id: number) {
         try {
             const abctype = await this.abctypeRepository.findOne({
-                where: { id },
+                where: { id, status: Not(AbctypeStatus.DELETED) },
             });
 
             if (!abctype) {
                 throw new NotFoundException('Abc Type not found');
             }
 
-            await this.abctypeRepository.remove(abctype);
+            abctype.status = AbctypeStatus.DELETED;
+            await this.abctypeRepository.save(abctype);
 
             return {
                 success: true,

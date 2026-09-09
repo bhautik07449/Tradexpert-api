@@ -4,8 +4,8 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
-import { Category } from './entities/category.entity';
+import { IsNull, Not, Repository } from 'typeorm';
+import { Category, CategoryStatus } from './entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class CategoriesService {
     async create(data: Partial<Category>): Promise<Category> {
         if (data.parent?.id) {
             const parent = await this.categoryRepository.findOne({
-                where: { id: data.parent.id },
+                where: { id: data.parent.id, status: Not(CategoryStatus.DELETED) },
             });
 
             if (!parent) {
@@ -34,6 +34,7 @@ export class CategoriesService {
 
     async findAll(): Promise<Category[]> {
         const categories = await this.categoryRepository.find({
+            where: { status: Not(CategoryStatus.DELETED) },
             relations: ['parent'],
         });
 
@@ -43,7 +44,7 @@ export class CategoriesService {
     async findAllByCountry(country: string): Promise<Category[]> {
         const categories = await this.categoryRepository.find({
             relations: ['parent'],
-            where: { country },
+            where: { country, status: Not(CategoryStatus.DELETED) },
         });
 
         return this.buildTree(categories);
@@ -51,6 +52,7 @@ export class CategoriesService {
 
     async findFlat(): Promise<Category[]> {
         return this.categoryRepository.find({
+            where: { status: Not(CategoryStatus.DELETED) },
             relations: ['parent'],
             order: { id: 'ASC' },
         });
@@ -58,7 +60,7 @@ export class CategoriesService {
 
     async findParents(): Promise<Category[]> {
         return this.categoryRepository.find({
-            where: { parent: IsNull() },
+            where: { parent: IsNull(), status: Not(CategoryStatus.DELETED) },
             order: { id: 'ASC' },
         });
     }
@@ -87,7 +89,7 @@ export class CategoriesService {
 
     async findOne(id: number): Promise<Category> {
         const category = await this.categoryRepository.findOne({
-            where: { id },
+            where: { id, status: Not(CategoryStatus.DELETED) },
             relations: ['parent', 'children'],
         });
 
@@ -142,7 +144,8 @@ export class CategoriesService {
             );
         }
 
-        await this.categoryRepository.remove(category);
+        category.status = CategoryStatus.DELETED;
+        await this.categoryRepository.save(category);
 
         return { message: 'Category deleted successfully' };
     }
@@ -150,12 +153,14 @@ export class CategoriesService {
     async getHierarchy(country?: string): Promise<any[]> {
         // 1. Fetch categories
         const categories = await this.categoryRepository.find({
+            where: { status: Not(CategoryStatus.DELETED) },
             relations: ['parent'],
             order: { id: 'ASC' },
         });
 
         // 2. Fetch products
         const products = await this.categoryRepository.manager.getRepository(Product).find({
+            where: { status: Not('deleted') },
             relations: ['category', 'subcategory', 'finacial_service'],
             order: { id: 'ASC' },
         });

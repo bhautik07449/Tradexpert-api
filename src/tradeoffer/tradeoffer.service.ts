@@ -3,8 +3,8 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Tradeoffer } from './entities/tradeoffer.entity';
+import { Repository, In, Not } from 'typeorm';
+import { Tradeoffer, TradeofferStatus } from './entities/tradeoffer.entity';
 import { TradeofferItem } from './entities/tradeoffer-item.entity';
 import { Tradetype } from 'src/tradetype/entities/tradetype.entity';
 import { Category } from 'src/categories/entities/category.entity';
@@ -82,7 +82,8 @@ export class TradeofferService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country: country } : {}
+        const whereClause: any = country ? { country: country } : {};
+        whereClause.status = Not(TradeofferStatus.DELETED);
 
         const data = await this.tradeofferRepo.find({
             relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
@@ -99,7 +100,7 @@ export class TradeofferService {
 
     async findAllByCountry(country: string) {
         const data = await this.tradeofferRepo.find({
-            where: { country },
+            where: { country, status: Not(TradeofferStatus.DELETED) },
             relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
             order: { createdAt: 'DESC' },
         });
@@ -113,7 +114,7 @@ export class TradeofferService {
 
     async findOne(id: number) {
         const data = await this.tradeofferRepo.findOne({
-            where: { id },
+            where: { id, status: Not(TradeofferStatus.DELETED) },
             relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
         });
 
@@ -128,7 +129,7 @@ export class TradeofferService {
 
     async update(id: number, body: any) {
         const tradeoffer = await this.tradeofferRepo.findOne({
-            where: { id },
+            where: { id, status: Not(TradeofferStatus.DELETED) },
             relations: ['trade_type', 'items'],
         });
 
@@ -169,13 +170,14 @@ export class TradeofferService {
 
     async remove(id: number) {
         const tradeoffer = await this.tradeofferRepo.findOne({
-            where: { id },
+            where: { id, status: Not(TradeofferStatus.DELETED) },
         });
 
         if (!tradeoffer)
             throw new NotFoundException('Trade offer not found');
 
-        await this.tradeofferRepo.remove(tradeoffer);
+        tradeoffer.status = TradeofferStatus.DELETED;
+        await this.tradeofferRepo.save(tradeoffer);
 
         return {
             success: true,

@@ -4,7 +4,8 @@ import { BlogCategory } from 'src/blogCategory/entities/blogcategory.entity';
 
 export enum BlogStatus {
   ACTIVE = 'active',
-  INACTIVE = 'inactive'
+  INACTIVE = 'inactive',
+  DELETED = 'deleted',
 }
 
 @Entity({ name: 'blogs' })

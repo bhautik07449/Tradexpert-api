@@ -5,8 +5,8 @@ import {
     NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Inquiry } from "./entities/inquiry.entity";
+import { Not, Repository } from "typeorm";
+import { Inquiry, status } from "./entities/inquiry.entity";
 import { Product } from "src/product/entities/product.entity";
 import { Buyer } from "src/buyers/entities/buyer.entity";
 
@@ -80,7 +80,7 @@ export class InquiryService {
 
     async findAll(country?: string) {
         try {
-            const whereClause: any = {};
+            const whereClause: any = { status: Not(status.DELETED) };
             if (country) {
                 whereClause.country = country;
             }
@@ -105,7 +105,7 @@ export class InquiryService {
     async findOne(id: number) {
         try {
             const inquiry = await this.inquiryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
                 relations: ["product"],
             });
 
@@ -126,7 +126,7 @@ export class InquiryService {
     async update(id: number, data: any) {
         try {
             const inquiry = await this.inquiryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!inquiry) {
@@ -162,14 +162,15 @@ export class InquiryService {
     async remove(id: number) {
         try {
             const inquiry = await this.inquiryRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!inquiry) {
                 throw new NotFoundException("Inquiry not found");
             }
 
-            await this.inquiryRepository.remove(inquiry);
+            inquiry.status = status.DELETED;
+            await this.inquiryRepository.save(inquiry);
 
             return {
                 success: true,

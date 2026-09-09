@@ -4,7 +4,7 @@ import {
     InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Measurement, MeasurementStatus } from './entities/measurement.entity';
 
 @Injectable()
@@ -90,7 +90,7 @@ export class MeasurementService {
 
     async remove(id: number) {
         const measurement = await this.measurementRepo.findOne({
-            where: { id },
+            where: { id, status: Not(MeasurementStatus.DELETED) },
         });
 
         if (!measurement) {

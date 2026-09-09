@@ -6,6 +6,7 @@ import { Product } from 'src/product/entities/product.entity';
 export enum status {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    DELETED = 'deleted',
 }
 @Entity()
 export class DMR {

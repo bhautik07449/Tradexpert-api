@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, Repository } from "typeorm";
-import { Analytical } from "./entities/analytical.entity";
+import { IsNull, Not, Repository } from "typeorm";
+import { Analytical, status } from "./entities/analytical.entity";
 
 @Injectable()
 export class AnalyticalService {
@@ -30,7 +30,7 @@ export class AnalyticalService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country } : {};
+            const whereClause: any = country ? { country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
             const data = await this.analyticalRepository.find({
                 where: whereClause,
@@ -50,7 +50,7 @@ export class AnalyticalService {
     async findOne(id: number) {
         try {
             const data = await this.analyticalRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!data) {
@@ -69,7 +69,7 @@ export class AnalyticalService {
 
     async findByCountry(country?: string) {
         try {
-            const whereClause = country ? { country: country } : { country: IsNull() };
+            const whereClause: any = country ? { country: country, status: Not(status.DELETED) } : { country: IsNull(), status: Not(status.DELETED) };
             const data = await this.analyticalRepository.find({
                 where: whereClause,
                 order: { createdAt: 'DESC' },
@@ -92,7 +92,7 @@ export class AnalyticalService {
     async update(id: number, data: Partial<Analytical>) {
         try {
             const existingData = await this.analyticalRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!existingData) {
@@ -116,14 +116,15 @@ export class AnalyticalService {
     async remove(id: number) {
         try {
             const data = await this.analyticalRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!data) {
                 throw new NotFoundException('Data not found');
             }
 
-            await this.analyticalRepository.remove(data);
+            data.status = status.DELETED;
+            await this.analyticalRepository.save(data);
 
             return {
                 success: true,

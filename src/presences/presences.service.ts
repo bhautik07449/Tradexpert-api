@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, In } from "typeorm";
-import { Presences } from "./entities/presences.entity";
+import { Repository, In, Not } from "typeorm";
+import { Presences, status } from "./entities/presences.entity";
 import { Category } from "../categories/entities/category.entity";
 
 @Injectable()
@@ -21,7 +21,7 @@ export class PresencesService {
             }
 
             const existingPresence = await this.presencesRepository.findOne({
-                where: { country: data.country },
+                where: { country: data.country, status: Not(status.DELETED) },
             });
 
             if (existingPresence) {
@@ -44,6 +44,7 @@ export class PresencesService {
     async findAll() {
         try {
             const data = await this.presencesRepository.find({
+                where: { status: Not(status.DELETED) },
                 order: { createdAt: 'DESC' },
             });
 
@@ -79,7 +80,7 @@ export class PresencesService {
     async findOne(id: number) {
         try {
             const presence = await this.presencesRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!presence) {
@@ -99,7 +100,7 @@ export class PresencesService {
     async update(id: number, data: Partial<Presences>) {
         try {
             const presence = await this.presencesRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!presence) {
@@ -108,7 +109,7 @@ export class PresencesService {
 
             if (data.country) {
                 const existingPresence = await this.presencesRepository.findOne({
-                    where: { country: data.country },
+                    where: { country: data.country, status: Not(status.DELETED) },
                 });
 
                 if (existingPresence && existingPresence.id !== id) {
@@ -133,14 +134,15 @@ export class PresencesService {
     async remove(id: number) {
         try {
             const presence = await this.presencesRepository.findOne({
-                where: { id },
+                where: { id, status: Not(status.DELETED) },
             });
 
             if (!presence) {
                 throw new NotFoundException('Presence not found');
             }
 
-            await this.presencesRepository.remove(presence);
+            presence.status = status.DELETED;
+            await this.presencesRepository.save(presence);
 
             return {
                 success: true,

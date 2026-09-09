@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository } from "typeorm";
-import { ContactNo } from "./entities/contactByCountry.entity";
+import { ContactNo, Status } from "./entities/contactByCountry.entity";
 
 @Injectable()
 export class ContactNoService {
@@ -17,13 +17,13 @@ export class ContactNoService {
             }
 
             if (data.country) {
-                const existingCountry = await this.contactnoRepository.findOne({ where: { country: data.country } });
+                const existingCountry = await this.contactnoRepository.findOne({ where: { country: data.country, status: Not(Status.DELETED) } });
                 if (existingCountry) {
                     throw new BadRequestException('Contact with this country already exists');
                 }
             }
             if (data.phone) {
-                const existingPhone = await this.contactnoRepository.findOne({ where: { phone: data.phone } });
+                const existingPhone = await this.contactnoRepository.findOne({ where: { phone: data.phone, status: Not(Status.DELETED) } });
                 if (existingPhone) {
                     throw new BadRequestException('Contact with this phone already exists');
                 }
@@ -47,7 +47,7 @@ export class ContactNoService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
             const data = await this.contactnoRepository.find({
                 order: { createdAt: 'DESC' },
@@ -67,7 +67,7 @@ export class ContactNoService {
     async findOne(id: number) {
         try {
             const contact = await this.contactnoRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!contact) {
@@ -87,7 +87,7 @@ export class ContactNoService {
     async update(id: number, data: Partial<ContactNo>) {
         try {
             const contact = await this.contactnoRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!contact) {
@@ -95,13 +95,13 @@ export class ContactNoService {
             }
 
             if (data.country && data.country !== contact.country) {
-                const existingCountry = await this.contactnoRepository.findOne({ where: { country: data.country, id: Not(id) } });
+                const existingCountry = await this.contactnoRepository.findOne({ where: { country: data.country, id: Not(id), status: Not(Status.DELETED) } });
                 if (existingCountry) {
                     throw new BadRequestException('Contact with this country already exists');
                 }
             }
             if (data.phone && data.phone !== contact.phone) {
-                const existingPhone = await this.contactnoRepository.findOne({ where: { phone: data.phone, id: Not(id) } });
+                const existingPhone = await this.contactnoRepository.findOne({ where: { phone: data.phone, id: Not(id), status: Not(Status.DELETED) } });
                 if (existingPhone) {
                     throw new BadRequestException('Contact with this phone already exists');
                 }
@@ -124,14 +124,15 @@ export class ContactNoService {
     async remove(id: number) {
         try {
             const contact = await this.contactnoRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!contact) {
                 throw new NotFoundException('Contact not found');
             }
 
-            await this.contactnoRepository.remove(contact);
+            contact.status = Status.DELETED;
+            await this.contactnoRepository.save(contact);
 
             return {
                 success: true,

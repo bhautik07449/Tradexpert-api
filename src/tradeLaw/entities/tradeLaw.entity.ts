@@ -1,5 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+export enum Status {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    DELETED = 'deleted',
+}
+
 @Entity({ name: 'trade_law' })
 export class TradeLawEntity {
     @PrimaryGeneratedColumn()
@@ -22,6 +28,13 @@ export class TradeLawEntity {
 
     @Column({ name: 'use_case', type: 'text', nullable: true })
     use_case: string;
+
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.ACTIVE,
+    })
+    status: Status;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Countryproductname } from "./entities/countryproductname.entity";
+import { Repository, Not } from "typeorm";
+import { Countryproductname, Status } from "./entities/countryproductname.entity";
 
 @Injectable()
 export class CountryproductnameService {
@@ -30,7 +30,7 @@ export class CountryproductnameService {
 
     async findAll(country?: string) {
         try {
-            const whereClause = country ? { country: country } : {}
+            const whereClause: any = country ? { country: country, status: Not(Status.DELETED) } : { status: Not(Status.DELETED) };
 
             const data = await this.countryproductnameRepository.find({
                 order: { createdAt: 'DESC' },
@@ -50,7 +50,7 @@ export class CountryproductnameService {
     async findOne(id: number) {
         try {
             const countryproductname = await this.countryproductnameRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!countryproductname) {
@@ -70,7 +70,7 @@ export class CountryproductnameService {
     async update(id: number, data: Partial<Countryproductname>) {
         try {
             const countryproductname = await this.countryproductnameRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!countryproductname) {
@@ -94,14 +94,15 @@ export class CountryproductnameService {
     async remove(id: number) {
         try {
             const countryproductname = await this.countryproductnameRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!countryproductname) {
                 throw new NotFoundException('Country Product Name not found');
             }
 
-            await this.countryproductnameRepository.remove(countryproductname);
+            countryproductname.status = Status.DELETED;
+            await this.countryproductnameRepository.save(countryproductname);
 
             return {
                 success: true,

@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
-import { ContentOverview } from './entities/contentoverview.entity'; import { GlobalImpotance } from './entities/global.entity';
+import { ContentOverview, status } from './entities/contentoverview.entity';
+import { GlobalImpotance } from './entities/global.entity';
 
 @Injectable()
 export class ContentOverviewService {
@@ -25,6 +26,7 @@ export class ContentOverviewService {
             where: {
                 country: body.country,
                 category: { id: body.category },
+                status: Not(status.DELETED),
             },
         });
 
@@ -47,7 +49,7 @@ export class ContentOverviewService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { country } : {};
+        const whereClause: any = country ? { country, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
         
         const contentoverview = await this.contentoverviewRepo.find({
             where: whereClause,
@@ -64,7 +66,7 @@ export class ContentOverviewService {
 
     async findOne(id: number) {
         const contentoverview = await this.contentoverviewRepo.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
             relations: ['category', 'global_impotance'],
         });
 
@@ -81,7 +83,7 @@ export class ContentOverviewService {
 
     async findByCategory(category: any) {
         const contentoverview = await this.contentoverviewRepo.findOne({
-            where: { category: { id: category } },
+            where: { category: { id: category }, status: Not(status.DELETED) },
             relations: ['category', 'global_impotance'],
         });
 
@@ -98,7 +100,7 @@ export class ContentOverviewService {
 
     async update(id: number, body: any) {
         const contentoverview = await this.contentoverviewRepo.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
             relations: ['category', 'global_impotance'],
         });
 
@@ -111,6 +113,7 @@ export class ContentOverviewService {
             where: {
                 country: countryToCheck,
                 category: { id: categoryIdToCheck },
+                status: Not(status.DELETED),
             },
         });
 
@@ -141,12 +144,13 @@ export class ContentOverviewService {
 
     async delete(id: number) {
         const contentoverview = await this.contentoverviewRepo.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
         });
 
         if (!contentoverview) throw new NotFoundException('Content Overview not found');
 
-        await this.contentoverviewRepo.remove(contentoverview);
+        contentoverview.status = status.DELETED;
+        await this.contentoverviewRepo.save(contentoverview);
 
         return {
             success: true,

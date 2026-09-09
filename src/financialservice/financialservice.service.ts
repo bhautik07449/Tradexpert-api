@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Financial } from "./entities/financialservice.entity";
+import { Repository, Not } from "typeorm";
+import { Financial, Status } from "./entities/financialservice.entity";
 
 @Injectable()
 export class FinancialService {
@@ -28,16 +28,16 @@ export class FinancialService {
         }
     }
 
-    async findAll(country: string, finace?: string) {
+    async findAll(country?: string, finace?: string) {
         try {
-            let whereClause = {}
+            let whereClause: any = { status: Not(Status.DELETED) };
 
             if (country) {
-                whereClause = { country: country }
+                whereClause.country = country;
             }
 
             if (finace) {
-                whereClause = { type: finace }
+                whereClause.type = finace;
             }
 
             const data = await this.financialRepository.find({
@@ -58,7 +58,7 @@ export class FinancialService {
     async findOne(id: number) {
         try {
             const Financial = await this.financialRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!Financial) {
@@ -78,7 +78,7 @@ export class FinancialService {
     async update(id: number, data: Partial<Financial>) {
         try {
             const Financial = await this.financialRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!Financial) {
@@ -101,15 +101,16 @@ export class FinancialService {
 
     async remove(id: number) {
         try {
-            const Financial = await this.financialRepository.findOne({
-                where: { id },
+            const financial = await this.financialRepository.findOne({
+                where: { id, status: Not(Status.DELETED) },
             });
 
-            if (!Financial) {
+            if (!financial) {
                 throw new NotFoundException('Financial Service not found');
             }
 
-            await this.financialRepository.remove(Financial);
+            financial.status = Status.DELETED;
+            await this.financialRepository.save(financial);
 
             return {
                 success: true,

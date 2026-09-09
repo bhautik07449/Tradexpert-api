@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { EmailTemplate } from "./entities/emailtemplate.entity";
-import { Repository } from "typeorm";
+import { EmailTemplate, EmailtemplateStatus } from "./entities/emailtemplate.entity";
+import { Repository, Not } from "typeorm";
 
 @Injectable()
 export class EmailTemplateService {
@@ -31,6 +31,7 @@ export class EmailTemplateService {
     async findAll() {
         try {
             const data = await this.emailtemplateRepository.find({
+                where: { status: Not(EmailtemplateStatus.DELETED) },
                 order: { createdAt: 'ASC' },
             });
 
@@ -47,7 +48,7 @@ export class EmailTemplateService {
     async findOne(id: number) {
         try {
             const emailtemplate = await this.emailtemplateRepository.findOne({
-                where: { id },
+                where: { id, status: Not(EmailtemplateStatus.DELETED) },
             });
 
             if (!emailtemplate) {
@@ -67,7 +68,7 @@ export class EmailTemplateService {
     async update(id: number, data: Partial<EmailTemplate>) {
         try {
             const emailtemplate = await this.emailtemplateRepository.findOne({
-                where: { id },
+                where: { id, status: Not(EmailtemplateStatus.DELETED) },
             });
 
             if (!emailtemplate) {
@@ -91,14 +92,15 @@ export class EmailTemplateService {
     async remove(id: number) {
         try {
             const emailtemplate = await this.emailtemplateRepository.findOne({
-                where: { id },
+                where: { id, status: Not(EmailtemplateStatus.DELETED) },
             });
 
             if (!emailtemplate) {
                 throw new NotFoundException('Email Template not found');
             }
 
-            await this.emailtemplateRepository.remove(emailtemplate);
+            emailtemplate.status = EmailtemplateStatus.DELETED;
+            await this.emailtemplateRepository.save(emailtemplate);
 
             return {
                 success: true,

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Category } from 'src/categories/entities/category.entity';
-import { DMR } from './entities/dmr.entity';
+import { DMR, status } from './entities/dmr.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { MarketDetails } from './entities/dmr-market.entity';
 
@@ -58,7 +58,7 @@ export class DRMService {
     }
 
     async findAll(country?: string) {
-        const whereClause = country ? { subcategory: { country: country } } : {}
+        const whereClause: any = country ? { subcategory: { country: country }, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
 
         const dmr = await this.dmrRepo.find({
             relations: ['category', 'subcategory', 'market', 'product'],
@@ -75,6 +75,7 @@ export class DRMService {
 
     async getAllMarketData() {
         const markets = await this.marketRepo.find({
+            where: { dmr: { status: Not(status.DELETED) } },
             relations: ['dmr'],
             order: { id: 'DESC' },
         });
@@ -94,6 +95,7 @@ export class DRMService {
     async getAllMarketDataByCategory(category: number, subCategory?: number) {
         const whereClause: any = {
             dmr: {
+                status: Not(status.DELETED),
                 category: {
                     id: category,
                 },
@@ -126,7 +128,7 @@ export class DRMService {
 
     async findOne(id: number) {
         const dmr = await this.dmrRepo.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
             relations: ['category', 'subcategory', 'market', 'product'],
         });
 
@@ -143,7 +145,7 @@ export class DRMService {
 
     async update(id: number, body: any) {
         const dmr = await this.dmrRepo.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
             relations: ['category', 'subcategory', 'market', 'product'],
         });
 
@@ -192,12 +194,13 @@ export class DRMService {
 
     async delete(id: number) {
         const dmr = await this.dmrRepo.findOne({
-            where: { id },
+            where: { id, status: Not(status.DELETED) },
         });
 
         if (!dmr) throw new NotFoundException('DMR not found');
 
-        await this.dmrRepo.remove(dmr);
+        dmr.status = status.DELETED;
+        await this.dmrRepo.save(dmr);
 
         return {
             success: true,

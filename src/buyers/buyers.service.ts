@@ -26,7 +26,7 @@ export class BuyersService {
 
   async createBuyer(dto: RegisterBuyerDto, photoPath?: string): Promise<Buyer> {
     const existingBuyer = await this.buyerRepository.findOne({
-      where: { email: dto.email },
+      where: { email: dto.email, status: Not(BuyerStatus.DELETED) },
     });
     if (existingBuyer) {
       throw new BusinessException(ErrorCodes.ERR_RC_002, `Buyer with email id ${dto.email} already exists.`, 'Buyers', BuyersService.name);

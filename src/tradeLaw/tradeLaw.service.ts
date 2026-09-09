@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
-import { TradeLawEntity } from './entities/tradeLaw.entity';
+import { Repository, ILike, Not } from 'typeorm';
+import { TradeLawEntity, Status } from './entities/tradeLaw.entity';
 
 @Injectable()
 export class TradeLawService {
@@ -17,7 +17,7 @@ export class TradeLawService {
     }
 
     findAll(department?: string, country?: string) {
-        const where: any = {};
+        const where: any = { status: Not(Status.DELETED) };
         
         if (department) {
             where.department = ILike(`%${department}%`);
@@ -31,7 +31,7 @@ export class TradeLawService {
     }
 
     findOne(id: number) {
-        return this.tradeLawRepo.findOne({ where: { id } });
+        return this.tradeLawRepo.findOne({ where: { id, status: Not(Status.DELETED) } });
     }
 
     async update(id: number, body: Partial<TradeLawEntity>) {
@@ -41,9 +41,10 @@ export class TradeLawService {
     }
 
     async remove(id: number) {
-        const record = await this.findOne(id);
+        const record = await this.tradeLawRepo.findOne({ where: { id, status: Not(Status.DELETED) } });
         if (record) {
-            await this.tradeLawRepo.remove(record);
+            record.status = Status.DELETED;
+            await this.tradeLawRepo.save(record);
         }
         return { message: 'Trade Law deleted successfully' };
     }
