@@ -15,10 +15,24 @@ export class InvestorsService {
     try {
       if (data.email) {
         const existingInvestor = await this.investorRepository.findOne({ 
-          where: { email: data.email, status: Not(InvestorStatus.DELETED) } 
+          where: { email: data.email } 
         });
         if (existingInvestor) {
-          throw new ConflictException('Email already exists');
+          if (existingInvestor.status !== InvestorStatus.DELETED) {
+            throw new ConflictException('Email already exists');
+          }
+
+          if (data.password) {
+            data.password = await bcrypt.hash(data.password, 10);
+          }
+          Object.assign(existingInvestor, data, { status: InvestorStatus.PENDING });
+          const restored = await this.investorRepository.save(existingInvestor);
+
+          return {
+            success: true,
+            message: 'Investor registered successfully. Pending admin approval.',
+            data: restored,
+          };
         }
       }
 

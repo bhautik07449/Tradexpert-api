@@ -14,10 +14,18 @@ export class SuppliersService {
   async create(data: Partial<Supplier>): Promise<Supplier> {
     if (data.email) {
       const existingSupplier = await this.supplierRepository.findOne({ 
-        where: { email: data.email, status: Not(SupplierStatus.DELETED) } 
+        where: { email: data.email } 
       });
       if (existingSupplier) {
-        throw new ConflictException('Email already exists');
+        if (existingSupplier.status !== SupplierStatus.DELETED) {
+          throw new ConflictException('Email already exists');
+        }
+
+        if (data.password) {
+          data.password = await bcrypt.hash(data.password, 10);
+        }
+        Object.assign(existingSupplier, data, { status: SupplierStatus.PENDING });
+        return await this.supplierRepository.save(existingSupplier);
       }
     }
 

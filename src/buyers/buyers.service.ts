@@ -25,24 +25,35 @@ export class BuyersService {
   ) { }
 
   async createBuyer(dto: RegisterBuyerDto, photoPath?: string): Promise<Buyer> {
+    let buyer: Buyer;
     const existingBuyer = await this.buyerRepository.findOne({
-      where: { email: dto.email, status: Not(BuyerStatus.DELETED) },
+      where: { email: dto.email },
     });
     if (existingBuyer) {
-      throw new BusinessException(ErrorCodes.ERR_RC_002, `Buyer with email id ${dto.email} already exists.`, 'Buyers', BuyersService.name);
+      if (existingBuyer.status !== BuyerStatus.DELETED) {
+        throw new BusinessException(ErrorCodes.ERR_RC_002, `Buyer with email id ${dto.email} already exists.`, 'Buyers', BuyersService.name);
+      }
+
+      Object.assign(existingBuyer, dto, {
+        status: BuyerStatus.PENDING,
+        activationCode: this.generateActivationCode(dto.email),
+        activationDate: new Date('1970-01-01 00:00:01'),
+      });
+      existingBuyer.password = await bcrypt.hash(dto.password, 10);
+      buyer = existingBuyer;
+    } else {
+      const hashedPassword = await bcrypt.hash(dto.password, 10);
+      const activationCode = this.generateActivationCode(dto.email);
+      const activationDate = new Date('1970-01-01 00:00:01');
+
+      buyer = this.buyerRepository.create({
+        ...dto,
+        password: hashedPassword,
+        status: (dto as any).status || BuyerStatus.PENDING,
+        activationCode,
+        activationDate,
+      });
     }
-
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const activationCode = this.generateActivationCode(dto.email);
-    const activationDate = new Date('1970-01-01 00:00:01');
-
-    const buyer = this.buyerRepository.create({
-      ...dto,
-      password: hashedPassword,
-      status: (dto as any).status || BuyerStatus.PENDING,
-      activationCode,
-      activationDate,
-    });
 
     const savedBuyer = await this.buyerRepository.save(buyer);
 

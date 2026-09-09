@@ -35,11 +35,27 @@ export class AdminService {
     }
 
     const existingAdminByEmail = await this.adminRepository.findOne({
-      where: { email: dto.email, status: Not(AdminStatus.DELETED) },
+      where: { email: dto.email },
     });
 
     if (existingAdminByEmail) {
-      throw new BusinessException(ErrorCodes.ERR_RC_002, `User with email id ${dto.email} already exists.`);
+      if (existingAdminByEmail.status !== AdminStatus.DELETED) {
+        throw new BusinessException(ErrorCodes.ERR_RC_002, `User with email id ${dto.email} already exists.`);
+      }
+
+      const hashedPassword = await bcrypt.hash(dto.password, 10);
+      Object.assign(existingAdminByEmail, dto, {
+        role: targetRole,
+        password: hashedPassword,
+        status: AdminStatus.ACTIVE,
+      });
+      const restoredAdmin = await this.adminRepository.save(existingAdminByEmail);
+
+      return {
+        success: true,
+        message: 'Admin registered successfully.',
+        data: restoredAdmin,
+      };
     }
 
     const existingAdminByPhone = await this.adminRepository.findOne({
