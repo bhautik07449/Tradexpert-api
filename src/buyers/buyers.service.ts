@@ -89,7 +89,7 @@ export class BuyersService {
   }
 
   async getBuyerByEmail(email: string): Promise<Buyer> {
-    const buyer = await this.buyerRepository.findOne({ where: { email } });
+    const buyer = await this.buyerRepository.findOne({ where: { email, status: Not(BuyerStatus.DELETED) } });
     if (!buyer) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Buyer with email id ${email} not found.`, 'Buyers', BuyersService.name, 'getBuyerByEmail');
     }
@@ -101,6 +101,7 @@ export class BuyersService {
       .createQueryBuilder('buyer')
       .addSelect('buyer.password')
       .where('buyer.email = :email', { email })
+      .andWhere('buyer.status != :deletedStatus', { deletedStatus: BuyerStatus.DELETED })
       .getOne();
   }
 
@@ -145,7 +146,7 @@ export class BuyersService {
       throw new BusinessException(ErrorCodes.ERR_RC_001, 'Email and new password are required', 'Buyers', BuyersService.name, 'forgotPassword');
     }
 
-    const buyer = await this.buyerRepository.findOne({ where: { email } });
+    const buyer = await this.buyerRepository.findOne({ where: { email, status: Not(BuyerStatus.DELETED) } });
 
     if (!buyer) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Buyer with email ${email} not found`, 'Buyers', BuyersService.name, 'forgotPassword');

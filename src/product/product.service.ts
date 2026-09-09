@@ -195,7 +195,7 @@ export class ProductService {
 
     async update(id: number, body: any) {
         const product = await this.productRepo.findOne({
-            where: { id },
+            where: { id, status: Not('deleted') },
             relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
         });
 
@@ -264,7 +264,7 @@ export class ProductService {
 
     async delete(id: number) {
         const product = await this.productRepo.findOne({
-            where: { id },
+            where: { id, status: Not('deleted') },
         });
 
         if (!product) throw new NotFoundException('Product not found');

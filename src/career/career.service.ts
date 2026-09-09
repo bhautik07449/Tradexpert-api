@@ -113,7 +113,7 @@ export class CareerService {
 
             if (data.email !== career.email) {
                 const existingCareer = await this.careerRepository.findOne({
-                    where: { email: data.email, id: Not(id) }
+                    where: { email: data.email, id: Not(id), status: Not(Status.DELETED) }
                 });
                 if (existingCareer) {
                     throw new ConflictException('Email already in use by another career profile');
@@ -137,7 +137,7 @@ export class CareerService {
     async remove(id: number) {
         try {
             const career = await this.careerRepository.findOne({
-                where: { id },
+                where: { id, status: Not(Status.DELETED) },
             });
 
             if (!career) {
@@ -158,7 +158,9 @@ export class CareerService {
 
     async login(loginData: any) {
         const { email, password } = loginData;
-        const career = await this.careerRepository.findOne({ where: { email } });
+        const career = await this.careerRepository.findOne({ 
+            where: { email, status: Not(Status.DELETED) } 
+        });
 
         if (!career) {
             throw new UnauthorizedException('Invalid credentials');
@@ -200,7 +202,9 @@ export class CareerService {
             throw new ConflictException('Email and new password are required');
         }
 
-        const career = await this.careerRepository.findOne({ where: { email } });
+        const career = await this.careerRepository.findOne({ 
+            where: { email, status: Not(Status.DELETED) } 
+        });
 
         if (!career) {
             throw new NotFoundException(`Career profile with email ${email} not found`);

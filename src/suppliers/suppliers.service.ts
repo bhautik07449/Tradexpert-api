@@ -44,7 +44,7 @@ export class SuppliersService {
 
   async findOne(id: number): Promise<Supplier> {
     const supplier = await this.supplierRepository.findOne({
-      where: { id },
+      where: { id, status: Not(SupplierStatus.DELETED) },
     });
 
     if (!supplier) {
@@ -59,7 +59,7 @@ export class SuppliersService {
 
     if (data.email && data.email !== supplier.email) {
       const existingSupplier = await this.supplierRepository.findOne({ 
-        where: { email: data.email, id: Not(id) } 
+        where: { email: data.email, id: Not(id), status: Not(SupplierStatus.DELETED) } 
       });
       if (existingSupplier) {
         throw new ConflictException('Email already in use by another supplier');
@@ -86,6 +86,7 @@ export class SuppliersService {
       .createQueryBuilder('supplier')
       .addSelect('supplier.password')
       .where('supplier.email = :email', { email })
+      .andWhere('supplier.status != :deletedStatus', { deletedStatus: SupplierStatus.DELETED })
       .getOne();
 
     if (!supplier) {
@@ -124,7 +125,7 @@ export class SuppliersService {
       throw new ConflictException('Email and new password are required');
     }
 
-    const supplier = await this.supplierRepository.findOne({ where: { email } });
+    const supplier = await this.supplierRepository.findOne({ where: { email, status: Not(SupplierStatus.DELETED) } });
 
     if (!supplier) {
       throw new NotFoundException(`Supplier with email ${email} not found`);

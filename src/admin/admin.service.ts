@@ -24,7 +24,7 @@ export class AdminService {
 
     if (targetRole === AdminRole.SUPER_ADMIN) {
       const existingSuperAdmin = await this.adminRepository.findOne({
-        where: { role: AdminRole.SUPER_ADMIN },
+        where: { role: AdminRole.SUPER_ADMIN, status: Not(AdminStatus.DELETED) },
       });
       if (existingSuperAdmin) {
         throw new BusinessException(
@@ -43,7 +43,7 @@ export class AdminService {
     }
 
     const existingAdminByPhone = await this.adminRepository.findOne({
-      where: { phone: dto.phone },
+      where: { phone: dto.phone, status: Not(AdminStatus.DELETED) },
     });
 
     if (existingAdminByPhone) {
@@ -89,6 +89,7 @@ export class AdminService {
       .createQueryBuilder('admin')
       .addSelect('admin.password')
       .where('admin.email = :email', { email })
+      .andWhere('admin.status != :deletedStatus', { deletedStatus: AdminStatus.DELETED })
       .getOne();
   }
 
@@ -97,6 +98,7 @@ export class AdminService {
       .createQueryBuilder('admin')
       .addSelect('admin.password')
       .where('admin.email = :email', { email })
+      .andWhere('admin.status != :deletedStatus', { deletedStatus: AdminStatus.DELETED })
       .getMany();
   }
 
@@ -105,6 +107,7 @@ export class AdminService {
       .createQueryBuilder('admin')
       .addSelect('admin.password')
       .where('admin.email = :email AND admin.role = :role', { email, role })
+      .andWhere('admin.status != :deletedStatus', { deletedStatus: AdminStatus.DELETED })
       .getOne();
   }
 
@@ -118,7 +121,7 @@ export class AdminService {
   }
 
   async updateAdminById(id: number, dto: UpdateAdminDto): Promise<Admin> {
-    const admin = await this.adminRepository.findOne({ where: { id } });
+    const admin = await this.adminRepository.findOne({ where: { id, status: Not(AdminStatus.DELETED) } });
 
     if (!admin) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`);
@@ -126,7 +129,7 @@ export class AdminService {
 
     if (dto.email && dto.email !== admin.email) {
       const existingAdminByEmail = await this.adminRepository.findOne({
-        where: { email: dto.email },
+        where: { email: dto.email, status: Not(AdminStatus.DELETED) },
       });
       if (existingAdminByEmail) {
         throw new BusinessException(ErrorCodes.ERR_RC_002, `User with email id ${dto.email} already exists.`);
@@ -135,7 +138,7 @@ export class AdminService {
 
     if (dto.phone && dto.phone !== admin.phone) {
       const existingAdminByPhone = await this.adminRepository.findOne({
-        where: { phone: dto.phone },
+        where: { phone: dto.phone, status: Not(AdminStatus.DELETED) },
       });
       if (existingAdminByPhone) {
         throw new BusinessException(ErrorCodes.ERR_RC_002, `User with phone number ${dto.phone} already exists.`);
@@ -158,7 +161,7 @@ export class AdminService {
     dto: { firstName?: string; lastName?: string; photo?: string; password?: string; email?: string; phone?: string; country?: string }
   ): Promise<Admin> {
 
-    const admin = await this.adminRepository.findOne({ where: { id } });
+    const admin = await this.adminRepository.findOne({ where: { id, status: Not(AdminStatus.DELETED) } });
 
     if (!admin) {
       throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`);
@@ -166,7 +169,7 @@ export class AdminService {
 
     if (dto.email && dto.email !== admin.email) {
       const existingAdminByEmail = await this.adminRepository.findOne({
-        where: { email: dto.email },
+        where: { email: dto.email, status: Not(AdminStatus.DELETED) },
       });
       if (existingAdminByEmail) {
         throw new BusinessException(ErrorCodes.ERR_RC_002, `User with email id ${dto.email} already exists.`);
@@ -175,7 +178,7 @@ export class AdminService {
 
     if (dto.phone && dto.phone !== admin.phone) {
       const existingAdminByPhone = await this.adminRepository.findOne({
-        where: { phone: dto.phone },
+        where: { phone: dto.phone, status: Not(AdminStatus.DELETED) },
       });
       if (existingAdminByPhone) {
         throw new BusinessException(ErrorCodes.ERR_RC_002, `User with phone number ${dto.phone} already exists.`);
@@ -197,7 +200,7 @@ export class AdminService {
   }
 
   async remove(id: number) {
-    const admin = await this.adminRepository.findOne({ where: { id } });
+    const admin = await this.adminRepository.findOne({ where: { id, status: Not(AdminStatus.DELETED) } });
 
     if (!admin) throw new NotFoundException('This Admin user not found');
 

@@ -66,7 +66,7 @@ export class InvestorsService {
   async findOne(id: number) {
     try {
       const investor = await this.investorRepository.findOne({
-        where: { id },
+        where: { id, status: Not(InvestorStatus.DELETED) },
       });
 
       if (!investor) {
@@ -90,7 +90,7 @@ export class InvestorsService {
 
       if (data.email && data.email !== investor.email) {
         const existingInvestor = await this.investorRepository.findOne({
-          where: { email: data.email, id: Not(id) },
+          where: { email: data.email, id: Not(id), status: Not(InvestorStatus.DELETED) },
         });
         if (existingInvestor) {
           throw new ConflictException('Email already in use by another investor');
@@ -141,6 +141,7 @@ export class InvestorsService {
         .createQueryBuilder('investor')
         .addSelect('investor.password')
         .where('investor.email = :email', { email })
+        .andWhere('investor.status != :deletedStatus', { deletedStatus: InvestorStatus.DELETED })
         .getOne();
 
       if (!investor) {
@@ -184,7 +185,7 @@ export class InvestorsService {
         throw new ConflictException('Email and new password are required');
       }
 
-      const investor = await this.investorRepository.findOne({ where: { email } });
+      const investor = await this.investorRepository.findOne({ where: { email, status: Not(InvestorStatus.DELETED) } });
 
       if (!investor) {
         throw new NotFoundException(`Investor with email ${email} not found`);
