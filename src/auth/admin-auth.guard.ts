@@ -15,7 +15,7 @@ export class AdminAuthGuard extends AuthGuard('jwt') {
     }
 
     // Verify that the token payload has admin role
-    if (!user.role || user.role !== 'admin') {
+    if (!user.role || user.role !== 'super_admin') {
       throw new BusinessException(ErrorCodes.ERR_AC_004, 'Access denied. Admin role required.', 'Auth', AdminAuthGuard.name);
     }
 
