@@ -180,9 +180,12 @@ export class CareerService {
             throw new UnauthorizedException('Your account is pending admin approval. Access not granted yet.');
         }
 
-        if (career.status === Status.INACTIVE || career.status === Status.BLOCKED || career.status === Status.REVOKED) {
+        if (career.status === Status.BLOCKED || career.status === Status.REVOKED) {
             throw new UnauthorizedException('Your access to this app has been revoked by admin.');
         }
+
+        await this.careerRepository.update(career.id, { status: Status.ACTIVE });
+        career.status = Status.ACTIVE;
 
         const payload = { email: career.email, sub: career.id, role: 'career' };
         const token = this.jwtService.sign(payload);
@@ -192,6 +195,34 @@ export class CareerService {
             message: 'Login successful',
             token,
             data: career,
+        };
+    }
+
+    async logout(tokenOrId: string | number) {
+        let careerId: number | null = null;
+        if (typeof tokenOrId === 'number') {
+            careerId = tokenOrId;
+        } else if (typeof tokenOrId === 'string') {
+            const cleanToken = tokenOrId.replace(/^"|"$/g, '').trim();
+            if (!isNaN(Number(cleanToken)) && Number(cleanToken) > 0) {
+                careerId = Number(cleanToken);
+            } else {
+                try {
+                    const decoded: any = this.jwtService.decode(cleanToken);
+                    if (decoded && decoded.sub) {
+                        careerId = decoded.sub;
+                    }
+                } catch (error) {
+                    // Token decode failed
+                }
+            }
+        }
+        if (careerId) {
+            await this.careerRepository.update(careerId, { status: Status.INACTIVE });
+        }
+        return {
+            success: true,
+            message: 'Career logged out successfully',
         };
     }
 

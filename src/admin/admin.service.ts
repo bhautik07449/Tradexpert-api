@@ -136,6 +136,15 @@ export class AdminService {
     return plainToInstance(AdminDto, admins, { excludeExtraneousValues: true });
   }
 
+  async update(id: number, attrs: Partial<Admin>): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id } });
+    if (!admin) {
+      throw new BusinessException(ErrorCodes.ERR_RC_001, `Admin with id ${id} not found`);
+    }
+    Object.assign(admin, attrs);
+    return await this.adminRepository.save(admin);
+  }
+
   async updateAdminById(id: number, dto: UpdateAdminDto): Promise<Admin> {
     const admin = await this.adminRepository.findOne({ where: { id, status: Not(AdminStatus.DELETED) } });
 

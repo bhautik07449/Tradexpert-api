@@ -4,11 +4,14 @@ import * as bcrypt from 'bcrypt';
 import { Repository, Not } from 'typeorm';
 import { Supplier, SupplierStatus } from './entities/supplier.entity';
 
+import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class SuppliersService {
   constructor(
     @InjectRepository(Supplier)
     private readonly supplierRepository: Repository<Supplier>,
+    private readonly jwtService: JwtService,
   ) { }
 
   async create(data: Partial<Supplier>): Promise<Supplier> {
@@ -119,10 +122,41 @@ export class SuppliersService {
       throw new UnauthorizedException('Your access to this app has been revoked by admin.');
     }
 
+    await this.supplierRepository.update(supplier.id, { status: SupplierStatus.ACTIVE });
+    supplier.status = SupplierStatus.ACTIVE;
+
     const { password: _, ...result } = supplier;
     return {
       message: 'Supplier Login successful',
       supplier: result,
+    };
+  }
+
+  async logout(tokenOrId: string | number): Promise<{ success: boolean; message: string }> {
+    let supplierId: number | null = null;
+    if (typeof tokenOrId === 'number') {
+      supplierId = tokenOrId;
+    } else if (typeof tokenOrId === 'string') {
+      const cleanToken = tokenOrId.replace(/^"|"$/g, '').trim();
+      if (!isNaN(Number(cleanToken)) && Number(cleanToken) > 0) {
+        supplierId = Number(cleanToken);
+      } else {
+        try {
+          const decoded: any = this.jwtService.decode(cleanToken);
+          if (decoded && decoded.sub) {
+            supplierId = decoded.sub;
+          }
+        } catch (error) {
+          // Token decode failed
+        }
+      }
+    }
+    if (supplierId) {
+      await this.supplierRepository.update(supplierId, { status: SupplierStatus.INACTIVE });
+    }
+    return {
+      success: true,
+      message: "Supplier logged out successfully",
     };
   }
 

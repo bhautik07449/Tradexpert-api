@@ -11,6 +11,7 @@ import {
   UploadedFile,
   Query,
   Res,
+  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -51,6 +52,21 @@ export class BuyersController {
       });
     }
     return result;
+  }
+
+  @Post('logout')
+  @Transactional()
+  async logout(@Request() req: any, @Body() body: any) {
+    let tokenOrId = '';
+    const authHeader = req.headers?.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      tokenOrId = authHeader.substring(7);
+    } else if (body && body.token) {
+      tokenOrId = body.token;
+    } else if (body && body.id) {
+      tokenOrId = body.id;
+    }
+    return await this.buyersService.logout(tokenOrId);
   }
 
   @Post('forgot-password')

@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export enum InvestorStatus {
   ACTIVE = 'active',
   PENDING = 'pending',
+  INACTIVE = 'inactive',
   BLOCKED = 'blocked',
   DELETED = 'deleted',
   REVOKED = 'revoked',

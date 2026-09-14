@@ -7,6 +7,7 @@ import { LoginAdminResultDto } from './dto/login-admin-result.dto';
 import { plainToClass } from 'class-transformer';
 import { BusinessException } from 'src/common/business.exception';
 import { ErrorCodes } from 'src/common/error-codes.constant';
+import { AdminStatus } from '../admin/entities/admin.entity';
 
 @Injectable()
 export class AuthService {
@@ -38,11 +39,26 @@ export class AuthService {
     const payload = { email: admin.email, sub: admin.id, role: admin.role || 'super_admin' };
     const accessToken = this.jwtService.sign(payload);
 
+    await this.adminService.update(admin.id, { status: AdminStatus.ACTIVE });
+
     const result = plainToClass(LoginAdminResultDto, admin, {
       excludeExtraneousValues: true,
     });
+    result.status = AdminStatus.ACTIVE;
     result.access_token = accessToken;
 
     return result;
+  }
+
+  async logoutAdmin(token: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const decoded: any = this.jwtService.decode(token);
+      if (decoded && decoded.sub) {
+        await this.adminService.update(decoded.sub, { status: AdminStatus.INACTIVE });
+      }
+    } catch (error) {
+      // Ignore token decode errors
+    }
+    return { success: true, message: 'Admin logged out successfully' };
   }
 }

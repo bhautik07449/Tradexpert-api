@@ -30,6 +30,20 @@ export class CareerController {
         return result;
     }
 
+    @Post('logout')
+    async logout(@Request() req: any, @Body() body: any) {
+        let tokenOrId = '';
+        const authHeader = req.headers?.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            tokenOrId = authHeader.substring(7);
+        } else if (body && body.token) {
+            tokenOrId = body.token;
+        } else if (body && body.id) {
+            tokenOrId = body.id;
+        }
+        return await this.careerService.logout(tokenOrId);
+    }
+
     @Post('forgot-password')
     forgotPassword(@Body() body: any) {
         return this.careerService.forgotPassword(body);

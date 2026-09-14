@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export enum AdminStatus {
   ACTIVE = 'active',
   PENDING = 'pending',
+  INACTIVE = 'inactive',
   BLOCK = 'block',
   DELETED = 'deleted',
 }

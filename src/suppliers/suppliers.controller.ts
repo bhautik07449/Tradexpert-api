@@ -10,6 +10,7 @@ import {
     Patch,
     Query,
     Res,
+    Request,
 } from '@nestjs/common';
 import { SuppliersService } from './suppliers.service';
 import { Supplier } from './entities/supplier.entity';
@@ -39,6 +40,20 @@ export class SuppliersController {
             });
         }
         return result;
+    }
+
+    @Post('logout')
+    async logout(@Request() req: any, @Body() body: any) {
+        let tokenOrId = '';
+        const authHeader = req.headers?.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            tokenOrId = authHeader.substring(7);
+        } else if (body && body.token) {
+            tokenOrId = body.token;
+        } else if (body && body.id) {
+            tokenOrId = body.id;
+        }
+        return await this.suppliersService.logout(tokenOrId);
     }
 
     @Post('forgot-password')

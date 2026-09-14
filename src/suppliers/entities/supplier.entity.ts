@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export enum SupplierStatus {
   ACTIVE = 'active',
   PENDING = 'pending',
+  INACTIVE = 'inactive',
   BLOCKED = 'blocked',
   DELETED = 'deleted',
   REVOKED = 'revoked',

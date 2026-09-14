@@ -137,6 +137,8 @@ export class BuyersService {
     if (!isPasswordMatching) {
       throw new BusinessException(ErrorCodes.ERR_AC_001, 'Invalid credentials', 'Buyers', BuyersService.name, 'login');
     }
+    await this.buyerRepository.update(buyer.id, { status: BuyerStatus.ACTIVE });
+    buyer.status = BuyerStatus.ACTIVE;
     const payload = { email: buyer.email, sub: buyer.id, role: 'buyer' };
     const accessToken = this.jwtService.sign(payload);
     const result = plainToClass(LoginBuyerResultDto, buyer, {
@@ -147,6 +149,34 @@ export class BuyersService {
       success: true,
       message: "Buyer login successfully",
       data: result,
+    };
+  }
+
+  async logout(tokenOrId: string | number): Promise<{ success: boolean; message: string }> {
+    let buyerId: number | null = null;
+    if (typeof tokenOrId === 'number') {
+      buyerId = tokenOrId;
+    } else if (typeof tokenOrId === 'string') {
+      const cleanToken = tokenOrId.replace(/^"|"$/g, '').trim();
+      if (!isNaN(Number(cleanToken)) && Number(cleanToken) > 0) {
+        buyerId = Number(cleanToken);
+      } else {
+        try {
+          const decoded: any = this.jwtService.decode(cleanToken);
+          if (decoded && decoded.sub) {
+            buyerId = decoded.sub;
+          }
+        } catch (error) {
+          // Token decode failed
+        }
+      }
+    }
+    if (buyerId) {
+      await this.buyerRepository.update(buyerId, { status: BuyerStatus.INACTIVE });
+    }
+    return {
+      success: true,
+      message: "Buyer logged out successfully",
     };
   }
 

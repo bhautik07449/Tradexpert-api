@@ -33,4 +33,16 @@ export class AuthController {
 
     return this.authService.loginAdmin(loginAdminDto);
   }
+
+  @Post('logout')
+  async logoutAdmin(@Request() request: any) {
+    let token = '';
+    const authHeader = request.headers?.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else if (request.body?.token) {
+      token = request.body.token;
+    }
+    return this.authService.logoutAdmin(token);
+  }
 }

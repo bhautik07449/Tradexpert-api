@@ -10,6 +10,7 @@ import {
     Patch,
     Query,
     Res,
+    Request,
 } from '@nestjs/common';
 import { InvestorsService } from './investors.service';
 import { Investor } from './entities/investor.entity';
@@ -38,6 +39,20 @@ export class InvestorsController {
             });
         }
         return result;
+    }
+
+    @Post('logout')
+    async logout(@Request() req: any, @Body() body: any) {
+        let tokenOrId = '';
+        const authHeader = req.headers?.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            tokenOrId = authHeader.substring(7);
+        } else if (body && body.token) {
+            tokenOrId = body.token;
+        } else if (body && body.id) {
+            tokenOrId = body.id;
+        }
+        return await this.investorsService.logout(tokenOrId);
     }
 
     @Post('forgot-password')

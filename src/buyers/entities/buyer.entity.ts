@@ -10,6 +10,7 @@ export enum BuyerGender {
 export enum BuyerStatus {
   ACTIVE = 'active',
   PENDING = 'pending',
+  INACTIVE = 'inactive',
   BLOCK = 'block',
   DELETED = 'deleted',
   REVOKED = 'revoked',
