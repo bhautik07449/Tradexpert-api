@@ -53,6 +53,18 @@ export class ProductController {
         return this.productService.update(id, body, req?.user);
     }
 
+    @Patch(':id/approve')
+    @UseGuards(AdminOrSupplierAuthGuard)
+    approve(@Param('id') id: string) {
+        return this.productService.update(Number(id), { approval_status: 'approved' });
+    }
+
+    @Patch(':id/reject')
+    @UseGuards(AdminOrSupplierAuthGuard)
+    reject(@Param('id') id: string, @Body() body: any) {
+        return this.productService.update(Number(id), { approval_status: 'rejected', rejection_reason: body?.reason });
+    }
+
     @Delete(':id')
     @UseGuards(AdminOrSupplierAuthGuard)
     delete(@Param('id') id: number) {

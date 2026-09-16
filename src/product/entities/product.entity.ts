@@ -86,6 +86,9 @@ export class Product {
     @Column({ name: 'status', nullable: true })
     status: string;
 
+    @Column({ name: 'service_type', nullable: true })
+    service_type: string;
+
     @Column({ name: 'supplier_id', nullable: true })
     supplier_id: number;
 

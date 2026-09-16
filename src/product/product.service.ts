@@ -97,7 +97,20 @@ export class ProductService {
             body.supplier_id = user?.supplierId || body.supplier_id;
             body.supplier_name = user?.name || body.supplier_name;
             body.is_supplier_created = true;
-            body.approval_status = body.approval_status || 'pending';
+            body.approval_status = 'pending'; // Supplier-created products require admin approval
+        } else {
+            // Admin created products are approved by default
+            body.approval_status = body.approval_status || 'approved';
+        }
+
+        // Handle service_type field (previously passed as status or service_type)
+        if (body.service_type || body.status) {
+            body.service_type = body.service_type || body.status;
+        }
+
+        // Set default active status for record state
+        if (!body.status || body.status === 'pending' || body.status === 'approved' || body.status === 'rejected') {
+            body.status = 'active';
         }
 
         const product = this.productRepo.create({
