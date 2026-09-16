@@ -7,21 +7,22 @@ import {
     Put,
     Delete,
     Patch,
-    UseGuards,
     Query,
+    Request,
 } from '@nestjs/common';
 
 import { ProductService } from './product.service';
-import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
+import { AdminOrSupplierAuthGuard } from 'src/auth/admin-or-supplier-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('products')
 export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
-    create(@Body() body: any) {
-        return this.productService.create(body);
+    @UseGuards(AdminOrSupplierAuthGuard)
+    create(@Body() body: any, @Request() req: any) {
+        return this.productService.create(body, req?.user);
     }
 
     @Get()
@@ -29,9 +30,10 @@ export class ProductController {
         @Query('country') country?: string,
         @Query('season') season?: string,
         @Query('category') category?: string,
-        @Query('subcategory') subcategory?: string
+        @Query('subcategory') subcategory?: string,
+        @Request() req?: any
     ) {
-        return this.productService.findAll(season, category, country, subcategory);
+        return this.productService.findAll(season, category, country, subcategory, req?.user);
     }
 
     @Get(':id')
@@ -45,13 +47,13 @@ export class ProductController {
     }
 
     @Patch(':id')
-    @UseGuards(AdminAuthGuard)
-    update(@Param('id') id: number, @Body() body: any) {
-        return this.productService.update(id, body);
+    @UseGuards(AdminOrSupplierAuthGuard)
+    update(@Param('id') id: number, @Body() body: any, @Request() req: any) {
+        return this.productService.update(id, body, req?.user);
     }
 
     @Delete(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     delete(@Param('id') id: number) {
         return this.productService.delete(id);
     }

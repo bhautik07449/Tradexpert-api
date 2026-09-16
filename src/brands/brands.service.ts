@@ -22,7 +22,7 @@ export class BrandsService {
         private readonly productRepository: Repository<Product>,
     ) { }
 
-    async create(data: Partial<Brand>): Promise<Brand> {
+    async create(data: Partial<Brand>, user?: any): Promise<Brand> {
         if (!data) {
             throw new BadRequestException('Request body is required');
         }
@@ -39,12 +39,23 @@ export class BrandsService {
             data.category = category;
         }
 
+        if (user?.supplierId || data.supplier_id) {
+            data.supplier_id = user?.supplierId || data.supplier_id;
+            data.supplier_name = user?.name || data.supplier_name;
+            data.is_supplier_created = true;
+            data.approval_status = data.approval_status || 'pending';
+        }
+
         const brand = this.brandRepository.create(data);
         return this.brandRepository.save(brand);
     }
 
-    async findAll(country?: string): Promise<Brand[]> {
+    async findAll(country?: string, user?: any): Promise<Brand[]> {
         const whereClause: any = country ? { country, status: Not(BrandStatus.DELETED) } : { status: Not(BrandStatus.DELETED) };
+
+        if (user?.supplierId) {
+            whereClause.supplier_id = user.supplierId;
+        }
 
         return this.brandRepository.find({
             where: whereClause,
@@ -158,7 +169,7 @@ export class BrandsService {
         return brand;
     }
 
-    async update(id: number, data: Partial<Brand>): Promise<Brand> {
+    async update(id: number, data: Partial<Brand>, user?: any): Promise<Brand> {
         const brand = await this.findOne(id);
 
         if (data.category?.id) {

@@ -7,6 +7,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 
+import { AdminAuthGuard } from './admin-auth.guard';
+import { SupplierAuthGuard } from './supplier-auth.guard';
+import { AdminOrSupplierAuthGuard } from './admin-or-supplier-auth.guard';
+
 @Module({
   imports: [
     PassportModule,
@@ -23,8 +27,8 @@ import { JwtStrategy } from './jwt.strategy';
     }),
     AdminModule
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, AdminAuthGuard, SupplierAuthGuard, AdminOrSupplierAuthGuard],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule, AdminAuthGuard, SupplierAuthGuard, AdminOrSupplierAuthGuard],
 })
 export class AuthModule { }

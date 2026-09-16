@@ -55,7 +55,7 @@ export class TradeofferService {
         return formatted;
     }
 
-    async create(data: any) {
+    async create(data: any, user?: any) {
         if (data.trade_type?.id) {
             const tradeType = await this.tradetypeRepo.findOne({
                 where: { id: data.trade_type.id },
@@ -64,6 +64,13 @@ export class TradeofferService {
             if (!tradeType) throw new NotFoundException('Trade type not found');
 
             data.trade_type = tradeType;
+        }
+
+        if (user?.supplierId || data.supplier_id) {
+            data.supplier_id = user?.supplierId || data.supplier_id;
+            data.supplier_name = user?.name || data.supplier_name;
+            data.is_supplier_created = true;
+            data.approval_status = data.approval_status || 'pending';
         }
 
         const payloadItems = data.dealer || data.tender || data.association || data.ready_stock || data.items;
@@ -81,9 +88,14 @@ export class TradeofferService {
         };
     }
 
-    async findAll(country?: string) {
+    async findAll(country?: string, user?: any) {
         const whereClause: any = country ? { country: country } : {};
         whereClause.status = Not(TradeofferStatus.DELETED);
+
+        const supplierId = user?.supplierId;
+        if (supplierId) {
+            whereClause.supplier_id = supplierId;
+        }
 
         const data = await this.tradeofferRepo.find({
             relations: ['trade_type', 'items', 'items.category', 'items.subCategory', 'items.product', 'items.franchise_type'],
@@ -127,7 +139,7 @@ export class TradeofferService {
         };
     }
 
-    async update(id: number, body: any) {
+    async update(id: number, body: any, user?: any) {
         const tradeoffer = await this.tradeofferRepo.findOne({
             where: { id, status: Not(TradeofferStatus.DELETED) },
             relations: ['trade_type', 'items'],

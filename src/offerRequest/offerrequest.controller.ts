@@ -7,45 +7,46 @@ import {
     Body,
     Param,
     ParseIntPipe,
-    UseGuards,
     Query,
+    Request,
 } from '@nestjs/common';
-import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 import { OfferRequestService } from './offerrequest.service';
+import { AdminOrSupplierAuthGuard } from 'src/auth/admin-or-supplier-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('offerrequest')
 export class OfferRequestController {
     constructor(private readonly service: OfferRequestService) { }
 
     @Post()
-    // @UseGuards(AdminAuthGuard)
-    create(@Body() body: any) {
-        return this.service.create(body);
+    create(@Body() body: any, @Request() req: any) {
+        return this.service.create(body, req?.user);
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
-    findAll(@Query('country') country?: string) {
-        return this.service.findAll(country);
+    @UseGuards(AdminOrSupplierAuthGuard)
+    findAll(@Query('country') country?: string, @Request() req?: any) {
+        return this.service.findAll(country, req?.user);
     }
 
     @Get(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.service.findOne(id);
     }
 
     @Patch(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: any,
+        @Request() req?: any,
     ) {
-        return this.service.update(id, body);
+        return this.service.update(id, body, req?.user);
     }
 
     @Delete(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.service.remove(id);
     }

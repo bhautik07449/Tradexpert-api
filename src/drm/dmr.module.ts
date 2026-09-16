@@ -6,9 +6,10 @@ import { DMRController } from './dmr.controller';
 import { DRMService } from './dmr.service';
 import { Category } from 'src/categories/entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([DMR, MarketDetails, Category, Product])],
+    imports: [TypeOrmModule.forFeature([DMR, MarketDetails, Category, Product]), AuthModule],
     controllers: [DMRController],
     providers: [DRMService],
 })

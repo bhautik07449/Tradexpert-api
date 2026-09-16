@@ -15,7 +15,7 @@ export class CategoriesService {
         private readonly categoryRepository: Repository<Category>,
     ) { }
 
-    async create(data: Partial<Category>): Promise<Category> {
+    async create(data: Partial<Category>, user?: any): Promise<Category> {
         if (data.parent?.id) {
             const parent = await this.categoryRepository.findOne({
                 where: { id: data.parent.id, status: Not(CategoryStatus.DELETED) },
@@ -26,6 +26,13 @@ export class CategoriesService {
             }
 
             data.parent = parent;
+        }
+
+        if (user?.supplierId || data.supplier_id) {
+            data.supplier_id = user?.supplierId || data.supplier_id;
+            data.supplier_name = user?.name || data.supplier_name;
+            data.is_supplier_created = true;
+            data.approval_status = data.approval_status || 'pending';
         }
 
         const category = this.categoryRepository.create(data);
@@ -100,7 +107,7 @@ export class CategoriesService {
         return category;
     }
 
-    async update(id: number, data: Partial<Category>): Promise<Category> {
+    async update(id: number, data: Partial<Category>, user?: any): Promise<Category> {
         const category = await this.findOne(id);
 
         if (data.parent?.id) {

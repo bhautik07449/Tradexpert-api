@@ -125,9 +125,18 @@ export class SuppliersService {
     await this.supplierRepository.update(supplier.id, { status: SupplierStatus.ACTIVE });
     supplier.status = SupplierStatus.ACTIVE;
 
+    const payload = {
+      sub: supplier.id,
+      email: supplier.email,
+      name: supplier.company_name || `${supplier.firstName || ''} ${supplier.lastName || ''}`.trim(),
+      role: 'supplier',
+    };
+    const token = this.jwtService.sign(payload);
+
     const { password: _, ...result } = supplier;
     return {
       message: 'Supplier Login successful',
+      token,
       supplier: result,
     };
   }

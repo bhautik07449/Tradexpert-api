@@ -17,7 +17,7 @@ export class OfferRequestService {
         private readonly tradeofferRepo: Repository<Tradeoffer>,
     ) { }
 
-    async create(data: Partial<OfferRequest>) {
+    async create(data: Partial<OfferRequest>, user?: any) {
         if (data.trade_offer?.id) {
             const offer = await this.tradeofferRepo.findOne({
                 where: { id: data.trade_offer.id },
@@ -26,6 +26,13 @@ export class OfferRequestService {
             if (!offer) throw new NotFoundException('Trade offer not found');
 
             data.trade_offer = offer;
+        }
+
+        if (user?.supplierId || data.supplier_id) {
+            data.supplier_id = user?.supplierId || data.supplier_id;
+            data.supplier_name = user?.name || data.supplier_name;
+            data.is_supplier_created = true;
+            data.approval_status = data.approval_status || 'pending';
         }
 
         const request = this.offerRepo.create(data);
@@ -38,9 +45,13 @@ export class OfferRequestService {
         };
     }
 
-    async findAll(country?: string) {
+    async findAll(country?: string, user?: any) {
         const whereClause: any = country ? { trade_offer: { country: country } } : {};
         whereClause.status = Not(OfferRequestStatus.DELETED);
+
+        if (user?.supplierId) {
+            whereClause.supplier_id = user.supplierId;
+        }
 
         const data = await this.offerRepo.find({
             where: whereClause,
@@ -70,7 +81,7 @@ export class OfferRequestService {
         };
     }
 
-    async update(id: number, body: Partial<OfferRequest>) {
+    async update(id: number, body: Partial<OfferRequest>, user?: any) {
         const request = await this.offerRepo.findOne({
             where: { id, status: Not(OfferRequestStatus.DELETED) },
             relations: ['trade_offer'],

@@ -13,11 +13,19 @@ export class TradetypeService {
         private readonly tradeofferRepository: Repository<Tradeoffer>
     ) { }
 
-    async create(data: Partial<Tradetype>) {
+    async create(data: Partial<Tradetype>, user?: any) {
         try {
             if (!data) {
                 throw new BadRequestException('Request body is required');
             }
+
+            if (user?.supplierId || data.supplier_id) {
+                data.supplier_id = user?.supplierId || data.supplier_id;
+                data.supplier_name = user?.name || data.supplier_name;
+                data.is_supplier_created = true;
+                data.approval_status = data.approval_status || 'pending';
+            }
+
             const tradetype = this.tradetypeRepository.create(data);
             const saved = await this.tradetypeRepository.save(tradetype);
 
@@ -26,6 +34,10 @@ export class TradetypeService {
                 name: saved.name,
                 description: `Auto-generated trade offer for ${saved.name}`,
                 country: saved.country,
+                supplier_id: saved.supplier_id,
+                supplier_name: saved.supplier_name,
+                is_supplier_created: saved.is_supplier_created,
+                approval_status: saved.approval_status,
                 items: [],
             });
             await this.tradeofferRepository.save(tradeoffer);
@@ -40,9 +52,13 @@ export class TradetypeService {
         }
     }
 
-    async findAll(country?: string) {
+    async findAll(country?: string, user?: any) {
         try {
-            const whereClause: any = country ? { country: country } : {};
+            const whereClause: any = country ? { country: country, status: Not(TradetypeStatus.DELETED) } : { status: Not(TradetypeStatus.DELETED) };
+
+            if (user?.supplierId) {
+                whereClause.supplier_id = user.supplierId;
+            }
             whereClause.status = Not(TradetypeStatus.DELETED);
 
             const data = await this.tradetypeRepository.find({
@@ -80,7 +96,7 @@ export class TradetypeService {
         }
     }
 
-    async update(id: number, data: Partial<Tradetype>) {
+    async update(id: number, data: Partial<Tradetype>, user?: any) {
         try {
             const tradetype = await this.tradetypeRepository.findOne({
                 where: { id, status: Not(TradetypeStatus.DELETED) },

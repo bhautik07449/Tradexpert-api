@@ -8,20 +8,21 @@ import {
     ParseIntPipe,
     Patch,
     Query,
-    UseGuards,
+    Request,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { Category } from './entities/category.entity';
-import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
+import { AdminOrSupplierAuthGuard } from 'src/auth/admin-or-supplier-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('categories')
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
-    create(@Body() body: Partial<Category>): Promise<Category> {
-        return this.categoriesService.create(body);
+    @UseGuards(AdminOrSupplierAuthGuard)
+    create(@Body() body: Partial<Category>, @Request() req: any): Promise<Category> {
+        return this.categoriesService.create(body, req?.user);
     }
 
     @Get()
@@ -55,7 +56,7 @@ export class CategoriesController {
     }
 
     @Patch('hierarchy/update')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     updateHierarchy(
         @Body() body: { categoryId?: number; subcategoryId?: number; productId?: number },
     ): Promise<{ message: string }> {
@@ -63,16 +64,17 @@ export class CategoriesController {
     }
 
     @Patch(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<Category>,
+        @Request() req: any,
     ): Promise<Category> {
-        return this.categoriesService.update(id, body);
+        return this.categoriesService.update(id, body, req?.user);
     }
 
     @Delete(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     remove(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<{ message: string }> {

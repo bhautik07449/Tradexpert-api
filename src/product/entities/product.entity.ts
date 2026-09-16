@@ -86,6 +86,18 @@ export class Product {
     @Column({ name: 'status', nullable: true })
     status: string;
 
+    @Column({ name: 'supplier_id', nullable: true })
+    supplier_id: number;
+
+    @Column({ name: 'supplier_name', nullable: true })
+    supplier_name: string;
+
+    @Column({ name: 'is_supplier_created', default: false })
+    is_supplier_created: boolean;
+
+    @Column({ name: 'approval_status', default: 'approved' })
+    approval_status: string;
+
     @ManyToMany(() => Abc, abc => abc.products)
     abcs: Abc[];
 

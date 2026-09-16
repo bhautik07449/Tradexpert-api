@@ -5,9 +5,10 @@ import { Category } from '../categories/entities/category.entity';
 import { Product } from '../product/entities/product.entity';
 import { BrandsService } from './brands.service';
 import { BrandsController } from './brands.controller';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Brand, Category, Product])],
+    imports: [TypeOrmModule.forFeature([Brand, Category, Product]), AuthModule],
     providers: [BrandsService],
     controllers: [BrandsController],
 })

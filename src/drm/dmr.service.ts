@@ -22,7 +22,7 @@ export class DRMService {
         private readonly marketRepo: Repository<MarketDetails>,
     ) { }
 
-    async create(body: any) {
+    async create(body: any, user?: any) {
         const category = await this.categoryRepo.findOne({
             where: { id: body.category },
         });
@@ -41,6 +41,13 @@ export class DRMService {
 
         if (!product) throw new NotFoundException('Product not found');
 
+        if (user?.supplierId || body.supplier_id) {
+            body.supplier_id = user?.supplierId || body.supplier_id;
+            body.supplier_name = user?.name || body.supplier_name;
+            body.is_supplier_created = true;
+            body.approval_status = body.approval_status || 'pending';
+        }
+
         const dmr = this.dmrRepo.create({
             ...body,
             category,
@@ -57,8 +64,12 @@ export class DRMService {
         };
     }
 
-    async findAll(country?: string) {
+    async findAll(country?: string, user?: any) {
         const whereClause: any = country ? { subcategory: { country: country }, status: Not(status.DELETED) } : { status: Not(status.DELETED) };
+
+        if (user?.supplierId) {
+            whereClause.supplier_id = user.supplierId;
+        }
 
         const dmr = await this.dmrRepo.find({
             relations: ['category', 'subcategory', 'market', 'product'],
@@ -143,7 +154,7 @@ export class DRMService {
         };
     }
 
-    async update(id: number, body: any) {
+    async update(id: number, body: any, user?: any) {
         const dmr = await this.dmrRepo.findOne({
             where: { id, status: Not(status.DELETED) },
             relations: ['category', 'subcategory', 'market', 'product'],

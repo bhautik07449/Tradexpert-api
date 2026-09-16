@@ -6,28 +6,28 @@ import {
     Param,
     Delete,
     ParseIntPipe,
-    UseGuards,
     Patch,
     Query,
+    Request,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { Brand } from './entities/brand.entity';
-import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
+import { AdminOrSupplierAuthGuard } from 'src/auth/admin-or-supplier-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('brands')
 export class BrandsController {
     constructor(private readonly brandsService: BrandsService) { }
 
     @Post()
-    @UseGuards(AdminAuthGuard)
-    create(@Body() body: Partial<Brand>): Promise<Brand> {
-        return this.brandsService.create(body);
+    @UseGuards(AdminOrSupplierAuthGuard)
+    create(@Body() body: Partial<Brand>, @Request() req: any): Promise<Brand> {
+        return this.brandsService.create(body, req?.user);
     }
 
     @Get()
-    // @UseGuards(AdminAuthGuard)
-    findAll(@Query('country') country: string): Promise<Brand[]> {
-        return this.brandsService.findAll(country);
+    findAll(@Query('country') country: string, @Request() req: any): Promise<Brand[]> {
+        return this.brandsService.findAll(country, req?.user);
     }
 
     @Get('grouped')
@@ -36,22 +36,23 @@ export class BrandsController {
     }
 
     @Get(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     findOne(@Param('id', ParseIntPipe) id: number): Promise<Brand> {
         return this.brandsService.findOne(id);
     }
 
     @Patch(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<Brand>,
+        @Request() req: any,
     ): Promise<Brand> {
-        return this.brandsService.update(id, body);
+        return this.brandsService.update(id, body, req?.user);
     }
 
     @Delete(':id')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrSupplierAuthGuard)
     remove(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<{ message: string }> {

@@ -8,9 +8,10 @@ import { TradeofferController } from './tradeoffer.controller';
 import { Category } from 'src/categories/entities/category.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { Franchise } from 'src/franchise/entities/franchise.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Tradeoffer, TradeofferItem, Tradetype, Category, Product, Franchise])],
+    imports: [TypeOrmModule.forFeature([Tradeoffer, TradeofferItem, Tradetype, Category, Product, Franchise]), AuthModule],
     controllers: [TradeofferController],
     providers: [TradeofferService],
 })

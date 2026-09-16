@@ -17,7 +17,7 @@ export class AbcService {
         private readonly abctypeRepo: Repository<Abctype>,
     ) { }
 
-    async create(data: any) {
+    async create(data: any, user?: any) {
         if (data.categoryId) data.category = { id: data.categoryId };
         if (data.subCategoryId) data.subcategory = { id: data.subCategoryId };
         if (data.abcTypeId) data.abc_type = { id: data.abcTypeId };
@@ -28,6 +28,13 @@ export class AbcService {
             data.products = [{ id: data.productId }];
         } else if (data.products && Array.isArray(data.products)) {
             data.products = data.products.map(id => typeof id === 'object' ? id : { id });
+        }
+
+        if (user?.supplierId || data.supplier_id) {
+            data.supplier_id = user?.supplierId || data.supplier_id;
+            data.supplier_name = user?.name || data.supplier_name;
+            data.is_supplier_created = true;
+            data.approval_status = data.approval_status || 'pending';
         }
 
         const abc = this.abcRepo.create(data);
@@ -46,8 +53,12 @@ export class AbcService {
         };
     }
 
-    async findAll(country?: string) {
+    async findAll(country?: string, user?: any) {
         const whereClause: any = country ? { abc_type: { country: country }, status: Not(AbcStatus.DELETED) } : { status: Not(AbcStatus.DELETED) };
+
+        if (user?.supplierId) {
+            whereClause.supplier_id = user.supplierId;
+        }
 
         const data = await this.abcRepo.find({
             relations: ['category', 'subcategory', 'products', 'products.offer_type', 'products.offer_type.items', 'products.offer_type.items.product', 'abc_type'],
@@ -178,7 +189,7 @@ export class AbcService {
         };
     }
 
-    async update(id: number, body: any) {
+    async update(id: number, body: any, user?: any) {
         const abc = await this.abcRepo.findOne({
             where: { id, status: Not(AbcStatus.DELETED) },
         });

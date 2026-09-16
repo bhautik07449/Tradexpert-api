@@ -22,13 +22,13 @@ export class ProductService {
         private readonly tradeofferRepo: Repository<Tradeoffer>,
     ) { }
 
-    async create(body: any) {
+    async create(body: any, user?: any) {
         if (Array.isArray(body)) {
             const savedProducts = [];
             const errors = [];
             for (const [index, item] of body.entries()) {
                 try {
-                    const savedProduct = await this.createSingle(item);
+                    const savedProduct = await this.createSingle(item, user);
                     savedProducts.push(savedProduct);
                 } catch (error) {
                     errors.push({ index, item: item?.name, reason: error.message });
@@ -41,7 +41,7 @@ export class ProductService {
                 errors: errors.length > 0 ? errors : undefined
             };
         } else {
-            const savedProduct = await this.createSingle(body);
+            const savedProduct = await this.createSingle(body, user);
             return {
                 success: true,
                 message: 'Product created successfully',
@@ -50,7 +50,7 @@ export class ProductService {
         }
     }
 
-    private async createSingle(body: any) {
+    private async createSingle(body: any, user?: any) {
         if (!body.category) throw new BadRequestException('Category is required');
         const categoryId = Number(body.category);
         const category = await this.categoryRepo.findOne({
@@ -93,6 +93,13 @@ export class ProductService {
             }
         }
 
+        if (user?.supplierId || body.supplier_id) {
+            body.supplier_id = user?.supplierId || body.supplier_id;
+            body.supplier_name = user?.name || body.supplier_name;
+            body.is_supplier_created = true;
+            body.approval_status = body.approval_status || 'pending';
+        }
+
         const product = this.productRepo.create({
             ...body,
             category,
@@ -106,7 +113,7 @@ export class ProductService {
         return savedProduct;
     }
 
-    async findAll(season?: any, category?: any, country?: string, subcategory?: any) {
+    async findAll(season?: any, category?: any, country?: string, subcategory?: any, user?: any) {
         const whereClause: any = { status: Not('deleted') };
 
         if (season) {
@@ -125,6 +132,10 @@ export class ProductService {
             whereClause.country = country;
         }
 
+        if (user?.supplierId) {
+            whereClause.supplier_id = user.supplierId;
+        }
+
         const products = await this.productRepo.find({
             where: whereClause,
             relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.category', 'offer_type.items.subCategory', 'offer_type.items.product', 'finacial_service'],
@@ -132,7 +143,11 @@ export class ProductService {
         });
 
         if (!products.length) {
-            throw new NotFoundException('No data found');
+            return {
+                success: true,
+                message: 'No data found',
+                data: [],
+            };
         }
 
         return {
@@ -193,7 +208,7 @@ export class ProductService {
         };
     }
 
-    async update(id: number, body: any) {
+    async update(id: number, body: any, user?: any) {
         const product = await this.productRepo.findOne({
             where: { id, status: Not('deleted') },
             relations: ['category', 'subcategory', 'measure', 'offer_type', 'offer_type.items', 'offer_type.items.product', 'finacial_service'],
