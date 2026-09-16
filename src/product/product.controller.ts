@@ -26,6 +26,7 @@ export class ProductController {
     }
 
     @Get()
+    @UseGuards(AdminOrSupplierAuthGuard)
     findAll(
         @Query('country') country?: string,
         @Query('season') season?: string,

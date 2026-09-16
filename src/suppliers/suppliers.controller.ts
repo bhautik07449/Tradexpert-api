@@ -32,7 +32,7 @@ export class SuppliersController {
         const result = await this.suppliersService.login(body);
         const token = result?.token || result?.access_token;
         const supplierId = result?.supplier?.id || result?.data?.id || result?.id;
-        
+
         if (token) {
             response.cookie('supplier_token', String(token), {
                 domain: '.sourceseas.com',
@@ -74,7 +74,7 @@ export class SuppliersController {
                         if (decoded && decoded.sub) {
                             supplierId = Number(decoded.sub);
                         }
-                    } catch (err) {}
+                    } catch (err) { }
                 }
             }
         }
@@ -94,8 +94,7 @@ export class SuppliersController {
         return {
             success: true,
             message: 'Supplier profile fetched successfully',
-            data: supplier,
-            supplier,
+            data: supplier
         };
     }
 
