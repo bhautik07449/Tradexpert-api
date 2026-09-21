@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+﻿import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdminModule } from 'src/admin/admin.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -10,6 +10,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { AdminAuthGuard } from './admin-auth.guard';
 import { SupplierAuthGuard } from './supplier-auth.guard';
 import { AdminOrSupplierAuthGuard } from './admin-or-supplier-auth.guard';
+import { ServiceAuthGuard } from './service-auth.guard';
+import { AdminOrServiceAuthGuard } from './admin-or-service-auth.guard';
 
 @Module({
   imports: [
@@ -27,8 +29,24 @@ import { AdminOrSupplierAuthGuard } from './admin-or-supplier-auth.guard';
     }),
     AdminModule
   ],
-  providers: [AuthService, JwtStrategy, AdminAuthGuard, SupplierAuthGuard, AdminOrSupplierAuthGuard],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    AdminAuthGuard,
+    SupplierAuthGuard,
+    AdminOrSupplierAuthGuard,
+    ServiceAuthGuard,
+    AdminOrServiceAuthGuard,
+  ],
   controllers: [AuthController],
-  exports: [AuthService, JwtModule, AdminAuthGuard, SupplierAuthGuard, AdminOrSupplierAuthGuard],
+  exports: [
+    AuthService,
+    JwtModule,
+    AdminAuthGuard,
+    SupplierAuthGuard,
+    AdminOrSupplierAuthGuard,
+    ServiceAuthGuard,
+    AdminOrServiceAuthGuard,
+  ],
 })
 export class AuthModule { }

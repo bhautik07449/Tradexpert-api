@@ -1,13 +1,13 @@
 import { Injectable, ExecutionContext, CanActivate } from '@nestjs/common';
 
 @Injectable()
-export class AdminAuthGuard implements CanActivate {
+export class AdminOrServiceAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      const serviceIdHeader = request.headers['x-service-id'] || request.headers['service_id'] || request.headers['x-supplier-id'] || request.headers['supplier_id'];
+      const serviceIdHeader = request.headers['x-service-id'] || request.headers['service_id'];
       if (serviceIdHeader) {
         request.user = {
           serviceId: Number(serviceIdHeader),
@@ -24,6 +24,9 @@ export class AdminAuthGuard implements CanActivate {
       if (payloadBase64) {
         const decoded = JSON.parse(Buffer.from(payloadBase64, 'base64').toString('utf-8'));
         if (decoded) {
+          if (decoded.role === 'supplier') {
+            return false;
+          }
           if (decoded.role === 'super_admin' || decoded.role === 'admin') {
             request.user = {
               userId: decoded.sub,
@@ -31,10 +34,9 @@ export class AdminAuthGuard implements CanActivate {
               role: 'super_admin',
             };
             return true;
-          } else {
+          } else if (decoded.role === 'service' || decoded.role === 'service_partner' || decoded.sub) {
             request.user = {
               serviceId: decoded.sub || decoded.id,
-              supplierId: decoded.sub || decoded.id,
               email: decoded.email,
               name: decoded.name,
               role: decoded.role || 'service',
@@ -44,7 +46,7 @@ export class AdminAuthGuard implements CanActivate {
         }
       }
     } catch (err) {
-      // Allow fallback
+      // Decode failed
     }
 
     return true;

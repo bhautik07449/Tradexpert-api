@@ -5,6 +5,10 @@ import { Inquiry } from "src/inquiry/entities/inquiry.entity";
 import { Product } from "src/product/entities/product.entity";
 import { Quotation } from "src/quotation/entities/quotation.entity";
 import { Requestsamples } from "src/requestsamples/entities/requestsamples.entity";
+import { Blog } from "src/blog/entities/blog.entity";
+import { Team } from "src/team/entities/team.entity";
+import { Client } from "src/client/entities/client.entity";
+import { Events } from "src/events/entities/events.entity";
 import { Repository } from "typeorm";
 
 @Injectable()
@@ -24,6 +28,18 @@ export class DashboardService {
 
         @InjectRepository(Product)
         private readonly productRepo: Repository<Product>,
+
+        @InjectRepository(Blog)
+        private readonly blogRepo: Repository<Blog>,
+
+        @InjectRepository(Team)
+        private readonly teamRepo: Repository<Team>,
+
+        @InjectRepository(Client)
+        private readonly clientRepo: Repository<Client>,
+
+        @InjectRepository(Events)
+        private readonly eventsRepo: Repository<Events>,
     ) { }
     async getDashboardData() {
         const totalCategory = await this.categoryRepo.count();
@@ -66,6 +82,49 @@ export class DashboardService {
             totalEnquiry,
             monthlyProducts,
             sampleRequestGrowth,
+        };
+    }
+
+    async getServiceDashboardData() {
+        const totalBlogs = await this.blogRepo.count();
+        const totalTeamMembers = await this.teamRepo.count();
+        const totalClients = await this.clientRepo.count();
+        const totalEvents = await this.eventsRepo.count();
+
+        const blogGrowthRaw = await this.blogRepo
+            .createQueryBuilder('blog')
+            .select('EXTRACT(MONTH FROM blog.createdAt)', 'month')
+            .addSelect('COUNT(*)', 'count')
+            .groupBy('month')
+            .orderBy('month', 'ASC')
+            .getRawMany();
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const blogGrowth = monthNames.map((name, idx) => {
+            const found = blogGrowthRaw.find(item => parseInt(item.month) === idx + 1);
+            return { name, count: found ? parseInt(found.count) : 0 };
+        });
+
+        const eventGrowthRaw = await this.eventsRepo
+            .createQueryBuilder('event')
+            .select('EXTRACT(MONTH FROM event.createdAt)', 'month')
+            .addSelect('COUNT(*)', 'count')
+            .groupBy('month')
+            .orderBy('month', 'ASC')
+            .getRawMany();
+
+        const eventGrowth = monthNames.map((name, idx) => {
+            const found = eventGrowthRaw.find(item => parseInt(item.month) === idx + 1);
+            return { name, count: found ? parseInt(found.count) : 0 };
+        });
+
+        return {
+            totalBlogs,
+            totalTeamMembers,
+            totalClients,
+            totalEvents,
+            blogGrowth,
+            eventGrowth,
         };
     }
 }

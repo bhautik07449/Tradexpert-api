@@ -26,6 +26,9 @@ export class AdminOrSupplierAuthGuard implements CanActivate {
     try {
       const decoded = this.jwtService.decode(token) as any;
       if (decoded) {
+        if (decoded.role === 'service' || decoded.role === 'service_partner') {
+          return false;
+        }
         if (decoded.role === 'super_admin' || decoded.role === 'admin') {
           request.user = {
             userId: decoded.sub,
@@ -33,7 +36,7 @@ export class AdminOrSupplierAuthGuard implements CanActivate {
             role: 'super_admin',
           };
           return true;
-        } else {
+        } else if (decoded.role === 'supplier' || decoded.sub) {
           request.user = {
             supplierId: decoded.sub,
             email: decoded.email,

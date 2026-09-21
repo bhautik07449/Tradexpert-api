@@ -1,5 +1,5 @@
 import { Controller, Get, Body, UseGuards, Patch } from '@nestjs/common';
-import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
+import { AdminOrServiceAuthGuard } from 'src/auth/admin-or-service-auth.guard';
 import { GeneralSettingsService } from './generalsetting.service';
 import { GeneralSettings } from './entities/generalsetting.entity';
 
@@ -9,13 +9,13 @@ export class GeneralSettingsController {
     constructor(private readonly service: GeneralSettingsService) { }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrServiceAuthGuard)
     getSettings() {
         return this.service.getSettings();
     }
 
     @Patch()
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminOrServiceAuthGuard)
     updateSettings(@Body() body: Partial<GeneralSettings>) {
         return this.service.updateSettings(body);
     }

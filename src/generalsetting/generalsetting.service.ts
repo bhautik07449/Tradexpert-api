@@ -12,24 +12,20 @@ export class GeneralSettingsService {
   ) {}
 
   async getSettings() {
-    const settings = await this.repo.findOne({ where: { id: 1 } });
-
+    let settings = await this.repo.findOne({ where: { id: 1 } });
     if (!settings) {
-      throw new NotFoundException('Settings not found');
+      settings = await this.repo.save(this.repo.create({ id: 1 }));
     }
-
     return settings;
   }
 
   async updateSettings(data: Partial<GeneralSettings>) {
-    // const settings = await this.repo.findOne({ where: { id: 1 } });
-
-    // if (!settings) {
-    //   throw new NotFoundException('Settings not found');
-    // }
-
-    // Object.assign(settings, data);
-
-    return this.repo.save(data);
+    let settings = await this.repo.findOne({ where: { id: 1 } });
+    if (!settings) {
+      settings = this.repo.create({ id: 1, ...data });
+    } else {
+      Object.assign(settings, data);
+    }
+    return this.repo.save(settings);
   }
 }
