@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards } from "@nestjs/common";
 import { DashboardService } from "./dashboard.service";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
 import { AdminOrServiceAuthGuard } from "src/auth/admin-or-service-auth.guard";
+import { AdminOrSupplierAuthGuard } from "src/auth/admin-or-supplier-auth.guard";
 
 @Controller('dashboard')
 export class DashboardController {
@@ -27,6 +28,18 @@ export class DashboardController {
         return {
             success: true,
             message: "Service dashboard data fetched successfully",
+            data,
+        };
+    }
+
+    @Get('/supplier')
+    @UseGuards(AdminOrSupplierAuthGuard)
+    async getSupplierDashboard() {
+        const data = await this.dashboardService.getSupplierDashboardData();
+
+        return {
+            success: true,
+            message: "Supplier dashboard data fetched successfully",
             data,
         };
     }

@@ -127,4 +127,48 @@ export class DashboardService {
             eventGrowth,
         };
     }
+
+    async getSupplierDashboardData() {
+        const totalProducts = await this.productRepo.count();
+        const totalEnquiries = await this.enquiryRepo.count();
+        const totalQuotations = await this.quotationRepo.count();
+        const totalRequests = await this.sampleRepo.count();
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        const productGrowthRaw = await this.productRepo
+            .createQueryBuilder('product')
+            .select('EXTRACT(MONTH FROM product.createdAt)', 'month')
+            .addSelect('COUNT(*)', 'count')
+            .groupBy('month')
+            .orderBy('month', 'ASC')
+            .getRawMany();
+
+        const productGrowth = monthNames.map((name, idx) => {
+            const found = productGrowthRaw.find(item => parseInt(item.month) === idx + 1);
+            return { name, products: found ? parseInt(found.count) : 0 };
+        });
+
+        const inquiryGrowthRaw = await this.enquiryRepo
+            .createQueryBuilder('inquiry')
+            .select('EXTRACT(MONTH FROM inquiry.created_at)', 'month')
+            .addSelect('COUNT(*)', 'count')
+            .groupBy('month')
+            .orderBy('month', 'ASC')
+            .getRawMany();
+
+        const inquiryGrowth = monthNames.map((name, idx) => {
+            const found = inquiryGrowthRaw.find(item => parseInt(item.month) === idx + 1);
+            return { name, inquiries: found ? parseInt(found.count) : 0 };
+        });
+
+        return {
+            totalProducts,
+            totalEnquiries,
+            totalQuotations,
+            totalRequests,
+            productGrowth,
+            inquiryGrowth,
+        };
+    }
 }
