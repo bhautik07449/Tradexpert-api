@@ -70,8 +70,7 @@ import { TradeLawModule } from './tradeLaw/tradeLaw.module';
 import { FranchiseModule } from './franchise/franchise.module';
 import { RequestInfoModule } from './requestInfo/requestInfo.module';
 import { ElearningApiKeyModule } from './ElearningApiKey/ElearningApiKey.module';
-
-
+import { InvoicesModule } from './invoices/invoices.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -142,7 +141,8 @@ import { ElearningApiKeyModule } from './ElearningApiKey/ElearningApiKey.module'
     FranchiseModule, RequestInfoModule,
 
     //elearning api key module
-    ElearningApiKeyModule
+    ElearningApiKeyModule,
+    InvoicesModule
   ],
   controllers: [AppController, UploadController],
   providers: [

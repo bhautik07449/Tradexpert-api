@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "@types/multer": "^2.0.0",
-    "@types/streamifier": "^0.1.2",
-    "puppeteer": "^24.34.0"
+    "@types/streamifier": "^0.1.2"
   }
 }
