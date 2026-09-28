@@ -13,6 +13,9 @@ import { Events } from 'src/events/entities/events.entity';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 
+import { Brand } from 'src/brands/entities/brand.entity';
+import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
+
 @Module({
     imports: [
         AuthModule,
@@ -26,6 +29,8 @@ import { DashboardService } from './dashboard.service';
             Team,
             Client,
             Events,
+            Brand,
+            Tradeoffer,
         ]),
     ],
     controllers: [DashboardController],

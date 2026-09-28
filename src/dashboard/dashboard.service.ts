@@ -11,6 +11,9 @@ import { Client } from "src/client/entities/client.entity";
 import { Events } from "src/events/entities/events.entity";
 import { Repository } from "typeorm";
 
+import { Brand } from "src/brands/entities/brand.entity";
+import { Tradeoffer } from "src/tradeoffer/entities/tradeoffer.entity";
+
 @Injectable()
 export class DashboardService {
     constructor(
@@ -40,6 +43,12 @@ export class DashboardService {
 
         @InjectRepository(Events)
         private readonly eventsRepo: Repository<Events>,
+
+        @InjectRepository(Brand)
+        private readonly brandRepo: Repository<Brand>,
+
+        @InjectRepository(Tradeoffer)
+        private readonly tradeofferRepo: Repository<Tradeoffer>,
     ) { }
     async getDashboardData() {
         const totalCategory = await this.categoryRepo.count();
@@ -130,9 +139,9 @@ export class DashboardService {
 
     async getSupplierDashboardData() {
         const totalProducts = await this.productRepo.count();
-        const totalEnquiries = await this.enquiryRepo.count();
-        const totalQuotations = await this.quotationRepo.count();
-        const totalRequests = await this.sampleRepo.count();
+        const totalCategories = await this.categoryRepo.count();
+        const totalBrands = await this.brandRepo.count();
+        const totalTradeOffers = await this.tradeofferRepo.count();
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -149,6 +158,9 @@ export class DashboardService {
             return { name, products: found ? parseInt(found.count) : 0 };
         });
 
+        // We can leave inquiryGrowth as is for the chart or change it if we want.
+        // Let's keep inquiryGrowth so the chart doesn't break, or we can replace it with tradeOfferGrowth.
+        // The user didn't mention chart, but we'll leave it as is to avoid breaking.
         const inquiryGrowthRaw = await this.enquiryRepo
             .createQueryBuilder('inquiry')
             .select('EXTRACT(MONTH FROM inquiry.created_at)', 'month')
@@ -164,9 +176,9 @@ export class DashboardService {
 
         return {
             totalProducts,
-            totalEnquiries,
-            totalQuotations,
-            totalRequests,
+            totalCategories,
+            totalBrands,
+            totalTradeOffers,
             productGrowth,
             inquiryGrowth,
         };

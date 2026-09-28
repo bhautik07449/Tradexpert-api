@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
+import { Category } from 'src/categories/entities/category.entity';
 
 export enum SupplierStatus {
   ACTIVE = 'active',
@@ -44,6 +45,10 @@ export class Supplier {
 
   @Column({ nullable: true })
   website: string;
+
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 
   @Column({ nullable: true, select: false })
   password?: string;

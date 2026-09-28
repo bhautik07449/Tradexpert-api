@@ -146,8 +146,8 @@ export class ProductService {
         }
 
         if (user?.role === 'supplier' || user?.supplierId) {
-            // When supplier requests products: show only products created by this supplier
-            whereClause.supplier_id = user.supplierId;
+            // When supplier requests products: show all products (per user request)
+            // whereClause.supplier_id = user.supplierId;
         } else if (!user || user?.role !== 'super_admin') {
             // For public / customer store front: show ONLY approved products
             whereClause.approval_status = 'approved';

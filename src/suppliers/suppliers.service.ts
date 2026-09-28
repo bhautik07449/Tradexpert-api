@@ -15,6 +15,10 @@ export class SuppliersService {
   ) { }
 
   async create(data: Partial<Supplier>): Promise<Supplier> {
+    if (data.category) {
+      data.category = { id: Number(data.category) } as any;
+    }
+
     if (data.email) {
       const existingSupplier = await this.supplierRepository.findOne({ 
         where: { email: data.email } 
@@ -38,6 +42,7 @@ export class SuppliersService {
     if (!data.status) {
       data.status = SupplierStatus.PENDING;
     }
+    
     const supplier = this.supplierRepository.create(data);
     return await this.supplierRepository.save(supplier);
   }
@@ -75,6 +80,10 @@ export class SuppliersService {
       if (existingSupplier) {
         throw new ConflictException('Email already in use by another supplier');
       }
+    }
+
+    if (data.category) {
+      data.category = { id: Number(data.category) } as any;
     }
 
     Object.assign(supplier, data);
