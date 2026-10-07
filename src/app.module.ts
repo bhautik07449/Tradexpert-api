@@ -31,6 +31,8 @@ import { GalleryModule } from './gallery/gallery.module';
 import { FaqModule } from './faq/faq.module';
 import { GeneralSettingsModule } from './generalsetting/generalsetting.module';
 import { SocialSettingsModule } from './socialsetting/socialsetting.module';
+import { DevelopPrepositionsModule } from './develop-prepositions/develop-prepositions.module';
+import { DevelopTopologiesModule } from './develop-topologies/develop-topologies.module';
 import { QuotationModule } from './quotation/quotation.module';
 import { RequestsamplesModule } from './requestsamples/requestsamples.module';
 import { ContactModule } from './contact/contact.module';
@@ -129,7 +131,7 @@ import { InvoicesModule } from './invoices/invoices.module';
     EmailtemplateModule, BlogCategoryModule,
     BlogModule, TeamModule, ClientModule, TestimonialModule,
     TradetypeModule, TradeofferModule, OfferRequestModule,
-    HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule,
+    HomebannerModule, CertificationsliderModule, GalleryModule, FaqModule, DevelopPrepositionsModule, DevelopTopologiesModule,
     GeneralSettingsModule, SocialSettingsModule,
     QuotationModule, RequestsamplesModule, ContactModule, InquiryModule,
     DRMModule, DashboardModule, CreditAccountModule, NewsletterModule,
