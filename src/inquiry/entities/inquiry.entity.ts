@@ -39,6 +39,21 @@ export class Inquiry {
     @Column({ name: 'country', nullable: true })
     country: string;
 
+    @Column({ name: 'reason_type', nullable: true })
+    reason_type: string;
+
+    @Column({ name: 'category', nullable: true })
+    category: string;
+
+    @Column({ name: 'reason_desc', type: 'text', nullable: true })
+    reason_desc: string;
+
+    @Column({ name: 'supplier_id', nullable: true })
+    supplier_id: number;
+
+    @Column({ name: 'supplier_name', nullable: true })
+    supplier_name: string;
+
     @Column({
         type: 'enum',
         enum: status,

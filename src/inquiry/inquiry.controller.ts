@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { AdminAuthGuard } from "src/auth/admin-auth.guard";
+import { AdminOrSupplierAuthGuard } from "src/auth/admin-or-supplier-auth.guard";
 import { InquiryService } from "./inquiry.service";
 import { Inquiry } from "./entities/inquiry.entity";
 
@@ -8,15 +9,22 @@ export class InquiryController {
     constructor(private readonly inquiryService: InquiryService) { }
 
     @Post()
-    // @UseGuards(AdminAuthGuard)
-    create(@Body() body: Partial<Inquiry>) {
+    @UseGuards(AdminOrSupplierAuthGuard)
+    create(@Body() body: Partial<Inquiry>, @Req() req: any) {
+        if (req.user?.supplierId && !body.supplier_id) {
+            body.supplier_id = req.user.supplierId;
+        }
+        if (req.user?.name && !body.supplier_name) {
+            body.supplier_name = req.user.name;
+        }
         return this.inquiryService.create(body);
     }
 
     @Get()
-    @UseGuards(AdminAuthGuard)
-    findAll(@Query('country') country?: string) {
-        return this.inquiryService.findAll(country);
+    @UseGuards(AdminOrSupplierAuthGuard)
+    findAll(@Query('country') country?: string, @Query('supplier_id') supplier_id?: number, @Req() req?: any) {
+        const supId = req?.user?.supplierId || supplier_id;
+        return this.inquiryService.findAll(country, supId);
     }
 
     @Get(':id')

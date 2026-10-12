@@ -5,9 +5,10 @@ import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
 import { OfferRequestController } from './offerrequest.controller';
 import { OfferRequestService } from './offerrequest.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { InterwatchAlertModule } from 'src/interwatch-alert/interwatch-alert.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([OfferRequest, Tradeoffer]), AuthModule],
+    imports: [TypeOrmModule.forFeature([OfferRequest, Tradeoffer]), AuthModule, InterwatchAlertModule],
     controllers: [OfferRequestController],
     providers: [OfferRequestService],
 })

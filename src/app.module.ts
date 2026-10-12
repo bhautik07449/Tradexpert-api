@@ -73,6 +73,7 @@ import { FranchiseModule } from './franchise/franchise.module';
 import { RequestInfoModule } from './requestInfo/requestInfo.module';
 import { ElearningApiKeyModule } from './ElearningApiKey/ElearningApiKey.module';
 import { InvoicesModule } from './invoices/invoices.module';
+import { InterwatchAlertModule } from './interwatch-alert/interwatch-alert.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -144,7 +145,8 @@ import { InvoicesModule } from './invoices/invoices.module';
 
     //elearning api key module
     ElearningApiKeyModule,
-    InvoicesModule
+    InvoicesModule,
+    InterwatchAlertModule
   ],
   controllers: [AppController, UploadController],
   providers: [

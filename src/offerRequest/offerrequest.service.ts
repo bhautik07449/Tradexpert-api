@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { Tradeoffer } from 'src/tradeoffer/entities/tradeoffer.entity';
 import { OfferRequest, OfferRequestStatus } from './entities/offerrequest.entity';
+import { InterwatchAlertService } from 'src/interwatch-alert/interwatch-alert.service';
 
 @Injectable()
 export class OfferRequestService {
@@ -15,6 +16,8 @@ export class OfferRequestService {
 
         @InjectRepository(Tradeoffer)
         private readonly tradeofferRepo: Repository<Tradeoffer>,
+
+        private readonly interwatchAlertService: InterwatchAlertService,
     ) { }
 
     async create(data: Partial<OfferRequest>, user?: any) {
@@ -37,6 +40,23 @@ export class OfferRequestService {
 
         const request = this.offerRepo.create(data);
         const saved = await this.offerRepo.save(request);
+
+        if (saved.reason_type || saved.reason_desc) {
+            try {
+                await this.interwatchAlertService.create({
+                    supplier_id: saved.supplier_id,
+                    supplier_name: saved.supplier_name || user?.name || saved.name || 'Supplier',
+                    alert_type: saved.reason_type || 'Fall Short',
+                    reason_type: saved.reason_type || 'Fall Short',
+                    category: saved.category || 'Material',
+                    reason_desc: saved.reason_desc || saved.message,
+                    source_module: 'Offer Request',
+                    source_id: saved.id,
+                });
+            } catch (err) {
+                console.error('Failed to auto-create Interwatch Alert for Offer Request:', err);
+            }
+        }
 
         return {
             success: true,
@@ -103,6 +123,23 @@ export class OfferRequestService {
         Object.assign(request, body);
 
         const updated = await this.offerRepo.save(request);
+
+        if (updated.reason_type || updated.reason_desc) {
+            try {
+                await this.interwatchAlertService.create({
+                    supplier_id: updated.supplier_id,
+                    supplier_name: updated.supplier_name || user?.name || updated.name || 'Supplier',
+                    alert_type: updated.reason_type || 'Fall Short',
+                    reason_type: updated.reason_type || 'Fall Short',
+                    category: updated.category || 'Material',
+                    reason_desc: updated.reason_desc || updated.message,
+                    source_module: 'Offer Request',
+                    source_id: updated.id,
+                });
+            } catch (err) {
+                console.error('Failed to auto-create Interwatch Alert on update:', err);
+            }
+        }
 
         return {
             success: true,

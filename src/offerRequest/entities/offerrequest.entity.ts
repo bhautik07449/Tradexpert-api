@@ -30,7 +30,16 @@ export class OfferRequest {
     message: string;
 
     @Column({ name: 'type', nullable: true })
-    type: string
+    type: string;
+
+    @Column({ name: 'reason_type', nullable: true })
+    reason_type: string;
+
+    @Column({ name: 'category', nullable: true })
+    category: string;
+
+    @Column({ name: 'reason_desc', type: 'text', nullable: true })
+    reason_desc: string;
 
     @Column({
         type: 'enum',

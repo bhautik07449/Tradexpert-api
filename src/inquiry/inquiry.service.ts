@@ -9,6 +9,7 @@ import { Not, Repository } from "typeorm";
 import { Inquiry, status } from "./entities/inquiry.entity";
 import { Product } from "src/product/entities/product.entity";
 import { Buyer } from "src/buyers/entities/buyer.entity";
+import { InterwatchAlertService } from "src/interwatch-alert/interwatch-alert.service";
 
 @Injectable()
 export class InquiryService {
@@ -20,7 +21,9 @@ export class InquiryService {
         private readonly productRepository: Repository<Product>,
 
         @InjectRepository(Buyer)
-        private readonly buyerRepository: Repository<Buyer>
+        private readonly buyerRepository: Repository<Buyer>,
+
+        private readonly interwatchAlertService: InterwatchAlertService,
     ) { }
 
     async create(data: any) {
@@ -55,15 +58,39 @@ export class InquiryService {
                 subject: data.subject,
                 message: data.message,
 
-                quantity: data.expectedQty,
-                frequency: data.requirementFrequency,
-                price: data.getLatestPrice ? null : data.preferredPrice,
+                quantity: data.expectedQty || data.quantity,
+                frequency: data.requirementFrequency || data.frequency,
+                price: data.getLatestPrice ? null : (data.preferredPrice || data.price),
+                country: data.country,
+
+                reason_type: data.reason_type,
+                category: data.category,
+                reason_desc: data.reason_desc,
+                supplier_id: data.supplier_id || product?.supplier_id,
+                supplier_name: data.supplier_name || product?.supplier_name,
 
                 product: product,
                 buyer: buyer,
             });
 
             const saved = await this.inquiryRepository.save(inquiry);
+
+            if (saved.reason_type || saved.reason_desc) {
+                try {
+                    await this.interwatchAlertService.create({
+                        supplier_id: saved.supplier_id || product?.supplier_id,
+                        supplier_name: saved.supplier_name || product?.supplier_name || 'Supplier',
+                        alert_type: saved.reason_type || 'Fall Short',
+                        reason_type: saved.reason_type || 'Fall Short',
+                        category: saved.category || 'Material',
+                        reason_desc: saved.reason_desc || saved.message,
+                        source_module: 'Product Enquiry',
+                        source_id: saved.id,
+                    });
+                } catch (err) {
+                    console.error('Failed to auto-create Interwatch Alert for Product Enquiry:', err);
+                }
+            }
 
             return {
                 success: true,
@@ -78,11 +105,14 @@ export class InquiryService {
         }
     }
 
-    async findAll(country?: string) {
+    async findAll(country?: string, supplier_id?: number) {
         try {
             const whereClause: any = { status: Not(status.DELETED) };
             if (country) {
                 whereClause.country = country;
+            }
+            if (supplier_id) {
+                whereClause.supplier_id = supplier_id;
             }
             const data = await this.inquiryRepository.find({
                 where: whereClause,
